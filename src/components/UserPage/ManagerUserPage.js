@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
@@ -8,6 +8,13 @@ const PasswordInput = () => {
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const [users, setUser] = useState({}); // Khởi tạo state users với giá trị ban đầu là một object trống
+    useEffect(() => {
+        const users = JSON.parse(localStorage.getItem("user"))
+        // console.log(user);
+        setUser(users);
+    }, [users]);
 
     return (
         <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -34,8 +41,8 @@ const ManagerUserPage = () => {
         <>
             <Form>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control type="text" placeholder="Enter name" />
                     <Form.Text className="text-muted">
                         We'll never share your email with anyone else.
                     </Form.Text>

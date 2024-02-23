@@ -2,7 +2,7 @@ import React from 'react';
 import './login.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { MDBBtn, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBInput, MDBIcon } from 'mdb-react-ui-kit';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import * as Yup from "yup";
 import axios from "axios";
 
@@ -12,10 +12,17 @@ const LoginForm = () => {
         password: '',
     };
 
+    const navigate = useNavigate();
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const response = await axios.post('http://localhost:8080/api/auth/signin', values); // Gửi yêu cầu POST tới API
-            console.log(response.data); // Log phản hồi từ API
+
+            if (response.data.accessToken) {
+                localStorage.setItem("user", JSON.stringify(response.data));
+                navigate("/");
+                window.location.reload();
+
+            }// Log phản hồi từ API
             // Xử lý phản hồi ở đây, ví dụ: chuyển hướng, hiển thị thông báo, lưu trữ thông tin người dùng đã đăng nhập, vv.
         } catch (error) {
             console.error('Error during login:', error);

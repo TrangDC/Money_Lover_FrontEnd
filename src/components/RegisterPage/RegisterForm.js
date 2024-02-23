@@ -46,12 +46,12 @@ const RegisterForm = () => {
         email: Yup.string().required('Email is a required field.').email(),
         password: Yup.string()
             .required('Password is a required field.')
-            .min(8,'Password must contain 8 characters'
+            .min(6,'Password must contain 8 characters'
             )
-            .minLowercase(1, 'Password must contain at least 1 lower case letter')
-            .minUppercase(1, 'Password must contain at least 1 upper case letter')
-            .minNumbers(1, 'Password must contain at least 1 number')
-            .minSymbols(1, 'Password must contain at least 1 special character')
+            // .minLowercase(1, 'Password must contain at least 1 lower case letter')
+            // .minUppercase(1, 'Password must contain at least 1 upper case letter')
+            // .minNumbers(1, 'Password must contain at least 1 number')
+            // .minSymbols(1, 'Password must contain at least 1 special character')
     });
     return (
 
@@ -112,7 +112,6 @@ const RegisterForm = () => {
                                             type='password'
                                             size='lg'
                                             name='password'
-                                            // as={Field}
                                         />
                                         <ErrorMessage name={"password"} component='span' className='text-red-500'/>
                                     </div>

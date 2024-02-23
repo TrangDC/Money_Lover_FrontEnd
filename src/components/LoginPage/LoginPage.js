@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import LoginForm from "./LoginForm";
 import './login.css';
 import {
@@ -7,6 +7,14 @@ import {
     from 'mdb-react-ui-kit';
 
 const LoginPage = () => {
+
+    const [users, setUser] = useState({}); // Khởi tạo state users với giá trị ban đầu là một object trống
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        console.log(user);
+        setUser(user);
+    }, [users]);
+
     return (
         <div>
             <MDBContainer fluid>
