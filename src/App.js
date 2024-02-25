@@ -11,6 +11,7 @@ import InformationUser from "./components/UserPage/InformationUser";
 import UploadImage from "./components/FireBase/Upimage";
 import Error from "./components/Error";
 import {useState} from "react";
+import ChangePassword from "./components/UserPage/ChangePassword";
 
 
 function App() {
@@ -24,25 +25,19 @@ function App() {
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<Error />} />
-                    <Route path='/auth/*' element={isAuth ? <AuthenticatedRoutes /> : <Error />} />
-                    {/* Truyền handleLoginSuccess và isAuth xuống LoginPage */}
-                    <Route path='/login' element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth} />} />
-                    <Route path='/register' element={<RegisterPage />} />
-                    <Route path='/upload' element={<UploadImage />} />
+                    <Route path='/' element={<Error />}></Route>
+                    <Route path='/auth/*' element={isAuth?<Layout />:<Error />}>
+                        <Route path="home" element={isAuth?<Dashboard />:<Error />}/>
+                        <Route path="wallets" element={isAuth?<WalletPage />:<Error />}/>
+                        <Route path="profile" element={isAuth?<InformationUser />:<Error />}/>
+                    </Route>
+                    <Route path='/login' element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>
+                    <Route path='/register' element={<RegisterPage/>}/>
+                    <Route path='/upload' element={<UploadImage/>}/>
+                    <Route path='/changepass' element={<ChangePassword/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
-    );
-}
-
-function AuthenticatedRoutes() {
-    return (
-        <Layout>
-            <Route path="home" element={<Dashboard />} />
-            <Route path="wallets" element={<WalletPage />} />
-            <Route path="profile" element={<InformationUser />} />
-        </Layout>
     );
 }
 
