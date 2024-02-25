@@ -80,7 +80,7 @@ const LoginForm = ({ handleLoginSuccess }) => {
             // Lưu credentialResponseDecoded vào localStorage
             await new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    localStorage.setItem('google_user', JSON.stringify(credentialResponseDecoded));
+                    localStorage.setItem('user', JSON.stringify(credentialResponseDecoded));
                     resolve();
                 }, 1000);
             });

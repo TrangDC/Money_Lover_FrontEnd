@@ -36,7 +36,7 @@ const InformationUser = () => {
         <div>
             <Container>
                 <div style={{textAlign: 'center'}}>
-                        <Image src={user.image} className= "mb-3" roundedCircle style={{width: '70px', height: '70px',margin: 'auto'}} />
+                        <Image src={user.image} alt={'image'} className= "mb-3" roundedCircle style={{width: '70px', height: '70px',margin: 'auto'}} />
                         <h5>{user.username}</h5>
                         <h7>{user.email}</h7>
                 </div>

@@ -17,7 +17,7 @@ import ChangePassword from "./components/UserPage/ChangePassword";
 function App() {
     const [isAuth, setIsAuth] = useState(false); // Tạo state isAuth
 
-    const user = window.localStorage.getItem('google_user')
+    const user = window.localStorage.getItem('user')
 
     const handleLoginSuccess = () => {
         setIsAuth(true); // Cập nhật isAuth khi đăng nhập thành công
