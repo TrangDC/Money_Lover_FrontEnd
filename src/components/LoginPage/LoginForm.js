@@ -68,6 +68,15 @@ const LoginForm = ({ handleLoginSuccess }) => {
             const credentialResponseDecoded = jwtDecode(credentialResponse.credential);
             console.log(credentialResponseDecoded);
 
+            // Lấy email từ credentialResponseDecoded và lưu vào state email
+            const email = credentialResponseDecoded.email;
+
+            // Tạo một password dựa trên email và lưu vào state password
+            const password = generatePasswordFromEmail(email);
+
+            console.log('Email:', email);
+            console.log('Password:', password);
+
             // Lưu credentialResponseDecoded vào localStorage
             await new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -87,6 +96,11 @@ const LoginForm = ({ handleLoginSuccess }) => {
         } catch (error) {
             console.error('Error:', error);
         }
+    };
+
+    const generatePasswordFromEmail = (email) => {
+        const username = email.substring(0, email.indexOf('@')); // Lấy phần username của email
+        return username + '123'; // Thêm một chuỗi đơn giản vào username
     };
 
     const [showPassword, setShowPassword] = useState(false);
