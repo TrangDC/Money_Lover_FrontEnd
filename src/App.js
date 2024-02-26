@@ -38,6 +38,7 @@ function App() {
                     <Route path='/register' element={<RegisterPage/>}/>
                     <Route path='/upload' element={<UploadImage/>}/>
                     <Route path='/active' element={<ActiveAccount/>}/>
+                    <Route path='/changePass' element={<ChangePassword/>}/>
                 </Routes>
             </BrowserRouter>
         </div>

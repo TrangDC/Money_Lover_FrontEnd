@@ -1,10 +1,25 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {HiOutlineBell, HiOutlineChatAlt, HiOutlineSearch} from "react-icons/hi";
 import {Menu, Popover, Transition} from "@headlessui/react";
 import classNames from "classnames";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const Header = () => {
+
+    const [image, setImage] = useState("")
+
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/users/' + user.id)
+            .then(res => {
+                console.log(res.data);
+                setImage(res.data.image);
+            })
+            .catch(err => console.error(err))
+    }, )
+
 
     const navigate = useNavigate();
 
@@ -103,10 +118,10 @@ const Header = () => {
                                                 focus:ring-neutral-400"
                         >
                             <span className="sr-only">Open user menu</span>
-                            <div className='h-10 w-10 rounded-full bg-sky-500
+                            <div className='h-10 w-10 rounded-full bg-white
                                             bg-cover bg-no-repeat bg-center'
-                                 style={{backgroundImage:`url("https://images.unsplash.com/photo-1509967419530-da38b4704bc6?q=80&w=1195&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")`}}
                             >
+                                <img src={image} alt={'image'}/>
                                             <span className='sr-only'>
                                                 Hugh Jackson
                                             </span>
