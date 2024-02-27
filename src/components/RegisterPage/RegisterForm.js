@@ -71,7 +71,6 @@ const RegisterForm = () => {
                 password: password
             });
             console.log('Signup response:', response.data);
-
             setTimeout(async () => {
                 await new Promise((resolve, reject) => {
                     localStorage.setItem('user', JSON.stringify(credentialResponseDecoded));
@@ -92,8 +91,8 @@ const RegisterForm = () => {
     };
 
     const generatePasswordFromEmail = (email) => {
-        const username = email.substring(0, email.indexOf('@'));
-        return username + '123##$$ML';
+        const password = email.substring(0, email.indexOf('@'));
+        return password + '123456';
     };
 
     const SignupSchema = Yup.object().shape({

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {FcBullish} from "react-icons/fc";
 import {DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS} from "../services/lib/consts";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import classNames from "classnames";
 import {HiOutlineLogout} from "react-icons/hi";
 import axios from "axios";
@@ -13,8 +13,9 @@ const linkClasses =
 
 const Sidebar = () => {
 
-    const [show, setShow] = useState(false);
+    const navigate = useNavigate();
 
+    const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -24,11 +25,12 @@ const Sidebar = () => {
 
             const user = JSON.parse(localStorage.getItem('user'));
             const accessToken = user.accessToken;
-            localStorage.removeItem('user');
-            const logout = await axios.post('http://localhost:8080/api/auth/logout', { token: accessToken })
+            console.log(user);
+            await axios.post('http://localhost:8080/api/auth/logout', { token: accessToken })
                 .then((response) => {
-
+                    localStorage.removeItem('user');
                     console.log('Response from server:', response.data);
+                    navigate("/login");
                 });
         } catch (error) {
             console.error('Error:', error);
@@ -50,7 +52,7 @@ const Sidebar = () => {
             </div>
             <div className='flex flex-col gap-0.5 pt-2 border-t border-neutral-700'>
                 {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((item) => (
-                <SidebarLink key={item.index} item={item}/>
+                    <SidebarLink key={item.index} item={item}/>
                 ))}
                 <div className={classNames('cursor-pointer text-white text-base',linkClasses)}>
                     <Button onClick={handleShow}>
@@ -95,5 +97,3 @@ function SidebarLink({item}) {
         </Link>
     )
 }
-
-

@@ -11,16 +11,16 @@ import InformationUser from "./components/UserPage/InformationUser";
 import UploadImage from "./components/FireBase/Upimage";
 import Error from "./components/Error";
 import {useState} from "react";
-import ChangePassword from "./components/UserPage/ChangePassword";
+
 
 
 function App() {
-    const [isAuth, setIsAuth] = useState(false); // Tạo state isAuth
+    const [isAuth, setIsAuth] = useState(false);
 
     const user = window.localStorage.getItem('user')
 
     const handleLoginSuccess = () => {
-        setIsAuth(true); // Cập nhật isAuth khi đăng nhập thành công
+        setIsAuth(true);
     };
 
     return (
@@ -36,12 +36,10 @@ function App() {
                     <Route path='/login' element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>
                     <Route path='/register' element={<RegisterPage/>}/>
                     <Route path='/upload' element={<UploadImage/>}/>
-                    <Route path='/changepass' element={<ChangePassword/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
     );
 }
-
 export default App;
 

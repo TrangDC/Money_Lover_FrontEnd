@@ -77,13 +77,10 @@ const LoginForm = ({ handleLoginSuccess }) => {
             });
 
             console.log(response.data);
-
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user && user.email === email || response) {
-
+            if (response) {
                 await new Promise((resolve, reject) => {
                     setTimeout(() => {
-                        localStorage.setItem('user', JSON.stringify(credentialResponseDecoded));
+                        localStorage.setItem('user', JSON.stringify(response.data));
                         resolve();
                     }, 1000);
                 });
@@ -95,7 +92,6 @@ const LoginForm = ({ handleLoginSuccess }) => {
                     duration: 1500,
                     isClosable: true,
                 });
-
                 setTimeout(() => {
                     navigate("/auth/home");
                 }, 1000);
@@ -123,7 +119,7 @@ const LoginForm = ({ handleLoginSuccess }) => {
 
     const generatePasswordFromEmail = (email) => {
         const username = email.substring(0, email.indexOf('@'));
-        return username + '123##$$ML';
+        return username + '123456';
     };
 
     const [showPassword, setShowPassword] = useState(false);
