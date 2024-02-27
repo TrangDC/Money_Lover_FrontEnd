@@ -60,6 +60,7 @@ const InformationUser = () => {
                     </Link>
                 </ListGroup.Item>
 
+
                 <ListGroup.Item className="d-flex align-items-center">
                     <Link to= "/auth/categories" className="text-dark d-flex align-items-center">
                     <FaLayerGroup  className="mr-2" style={{width: '25px' ,height: '25px'}}/>
@@ -108,12 +109,14 @@ const InformationUser = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            //modal up anh
             <Modal
                 show={showImg}
                 onHide={handleClose}
                 backdrop="static"
-                keyboard={false}
-            >
+                keyboard={false}>
+
                 <Upimage></Upimage>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={showImgClose}>
@@ -124,8 +127,8 @@ const InformationUser = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
         </div>
+
     );
 };
 

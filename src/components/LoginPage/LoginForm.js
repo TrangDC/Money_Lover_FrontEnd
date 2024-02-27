@@ -51,7 +51,7 @@ const LoginForm = ({ handleLoginSuccess }) => {
             });
             setTimeout(() => {
                 navigate('/auth/home');
-            }, 2000);
+            }, 1000);
         } catch (error) {
             console.error('Error during login:', error);
             toast({
