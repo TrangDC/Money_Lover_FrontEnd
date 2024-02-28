@@ -60,18 +60,29 @@ function UploadImage() {
             .catch(err => console.error(err))
     }, )
     return (
-        <div className="App" style={{display: "flex"}}>
-            <div>
-                <img src={images}/>
-            </div>
+        // <div className="App" style={{display: "flex"}}>
+        //     <div>
+        //         <img src={images}/>
+        //     </div>
+        //
+        //     <div style={{margin: "50px 20px"}}>
+        //         <input type="file" onChange={(e) => {setImageUpload((e.target.files[0]))}}/>
+        //         <button onClick={uploadImage} type="button" className="btn btn-primary" data-mdb-ripple-init>Upload Image</button>
+        //     </div>
+        //
+        // </div>
 
-            <div style={{margin: "50px 20px"}}>
-                <input type="file" onChange={(e) => {setImageUpload((e.target.files[0]))}}/>
-                <button onClick={uploadImage} type="button" className="btn btn-primary" data-mdb-ripple-init>Upload Image</button>
+        <div style={{ padding: "20px"}}>
+            <img src="https://note.moneylover.me/content/images/2017/05/Money-Lover---Logo.png" style={{ margin: 'auto', marginBottom: '20px'}}/>
+            <div style={{margin: "auto", display: "flex", alignItems: "center"}}>
+                <input type="file" onChange={(e) => {
+                    setImageUpload(e.target.files[0])
+                }} style={{ marginRight: "20px", padding: "10px", fontSize: "14px", border: "1px solid #ccc", borderRadius: "5px" }} />
+                <button onClick={uploadImage} type="button" className="btn btn-primary" style={{backgroundColor: "blue", color: "white", padding: "10px", fontSize: "16px", borderRadius: "5px"}}>
+                    Upload Image
+                </button>
             </div>
-
         </div>
-
     );
 }
 
