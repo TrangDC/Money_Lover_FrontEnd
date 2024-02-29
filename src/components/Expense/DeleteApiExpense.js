@@ -31,7 +31,7 @@ const ExpenseItem = ({ id, description, amount, onDelete }) => {
             <div>
                 <span>{description}</span>
                 <span>{amount}</span>
-                <button onClick={handleDelete} disabled={loading}>Xóa</button>
+                <button onClick={handleDelete} disabled={loading}>Delete</button>
             </div>
             {showConfirmation && (
                 <div>

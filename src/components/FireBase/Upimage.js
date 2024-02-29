@@ -72,7 +72,7 @@ function UploadImage() {
         //
         // </div>
 
-        <div style={{ padding: "20px"}}>
+        <div style={{ padding: "20px" }}>
             <img src="https://note.moneylover.me/content/images/2017/05/Money-Lover---Logo.png" style={{ margin: 'auto', marginBottom: '20px'}}/>
             <div style={{margin: "auto", display: "flex", alignItems: "center"}}>
                 <input type="file" onChange={(e) => {
