@@ -14,6 +14,7 @@ import {useState} from "react";
 import ActiveAccount from "./components/UserPage/ActiveAccount";
 import LoginForm from "./components/LoginPage/LoginForm";
 import CategoriesPage from "./components/UserPage/category/CategoriesPage";
+import SideBar from "./layout/SideBar/SideBar";
 
 function App() {
     const [isAuth, setIsAuth] = useState(false);
@@ -40,6 +41,7 @@ function App() {
                     <Route path='/register' element={<RegisterPage/>}/>
                     <Route path='/upload' element={<UploadImage/>}/>
                     <Route path='/active' element={<ActiveAccount/>}/>
+                    <Route path='/sidebar' element={<SideBar/>}/>
 
                 </Routes>
             </BrowserRouter>
