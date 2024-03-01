@@ -50,31 +50,27 @@ const Sidebar = () => {
                         <SidebarLink key={item.index} item={item}/>
                     ))}
                 </div>
-                <div className='flex flex-col gap-0.5 pt-2 border-t border-neutral-700'>
+                <div className='flex flex-col gap-0.5 pt-2 border-t border-neutral-700' onClick={handleShow}>
                     {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((item) => (
                         <SidebarLink key={item.index} item={item}/>
                     ))}
-                    <div className={classNames('cursor-pointer text-white text-base',linkClasses)}>
-                        <Button onClick={handleShow}>
-                            <span><HiOutlineLogout /> Logout</span>
-                        </Button>
-                    </div>
                 </div>
 
-                <Modal show={show} onHide={handleClose} >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Confirm Logout</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>Are you sure you want to logout?</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Nope
-                        </Button>
-                        <Button variant="primary" onClick={handleLogout}>
-                            Yes
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+            <Modal show={show} onHide={handleClose} >
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Logout</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to logout?</Modal.Body>
+                <img src="https://web.moneylover.me/static/img/image-404.8f4ef91.png"/>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Nope
+                    </Button>
+                    <Button variant="success" onClick={handleLogout}>
+                        Yes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
 
 

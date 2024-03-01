@@ -1,11 +1,17 @@
-import React, {Fragment, useContext} from 'react';
+import React, {Fragment, useContext, useEffect, useState} from 'react';
 import {HiOutlineBell, HiOutlineChatAlt, HiOutlineSearch} from "react-icons/hi";
 import {Menu, Popover, Transition} from "@headlessui/react";
 import classNames from "classnames";
 import {useNavigate} from "react-router-dom";
+import Image from "react-bootstrap/Image";
 
 const Header = () => {
     const navigate = useNavigate();
+    const [avatar, setAvatar] = useState('');
+    useEffect(() => {
+        const avatar = localStorage.getItem("avatar");
+        setAvatar(avatar)
+    }, )
 
     return (
         <div className='bg-white h-16 px-4 flex justify-between items-center
@@ -104,14 +110,11 @@ const Header = () => {
                                                 focus:ring-neutral-400"
                         >
                             <span className="sr-only">Open user menu</span>
-                            <div className='h-10 w-10 rounded-full bg-sky-500
+                                <Image className='h-10 w-10 rounded-full bg-sky-500
                                             bg-cover bg-no-repeat bg-center'
-                                 style={{backgroundImage:`url("https://images.unsplash.com/photo-1509967419530-da38b4704bc6?q=80&w=1195&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")`}}
-                            >
-                                            <span className='sr-only'>
-                                                Hugh Jackson
-                                            </span>
-                            </div>
+                                    src={avatar}
+                                    alt="Avatar" roundedCircle style={{width: '50px', height: '50px'}}
+                                    fluid/>
                         </Menu.Button>
                         <Transition
                             as={Fragment}

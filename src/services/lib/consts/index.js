@@ -6,7 +6,7 @@ import {
     HiOutlineDocumentText,
     HiOutlineAnnotation,
     HiOutlineQuestionMarkCircle,
-    HiOutlineCog
+    HiOutlineCog, HiOutlineLogout
 } from 'react-icons/hi'
 
 export const DASHBOARD_SIDEBAR_LINKS = [
@@ -25,7 +25,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     {
         key: 'categories',
         label: 'Categories',
-        path: '/categories',
+        path: '/auth/categories',
         icon: <HiOutlineShoppingCart />
     },
     {
@@ -60,5 +60,11 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
         label: 'Help & Support',
         path: '/support',
         icon: <HiOutlineQuestionMarkCircle />
+    }
+    ,
+    {
+        key: 'logout',
+        label: 'Log Out',
+        icon: <HiOutlineLogout />
     }
 ]

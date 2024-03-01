@@ -28,7 +28,7 @@ import {
 const InformationUser = () => {
     const [show, setShow] = useState(false);
     const [showImg, setShowImg] = useState(false);
-
+    const [avatar, setAvatar] = useState('');
     const handleShowImg = () => setShowImg(true);
     const showImgClose = () => setShowImg(false);
 
@@ -40,6 +40,8 @@ const InformationUser = () => {
 
     useEffect(() => {
         const userdata = localStorage.getItem("user");
+        const url = localStorage.getItem("avatar");
+        setAvatar(url);
         console.log(JSON.parse(userdata));
         setUser(JSON.parse(userdata))
     }, []);
@@ -49,7 +51,7 @@ const InformationUser = () => {
             <div style={{backgroundColor:'#3CB371', textAlign: 'center'}}>
                 <Container>
                     <div>
-                        <Image src={user.image} className="mb-3" roundedCircle
+                        <Image src={avatar} className="mb-3" roundedCircle
                                style={{width: '70px', height: '70px', margin: 'auto'}}/>
                         <h5>{user.username}</h5>
                         <h7>{user.email}</h7>
@@ -67,10 +69,10 @@ const InformationUser = () => {
                                     <MDBRow className="g-0">
                                         <MDBCol md="4" className="gradient-custom text-center text-white"
                                                 style={{backgroundColor:'#FFDAB9',borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem'}}>
-                                            <MDBCardImage
-                                                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-
-                                                alt="Avatar" className="my-5" style={{width: '260px', height: '250px'}}
+                                            <Image
+                                                src={avatar}
+                                                onClick={handleShowImg}
+                                                alt="Avatar" className="my-5" roundedCircle style={{width: '260px', height: '250px'}}
                                                 fluid/>
                                             <MDBIcon far icon="edit mb-5"/>
                                         </MDBCol>
@@ -139,7 +141,7 @@ const InformationUser = () => {
                 <Modal.Body>
                     <Container>
                         <div style={{textAlign: 'center'}}>
-                            <Link onClick={handleShowImg}>
+                            <Link>
                                 <Image src={user.image} roundedCircle
                                        style={{width: '60px', height: '60px', margin: 'auto'}} className="mb-3"/>
                             </Link>

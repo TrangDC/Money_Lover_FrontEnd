@@ -22,6 +22,7 @@ function UploadImage() {
                     userId: user.id,
                     image: url
                 }).then(() => {
+                    localStorage.setItem("avatar", url);
                     alert("Image Uploaded");
                 }).catch((error) => {
                     console.error("Error uploading image URL:", error);

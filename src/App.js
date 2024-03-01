@@ -15,6 +15,7 @@ import ActiveAccount from "./components/UserPage/ActiveAccount";
 import LoginForm from "./components/LoginPage/LoginForm";
 import DeleteApiExpense from "./components/Expense/DeleteApiExpense";
 import ExpenseItem from "./components/Expense/ExpenseItem";
+import CategoriesPage from "./components/UserPage/CategoriesPage";
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
                         <Route path="home" element={(isAuth || user) ? <Dashboard/> : <Error/>}/>
                         <Route path="wallets" element={(isAuth || user) ? <WalletPage/> : <Error/>}/>
                         <Route path="profile" element={(isAuth || user) ? <InformationUser/> : <Error/>}/>
+                        <Route path="categories" element={(isAuth || user) ? <CategoriesPage/> : <Error/>}/>
                     </Route>
                     <Route path='/login'
                            element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>
