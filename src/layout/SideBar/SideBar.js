@@ -5,7 +5,13 @@ import { MdAccountBalanceWallet } from "react-icons/md";
 import Image from 'react-bootstrap/Image';
 import { FaUserAstronaut } from "react-icons/fa";
 import { PiIntersectThreeBold } from "react-icons/pi";
-import "./sidebar.css"
+import "./sidebar.css";
+import { MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import { BsCalendar2Date } from "react-icons/bs";
+import { FaSearch } from "react-icons/fa";
+import { GiSheikahEye } from "react-icons/gi";
 import { FaGreaterThan } from "react-icons/fa";import {
     Table,
     Thead,
@@ -71,8 +77,41 @@ const SideBar = () => {
                     </Offcanvas>
 
                 <div style={{position: 'relative',backgroundColor: '#DCDCDC'}} className= "w-screen h-screen">
-                    <div style={{backgroundColor: 'white',width: '100%',height: '10%'}} className="mt-50">
+                    <div style={{backgroundColor: 'white',width: '100%'}} className="mt-50">
+                        <Navbar className="bg-body-tertiary">
+                            <Container>
+                                <Navbar.Brand href="#home">
+                                    <div className='relative'>
+                                        <MDBDropdown group>
+                                            <Image src="https://static.moneylover.me/img/icon/icon.png" style={{ width: '30px', height: '30px' }} roundedCircle />
 
+                                            <MDBDropdownToggle style={{backgroundColor: "white"}}>
+                                                <p className= "text-black" style={{ textTransform: "none", fontSize: "smaller" }}>
+                                                    Your Wallets
+                                                </p>
+                                                <p  className= "text-black" style={{ textTransform: "none", fontSize: "smaller" }}>
+                                                    10000000
+                                                </p>
+                                            </MDBDropdownToggle>
+                                            <MDBDropdownMenu>
+                                                    <MDBDropdownItem link>1</MDBDropdownItem>
+                                                    <MDBDropdownItem link>2</MDBDropdownItem>
+                                                    <MDBDropdownItem link>3</MDBDropdownItem>
+                                                <MDBDropdownItem link>See More</MDBDropdownItem>
+                                            </MDBDropdownMenu>
+                                        </MDBDropdown>
+                                    </div>
+                                </Navbar.Brand>
+                                <Navbar.Toggle />
+                                <Navbar.Collapse className="justify-content-end">
+                                    <Navbar.Text style={{ display: "flex", alignItems: "center" }}>
+                                        <BsCalendar2Date style={{ marginRight: 30 ,fontSize: '20px' }}/>
+                                        <GiSheikahEye style={{ marginRight: 30 ,fontSize: '20px' }}/>
+                                        <FaSearch style={{fontSize: '20px' }}/>
+                                    </Navbar.Text>
+                                </Navbar.Collapse>
+                            </Container>
+                        </Navbar>
                     </div>
 
                     <div className= "h-screen" style={{position: 'absolute',top: 0,left: 0, display: 'flex', width: '6%', backgroundColor: 'white', boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)' }}>
