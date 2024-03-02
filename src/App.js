@@ -12,10 +12,8 @@ import UploadImage from "./components/FireBase/Upimage";
 import Error from "./components/Error";
 import {useState} from "react";
 import ActiveAccount from "./components/UserPage/ActiveAccount";
-import LoginForm from "./components/LoginPage/LoginForm";
 import CategoriesPage from "./components/UserPage/category/CategoriesPage";
 import SideBar from "./layout/SideBar/SideBar";
-import LayoutDemo from "./layout/SideBar/LayoutDemo";
 
 function App() {
     const [isAuth, setIsAuth] = useState(false);
@@ -43,8 +41,6 @@ function App() {
                     <Route path='/upload' element={<UploadImage/>}/>
                     <Route path='/active' element={<ActiveAccount/>}/>
                     <Route path='/sidebar' element={<SideBar/>}/>
-                    <Route path='/layoutdemo' element={<LayoutDemo/>}/>
-
                 </Routes>
             </BrowserRouter>
         </div>
