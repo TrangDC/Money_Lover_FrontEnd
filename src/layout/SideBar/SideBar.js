@@ -1,51 +1,98 @@
-import React from 'react';
-import {Sidebar, Menu, MenuItem, SubMenu, menuClasses} from 'react-pro-sidebar';
-import { IoReorderThree } from "react-icons/io5";
+import React, {useState} from 'react';
+import Button from 'react-bootstrap/Button';
+import Offcanvas from 'react-bootstrap/Offcanvas';import { IoReorderThree } from "react-icons/io5";
 import { MdAccountBalanceWallet } from "react-icons/md";
+import Image from 'react-bootstrap/Image';
+import { FaUserAstronaut } from "react-icons/fa";
+import { PiIntersectThreeBold } from "react-icons/pi";
+import "./sidebar.css"
+import { FaGreaterThan } from "react-icons/fa";import {
+    Table,
+    Thead,
+    Tbody,
+    Tfoot,
+    Tr,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+} from '@chakra-ui/react'
 const SideBar = () => {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+
+
+
     const [toggled, setToggled] = React.useState(false);
     return (
-        <div>
-            <div style={{ display: 'flex', height: '100%', minHeight: '400px',background: 'none' }}>
-                <Sidebar onBackdropClick={() => setToggled(false)} toggled={toggled} breakPoint="always">
-                    <Menu>
-                        <SubMenu label="Charts" >
-                            <MenuItem> Pie charts</MenuItem>
-                            <MenuItem> Line charts</MenuItem>
-                            <MenuItem> Bar charts</MenuItem>
-                        </SubMenu>
-                        <MenuItem active >
-                            Calendar (active)
-                        </MenuItem>
-                        <MenuItem disabled >
-                            E-commerce (disabled)
-                        </MenuItem>
-                        <MenuItem > Examples</MenuItem>
-                    </Menu>
-                </Sidebar>
-                {/*<div style={{ display: 'flex', height: '100vh', width: '6%', backgroundColor: 'white', boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)' }}>*/}
-                {/*    <div style={{ height: '100%', display: 'flex', flexDirection: 'column',margin: 'auto',textAlign: 'center'}}>*/}
-                {/*        <IoReorderThree style={{ width: '30px', height: '30px',marginTop: '40%',color: '#696969' }} onClick={() => setToggled(!toggled)} />*/}
-                {/*        <span style={{marginTop: '40%'}}>*/}
-                {/*             <MdAccountBalanceWallet style={{ width: '30px', height: '30px',marginTop: '5%',color: '#696969' }}/>*/}
-                {/*            Transactions*/}
-                {/*        </span>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
 
-                <div style={{ display: 'flex', height: '100vh', width: '6%', backgroundColor: 'white', boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)' }}>
-                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ marginTop: '40%', fontSize: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                            <IoReorderThree className= "ml-3" style={{ width: '30px', height: '30px', color: '#696969' }} onClick={() => setToggled(!toggled)} />
-                        </div>
-                        <div style={{ marginTop: '40%', fontSize: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                            <MdAccountBalanceWallet className= "ml-2.5" style={{ width: '25px', height: '25px', color: '#228B22' }}/>
-                            <span className= "ml-2.5" style={{ marginTop: '5px', textAlign: 'center',color: '#228B22' }}>Transactions</span>
+            <div>
+                    <Offcanvas show={show} onHide={handleClose} style={{width: '27.5%'}}>
+                        <Offcanvas.Header style={{ margin: 'auto' }}>
+                            <div>
+                                <div style={{ margin: '30%' }}>
+                                    <Image src="https://imgt.taimienphi.vn/cf/Images/np/2022/8/16/anh-gai-xinh-cute-de-thuong-hot-girl-2.jpg" style={{ width: '65px', height: '65px' }} roundedCircle />
+                                </div>
+
+                                <div style={{ marginTop: '-25%',marginLeft: '20%' }}>
+
+                                    <span style={{marginLeft: '-10%',fontSize: '20px'}}>User Name</span>
+                                    <br />
+                                    <span style={{marginLeft: '-25%',fontSize: '14px'}}>useradmin@gmail.com</span>
+                                </div>
+                            </div>
+                        </Offcanvas.Header>
+
+                        <hr style={{height: '0.1px',backgroundColor: 'black'}}/>
+                        <Offcanvas.Body>
+                            <TableContainer style={{marginTop: '-10%'}}>
+                                <Table>
+                                        <Tr>
+                                            <Td><FaUserAstronaut className="icon"/></Td>
+                                            <Td class="text-left">My Account</Td>
+                                            <Td><FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/></Td>
+                                        </Tr>
+                                        <Tr>
+                                            <Td><MdAccountBalanceWallet className="icon"/></Td>
+                                            <Td>My Wallets</Td>
+                                            <Td><FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/></Td>
+                                        </Tr>
+                                        <Tr>
+                                            <Td><PiIntersectThreeBold className="icon"/></Td>
+                                            <Td>Categories</Td>
+                                            <Td><FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/></Td>
+                                        </Tr>
+                                </Table>
+                            </TableContainer>
+                        </Offcanvas.Body>
+                    </Offcanvas>
+
+                <div style={{position: 'relative',backgroundColor: '#DCDCDC'}} className= "w-screen h-screen">
+                    <div style={{backgroundColor: 'white',width: '100%',height: '10%'}} className="mt-50">
+
+                    </div>
+
+                    <div className= "h-screen" style={{position: 'absolute',top: 0,left: 0, display: 'flex', width: '6%', backgroundColor: 'white', boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ marginTop: '40%', fontSize: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                                <IoReorderThree className= "ml-3" style={{ width: '30px', height: '30px', color: '#696969' }} onClick={handleShow} />
+                            </div>
+                            <div style={{ marginTop: '40%', fontSize: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                                <MdAccountBalanceWallet className= "ml-2.5" style={{ width: '25px', height: '25px', color: '#228B22' }}/>
+                                <span className= "ml-2.5" style={{ marginTop: '5px', textAlign: 'center',color: '#228B22' }}>Transactions</span>
+                            </div>
+                            <hr style={{height: '0.1px',backgroundColor: 'black'}}/>
                         </div>
                     </div>
                 </div>
+
             </div>
-        </div>
+
+
+
     );
 };
 
