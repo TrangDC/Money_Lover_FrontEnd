@@ -152,17 +152,19 @@ const SideBar = () => {
                                 <div className='relative'>
                                     <MDBDropdown group>
                                         <Image src="https://static.moneylover.me/img/icon/icon.png"
-                                               style={{width: '30px', height: '30px'}} roundedCircle/>
+                                               style={{width: '40px', height: '40px'}} className= "mt-1" roundedCircle/>
 
                                         <MDBDropdownToggle style={{backgroundColor: "white"}}>
-                                            <p className="text-black"
-                                               style={{textTransform: "none", fontSize: "smaller"}}>
-                                                Your Wallets
-                                            </p>
-                                            <p className="text-black"
-                                               style={{textTransform: "none", fontSize: "smaller"}}>
-                                                10000000
-                                            </p>
+                                            <div style={{textAlign: 'center'}}>
+                                                <p className="text-black"
+                                                   style={{marginTop: '-10px',textTransform: "none", fontSize: "14px"}}>
+                                                    Your Wallets
+                                                </p>
+                                                <p className="text-black"
+                                                   style={{marginTop: '-15px',textTransform: "none", fontSize: "14px"}}>
+                                                    10000000
+                                                </p>
+                                            </div>
                                         </MDBDropdownToggle>
                                         <MDBDropdownMenu>
                                             <MDBDropdownItem link>1</MDBDropdownItem>
