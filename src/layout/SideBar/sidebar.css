@@ -30,14 +30,22 @@
     flex-grow: 1;
 }
 .btn-sign-out {
-    border-color: white; /* Thiết lập viền màu trắng */
-    color: green; /* Thiết lập màu chữ trắng */
+    border-color: white;
+    color: green;
 }
 
 .btn-sign-out:hover {
-    background-color: transparent; /* Loại bỏ màu nền khi hover */
-    border-color: #28a745; /* Màu viền khi hover */
-    color: #28a745; /* Màu chữ khi hover */
+    background-color: transparent;
+    border-color: #28a745;
+    color: #28a745;
 }
+.central-content {
+    background-color: #E0F7FA;
+    padding: 20px;
+    /*border-radius: 10px;*/
+    margin: 20px auto;
+
+}
+
 
 

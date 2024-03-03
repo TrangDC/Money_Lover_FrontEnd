@@ -186,6 +186,11 @@ const SideBar = () => {
                         </Container>
                     </Navbar>
                 </div>
+                {/* Phần chú thích cho phần trung tâm */}
+                <div className="central-content" style={{marginLeft: '6%',marginTop: 'auto',height: '85.5%'}}>
+                    <p>Đây là phần trung tâm của trang. Bạn có thể thêm nội dung ở đây.</p>
+                    <p>Ví dụ: Bảng dữ liệu, biểu đồ, hoặc các thành phần khác.</p>
+                </div>
 
                 <div className="h-screen" style={{
                     position: 'absolute',
