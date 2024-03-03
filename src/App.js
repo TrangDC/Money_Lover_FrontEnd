@@ -14,6 +14,7 @@ import {useState} from "react";
 import ActiveAccount from "./components/UserPage/ActiveAccount";
 import CategoriesPage from "./components/UserPage/category/CategoriesPage";
 import SideBar from "./layout/SideBar/SideBar";
+import Transactions from "./components/TransactionPage/Transactions";
 
 function App() {
     const [isAuth, setIsAuth] = useState(false);
@@ -41,6 +42,7 @@ function App() {
                     <Route path='/upload' element={<UploadImage/>}/>
                     <Route path='/active' element={<ActiveAccount/>}/>
                     <Route path='/sidebar' element={<SideBar/>}/>
+                    <Route path='/trans' element={<Transactions/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
