@@ -23,6 +23,7 @@ export default function PinnedSubheaderList() {
         const fetchData = async () => {
             const data = await TransactionService.fetchTransactions();
             setTransactions(data);
+            localStorage.setItem("transactions", JSON.stringify(data))
         };
 
         fetchData();

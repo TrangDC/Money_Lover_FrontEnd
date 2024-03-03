@@ -8,7 +8,7 @@ import {Divider} from "@mui/material";
 
 export default function OutlinedCard({ transaction, onClose }) {
     return (
-        <Card sx={{ width: 750, height: 300 }}>
+        <Card sx={{ width: 750, height: 350 }}>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     Transaction details
