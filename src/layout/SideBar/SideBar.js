@@ -10,9 +10,9 @@ import "./sidebar.css";
 import {MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem} from 'mdb-react-ui-kit';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import {BsCalendar2Date} from "react-icons/bs";
+import { LuCalendarDays } from "react-icons/lu";
 import {FaSearch} from "react-icons/fa";
-import {GiSheikahEye} from "react-icons/gi";
+import { TbEyeDollar } from "react-icons/tb";
 import {FaCircleQuestion} from "react-icons/fa6";
 import Modal from 'react-bootstrap/Modal';
 import {FaCartShopping} from "react-icons/fa6";
@@ -31,8 +31,6 @@ import {
     TableContainer,
 } from '@chakra-ui/react'
 import {Link} from "react-router-dom";
-import CategoriesPage from "../../components/UserPage/category/CategoriesPage";
-import Wallet from "../../components/WalletPage/Wallet";
 import axios from "axios";
 
 function MydModalWithGrid(props) {
@@ -144,7 +142,6 @@ const SideBar = () => {
     }, []);
 
     return (
-
         <div>
             <MydModalWithGrid show={modalShow} onHide={() => setModalShow(false)}/>
             <Offcanvas show={show} onHide={handleClose} style={{width: '27.5%'}}>
@@ -216,30 +213,28 @@ const SideBar = () => {
             </Offcanvas>
 
             <div style={{position: 'relative', backgroundColor: '#DCDCDC'}} className="w-screen h-screen">
-                <div style={{backgroundColor: 'white', width: '100%'}} className="mt-50">
+                <div style={{backgroundColor: 'white', width: '100%'}} >
                     <Navbar className="bg-body-tertiary">
                         <Container>
-                            <Navbar.Brand href="#home">
-                                <div className='relative'>
-                                    <MDBDropdown group>
+                            <Navbar.Brand>
+
+                                    <MDBDropdown group  style={{height: "40px"}}>
                                         <Image src="https://static.moneylover.me/img/icon/icon.png"
-                                               style={{width: '40px', height: '40px'}} className="mt-1" roundedCircle/>
+                                               style={{width: '40px', height: '40px'}} roundedCircle/>
 
                                         <MDBDropdownToggle style={{backgroundColor: "white"}}>
-                                            <div style={{textAlign: 'center'}}>
-                                                <p className="text-black"
-                                                   style={{
-                                                       marginTop: '-10px',
-                                                       textTransform: "none",
-                                                       fontSize: "14px"
+                                            <div>
+                                                <p style={{
+                                                        marginTop: '10px',
+                                                       fontSize: "13px",
+                                                    color: 'black'
                                                    }}>
                                                     Your Wallets
                                                 </p>
                                                 <p className="text-black"
                                                    style={{
                                                        marginTop: '-15px',
-                                                       textTransform: "none",
-                                                       fontSize: "14px"
+                                                       fontSize: "13px"
                                                    }}>
                                                     10000000
                                                 </p>
@@ -252,13 +247,13 @@ const SideBar = () => {
                                             <MDBDropdownItem link>See More</MDBDropdownItem>
                                         </MDBDropdownMenu>
                                     </MDBDropdown>
-                                </div>
+
                             </Navbar.Brand>
                             <Navbar.Toggle/>
                             <Navbar.Collapse className="justify-content-end">
-                                <Navbar.Text style={{display: "flex", alignItems: "center", marginRight: '-10%'}}>
-                                    <BsCalendar2Date style={{marginRight: 30, fontSize: '20px'}}/>
-                                    <GiSheikahEye style={{marginRight: 30, fontSize: '20px'}}/>
+                                <Navbar.Text style={{display: "flex", alignItems: "center", marginRight: '-5%'}}>
+                                    <LuCalendarDays style={{marginRight: 30, fontSize: '20px'}}/>
+                                    <TbEyeDollar style={{marginRight: 30, fontSize: '20px'}}/>
                                     <FaSearch style={{fontSize: '20px'}}/>
                                 </Navbar.Text>
                             </Navbar.Collapse>
