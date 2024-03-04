@@ -11,7 +11,7 @@ import {useToast} from "@chakra-ui/react";
 import {GiWallet} from "react-icons/gi";
 import {FaPiggyBank} from "react-icons/fa6";
 import {GiPiggyBank} from "react-icons/gi";
-import { MdCreateNewFolder } from "react-icons/md";
+import {MdCreateNewFolder} from "react-icons/md";
 
 const WalletPage = () => {
     const [show, setShow] = useState(false);
@@ -34,7 +34,6 @@ const WalletPage = () => {
         balance: ''
     });
     const [selectedWalletId, setSelectedWalletId] = useState(null);
-    const {id} = useParams();
     const toast = useToast()
 
     const navigate = useNavigate();
@@ -44,12 +43,12 @@ const WalletPage = () => {
     const handleShowC = () => setShowC(true);
     const handleSubmitC = (event) => {
         event.preventDefault();
-        axios.post('http://localhost:8080/api/wallets/saveWallet', wallet)
+        axios.post(`http://localhost:8080/api/wallets/user/${user.id}/create`, wallet)
             .then(res => {
                 console.log(res);
                 navigate("/auth/wallets")
                 handleCloseC();
-                fetchWallets();
+                fetchWallets(user);
                 toast({
                     title: 'Create success!',
                     description: 'You successfully created a wallet!',
@@ -58,32 +57,27 @@ const WalletPage = () => {
                     isClosable: true,
                 });
             })
-            .catch(err => toast({
-                title: 'Create Failed',
-                description: 'You successfully created a wallet!',
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            }));
+            .catch(err => {
+                console.error(err);
+                toast({
+                    title: 'Create Failed',
+                    description: 'Failed to create a wallet!',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
     };
 
-    useEffect(() => {
+    const handleUpdate = (event) => {
+        event.preventDefault();
         axios
-            .get(`http://localhost:8080/api/wallets/${id}`)
-            .then((res) => {
-                setWallet(res.data);
-            })
-            .catch((err) => console.error(err));
-
-    }, [id]);
-    const handleUpdate = () => {
-        axios
-            .put(`http://localhost:8080/api/wallets/${selectedWalletId}`, editWallet)
+            .put(`http://localhost:8080/api/wallets/user/${user.id}/edit/${selectedWalletId}`, editWallet)
             .then((res) => {
                 console.log(res.data);
                 handleClose();
                 navigate("/auth/wallets")
-                fetchWallets();
+                fetchWallets(user);
                 toast({
                     title: 'Update Successful',
                     description: 'You successfully repaired your wallet!',
@@ -104,14 +98,15 @@ const WalletPage = () => {
             });
     };
 
+
     const handleDelete = (id) => {
         const confirm = window.confirm('Are You Sure ?');
         if (confirm) {
-            axios.delete(`http://localhost:8080/api/wallets/deleteWallet/${selectedWalletId}`)
+            axios.delete(`http://localhost:8080/api/wallets/user/${user.id}/delete/${selectedWalletId}`)
                 .then(res => {
                     navigate("/auth/wallets")
                     handleClose();
-                    fetchWallets();
+                    fetchWallets(user);
                     toast({
                         title: 'Delete Successful',
                         description: 'You successfully deleted your wallet!',
@@ -131,37 +126,39 @@ const WalletPage = () => {
     };
 
     useEffect(() => {
-        const userdata = localStorage.getItem("user");
-        console.log(JSON.parse(userdata));
-        setUser(JSON.parse(userdata))
-        fetchWallets();
-    }, []);
+        const userdata = JSON.parse(localStorage.getItem("user"));
+        console.log(userdata);
+        setUser(userdata)
+        fetchWallets(userdata);
+    }, [wallet]);
 
     const handleSearch = (event) => {
-        event.preventDefault();
-
-        if (searchTerm) {
-            axios.get(`http://localhost:8080/api/wallets/searchWallet?nameWallet=${searchTerm}`)
-                .then(res => {
-                    console.log(res);
-                    setWallets(res.data);
-                })
-                .catch(err => console.error(err));
-        } else {
-            axios.get('http://localhost:8080/api/wallets')
-                .then(res => {
-                    console.log(res);
-                    setWallets(res.data);
-                })
-                .catch(err => console.error(err));
-        }
+        // event.preventDefault();
+        //
+        // if (searchTerm) {
+        //     axios.get(`http://localhost:8080/api/wallets/searchWallet?nameWallet=${searchTerm}`)
+        //         .then(res => {
+        //             console.log(res);
+        //             setWallets(res.data);
+        //         })
+        //         .catch(err => console.error(err));
+        // } else {
+        //     axios.get('http://localhost:8080/api/wallets')
+        //         .then(res => {
+        //             console.log(res);
+        //             setWallets(res.data);
+        //         })
+        //         .catch(err => console.error(err));
+        // }
     };
-    const fetchWallets = () => {
-        axios
-            .get(`http://localhost:8080/api/wallets`)
+    const fetchWallets = (userdata) => {
+        axios.get('http://localhost:8080/api/users/' + userdata.id)
             .then((res) => {
-                console.log(res);
-                setWallets(res.data);
+                console.log(res.data);
+
+                window.localStorage.setItem("wallets", JSON.stringify(res.data.wallets));
+                const wallets = JSON.parse(localStorage.getItem("wallets"));
+                setWallets(wallets);
             })
             .catch((err) => console.error(err));
     };
@@ -179,11 +176,12 @@ const WalletPage = () => {
     const handleSubmitM = (event) => {
         event.preventDefault();
         const money = parseFloat(event.target.money.value);
-        axios.put(`http://localhost:8080/api/wallets/${selectedWalletId}/add-money`, {money: money})
+        // axios.put(`http://localhost:8080/api/wallets/${selectedWalletId}/add-money`, {money: money})
+        axios.put(`http://localhost:8080/api/wallets/user/${user.id}/add_money/${selectedWalletId}/${money}`, {money: money})
             .then((res) => {
                 console.log(res.data);
                 handleCloseM();
-                fetchWallets();
+                fetchWallets(user);
                 toast({
                     title: 'Money added successfully',
                     status: 'success',
@@ -212,7 +210,8 @@ const WalletPage = () => {
                                   className="text-green-400"/>
                         My Wallet
                     </h4>
-                    <MdCreateNewFolder onClick={handleShowC}  style={{width: '40px', height: '40px',marginRight: '-360px'}}
+                    <MdCreateNewFolder onClick={handleShowC}
+                                       style={{width: '40px', height: '40px', marginRight: '-360px'}}
                                        className="text-green-400"/>
                     <Form onSubmit={handleSearch} style={{marginTop: '15px'}}>
                         <InputGroup className="mb-3">
@@ -305,14 +304,15 @@ const WalletPage = () => {
                                                       balance: e.target.value
                                                   })}/>
                                 </Form.Group>
-                                <div style={{display: 'flex', justifyContent: 'flex-end', gap: '10px'}}>
-                                    <Button variant="dark" onClick={handleUpdate}>Edit</Button>
-                                    <Button variant="danger" onClick={() => handleDelete(editWallet.id)}>Delete</Button>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                    {wallets.length > 1 && (
+                                        <Button variant="danger" onClick={() => handleDelete(editWallet.id)}>Delete</Button>
+                                    )}
+                                    <Button variant="success" onClick={handleUpdate}>Edit</Button>
                                 </div>
                             </Form>
                         </Modal.Body>
                     </Modal>
-
 
                     <Modal show={showC} onHide={handleCloseC}>
                         <Form onSubmit={handleSubmitC}>
@@ -345,7 +345,7 @@ const WalletPage = () => {
                                 <Button variant="secondary" onClick={handleCloseC}>
                                     Close
                                 </Button>
-                                <Button variant="primary" type="submit">
+                                <Button variant="success" type="submit">
                                     Submit
                                 </Button>
                             </Modal.Footer>
@@ -376,7 +376,7 @@ const WalletPage = () => {
                                     <Button variant="secondary" onClick={handleCloseM}>
                                         Close
                                     </Button>
-                                    <Button variant="primary" type="submit">
+                                    <Button variant="success" type="submit">
                                         Submit
                                     </Button>
                                 </Modal.Footer>

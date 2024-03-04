@@ -7,16 +7,13 @@ import LoginPage from "./components/LoginPage/LoginPage";
 import Layout from "./layout/Layout";
 import Dashboard from "./components/HomePage/Dashboard";
 import WalletPage from "./components/UserPage/wallet/WalletPage";
-import InformationUser from "./components/UserPage/InformationUser";
 import UploadImage from "./components/FireBase/Upimage";
 import Error from "./components/Error";
 import {useState} from "react";
 import ActiveAccount from "./components/UserPage/ActiveAccount";
-import LoginForm from "./components/LoginPage/LoginForm";
-import DeleteApiExpense from "./components/Expense/DeleteApiExpense";
-import ExpenseItem from "./components/Expense/ExpenseItem";
-import CategoriesPage from "./components/UserPage/CategoriesPage";
-
+import CategoriesPage from "./components/UserPage/category/CategoriesPage";
+import SideBar from "./layout/SideBar/SideBar";
+import Transactions from "./components/TransactionPage/Transactions";
 
 function App() {
     const [isAuth, setIsAuth] = useState(false);
@@ -35,7 +32,7 @@ function App() {
                     <Route path='/auth/*' element={(isAuth || user) ? <Layout/> : <Error/>}>
                         <Route path="home" element={(isAuth || user) ? <Dashboard/> : <Error/>}/>
                         <Route path="wallets" element={(isAuth || user) ? <WalletPage/> : <Error/>}/>
-                        <Route path="profile" element={(isAuth || user) ? <InformationUser/> : <Error/>}/>
+                        {/*<Route path="profile" element={(isAuth || user) ? <InformationUser/> : <Error/>}/>*/}
                         <Route path="categories" element={(isAuth || user) ? <CategoriesPage/> : <Error/>}/>
                     </Route>
                     <Route path='/login'
@@ -43,9 +40,8 @@ function App() {
                     <Route path='/register' element={<RegisterPage/>}/>
                     <Route path='/upload' element={<UploadImage/>}/>
                     <Route path='/active' element={<ActiveAccount/>}/>
-                    <Route path='/loginaa' element={<LoginForm/>}/>
-                    <Route path='/delete' element={<DeleteApiExpense/>}/>
-                    <Route path='/expenseitem' element={<ExpenseItem/>}/>
+                    <Route path='/sidebar' element={<SideBar/>}/>
+                    <Route path='/trans' element={<Transactions/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
