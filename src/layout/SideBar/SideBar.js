@@ -10,9 +10,9 @@ import "./sidebar.css";
 import {MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem} from 'mdb-react-ui-kit';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import { LuCalendarDays } from "react-icons/lu";
+import {LuCalendarDays} from "react-icons/lu";
 import {FaSearch} from "react-icons/fa";
-import { TbEyeDollar } from "react-icons/tb";
+import {TbEyeDollar} from "react-icons/tb";
 import {FaCircleQuestion} from "react-icons/fa6";
 import Modal from 'react-bootstrap/Modal';
 import {FaCartShopping} from "react-icons/fa6";
@@ -147,7 +147,7 @@ const SideBar = () => {
             <Offcanvas show={show} onHide={handleClose} style={{width: '27.5%'}}>
                 <Offcanvas.Header style={{margin: 'auto'}}>
                     <Container>
-                        <div style={{textAlign: 'center',marginTop: '15%'}}>
+                        <div style={{textAlign: 'center', marginTop: '15%'}}>
                             <div>
                                 <Image
                                     src={image}
@@ -213,40 +213,40 @@ const SideBar = () => {
             </Offcanvas>
 
             <div style={{position: 'relative', backgroundColor: '#DCDCDC'}} className="w-screen h-screen">
-                <div style={{backgroundColor: 'white', width: '100%'}} >
+                <div style={{backgroundColor: 'white', width: '100%'}}>
                     <Navbar className="bg-body-tertiary">
                         <Container>
                             <Navbar.Brand>
 
-                                    <MDBDropdown group  style={{height: "40px"}}>
-                                        <Image src="https://static.moneylover.me/img/icon/icon.png"
-                                               style={{width: '40px', height: '40px'}} roundedCircle/>
+                                <MDBDropdown group style={{height: "40px"}}>
+                                    <Image src="https://static.moneylover.me/img/icon/icon.png"
+                                           style={{width: '40px', height: '40px'}} roundedCircle/>
 
-                                        <MDBDropdownToggle style={{backgroundColor: "white"}}>
-                                            <div>
-                                                <p style={{
-                                                        marginTop: '10px',
-                                                       fontSize: "13px",
-                                                    color: 'black'
-                                                   }}>
-                                                    Your Wallets
-                                                </p>
-                                                <p className="text-black"
-                                                   style={{
-                                                       marginTop: '-15px',
-                                                       fontSize: "13px"
-                                                   }}>
-                                                    10000000
-                                                </p>
-                                            </div>
-                                        </MDBDropdownToggle>
-                                        <MDBDropdownMenu>
-                                            <MDBDropdownItem link>1</MDBDropdownItem>
-                                            <MDBDropdownItem link>2</MDBDropdownItem>
-                                            <MDBDropdownItem link>3</MDBDropdownItem>
-                                            <MDBDropdownItem link>See More</MDBDropdownItem>
-                                        </MDBDropdownMenu>
-                                    </MDBDropdown>
+                                    <MDBDropdownToggle style={{backgroundColor: "white"}}>
+                                        <div>
+                                            <p style={{
+                                                marginTop: '10px',
+                                                fontSize: "13px",
+                                                color: 'black'
+                                            }}>
+                                                Your Wallets
+                                            </p>
+                                            <p className="text-black"
+                                               style={{
+                                                   marginTop: '-15px',
+                                                   fontSize: "13px"
+                                               }}>
+                                                10000000
+                                            </p>
+                                        </div>
+                                    </MDBDropdownToggle>
+                                    <MDBDropdownMenu>
+                                        <MDBDropdownItem link>1</MDBDropdownItem>
+                                        <MDBDropdownItem link>2</MDBDropdownItem>
+                                        <MDBDropdownItem link>3</MDBDropdownItem>
+                                        <MDBDropdownItem link>See More</MDBDropdownItem>
+                                    </MDBDropdownMenu>
+                                </MDBDropdown>
 
                             </Navbar.Brand>
                             <Navbar.Toggle/>
@@ -330,8 +330,6 @@ const SideBar = () => {
                 </div>
             </div>
         </div>
-
-
     );
 };
 
