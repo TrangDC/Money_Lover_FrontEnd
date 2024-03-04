@@ -30,6 +30,7 @@ function App() {
                 <Routes>
                     <Route path='/' element={<Error/>}></Route>
                     <Route path='/auth/*' element={(isAuth || user) ? <Layout/> : <Error/>}>
+                        <Route path='trans' element={<Transactions/>}/>
                         <Route path="home" element={(isAuth || user) ? <Dashboard/> : <Error/>}/>
                         <Route path="wallets" element={(isAuth || user) ? <WalletPage/> : <Error/>}/>
                         {/*<Route path="profile" element={(isAuth || user) ? <InformationUser/> : <Error/>}/>*/}
