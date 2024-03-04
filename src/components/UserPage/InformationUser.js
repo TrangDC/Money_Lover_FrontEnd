@@ -46,8 +46,8 @@ const InformationUser = () => {
     }, []);
 
     return (
-        <div style={{backgroundColor: 'lightgray', width:'100%',height:'90vh'}}>
-            <div style={{backgroundColor:'#3CB371', textAlign: 'center'}}>
+        <div style={{backgroundColor: 'lightgray', width: '100%', height: '90vh'}}>
+            <div style={{backgroundColor: '#3CB371', textAlign: 'center'}}>
                 <Container>
                     <div>
                         <Image src={avatar} className="mb-3" roundedCircle
@@ -61,36 +61,45 @@ const InformationUser = () => {
             </div>
             <div>
                 {/*<section className="vh-500" style={{backgroundColor: 'blue'}}>*/}
-                <div className="py-5 h-1500" style={{backgroundColor:'lightgray',height:'100%', width:'100%'}}>
-                    <MDBRow className="justify-content-center align-items-center h-10" >
+                <div className="py-5 h-1500" style={{backgroundColor: 'lightgray', height: '100%', width: '100%'}}>
+                    <MDBRow className="justify-content-center align-items-center h-10">
                         <MDBCol lg="6" className="mb-4 mb-lg-0">
                             <MDBCard className="mb-3" style={{borderRadius: '.5rem'}}>
                                 <MDBRow className="g-0">
                                     <MDBCol md="4" className="gradient-custom text-center text-white"
-                                            style={{backgroundColor:'#FFDAB9',borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem'}}>
+                                            style={{
+                                                backgroundColor: '#FFDAB9',
+                                                borderTopLeftRadius: '.5rem',
+                                                borderBottomLeftRadius: '.5rem'
+                                            }}>
                                         <Image
                                             src={avatar}
                                             onClick={handleShowImg}
-                                            alt="Avatar" className="my-5" roundedCircle style={{width: '260px', height: '250px'}}
+                                            alt="Avatar" className="my-5" roundedCircle
+                                            style={{width: '260px', height: '250px'}}
                                             fluid/>
                                         <MDBIcon far icon="edit mb-5"/>
                                     </MDBCol>
 
 
-                                    <MDBCol md="8" style={{backgroundColor:'#FFC0CB'}}>
+                                    <MDBCol md="8" style={{backgroundColor: '#FFC0CB'}}>
                                         <MDBCardBody className="p-5">
-                                            <ListGroup.Item className= "d-flex align-items-center">
-                                                <Link  onClick={handleShow} className="text-dark d-flex align-items-center">
-                                                    <FaUserEdit className="mx-2 text-green-700" style={{ width: '25px', height: '25px' }} />
-                                                    <span style={{ fontWeight: 'bold'}}>Account Management</span>
+                                            <ListGroup.Item className="d-flex align-items-center">
+                                                <Link onClick={handleShow}
+                                                      className="text-dark d-flex align-items-center">
+                                                    <FaUserEdit className="mx-2 text-green-700"
+                                                                style={{width: '25px', height: '25px'}}/>
+                                                    <span style={{fontWeight: 'bold'}}>Account Management</span>
                                                 </Link>
                                             </ListGroup.Item>
                                             <MDBRow className="pt-1">
 
                                                 <hr className="mt-3 mb-5"/>
                                                 <ListGroup.Item className="d-flex align-items-center">
-                                                    <Link to="/auth/wallets" className="text-dark d-flex align-items-center">
-                                                        <HiMiniWallet className="mx-2 text-green-700" style={{ width: '25px', height: '25px' }} />
+                                                    <Link to="/auth/wallets"
+                                                          className="text-dark d-flex align-items-center">
+                                                        <HiMiniWallet className="mx-2 text-green-700"
+                                                                      style={{width: '25px', height: '25px'}}/>
                                                         <span style={{fontWeight: 'bold'}}>My Wallet</span>
                                                     </Link>
                                                 </ListGroup.Item>
@@ -101,8 +110,10 @@ const InformationUser = () => {
                                             <MDBRow className="pt-1">
 
                                                 <ListGroup.Item className="d-flex align-items-center">
-                                                    <Link to= "/auth/categories" className="text-dark d-flex align-items-center">
-                                                        <BiSolidCategory  className="mx-2 text-green-700" style={{width: '25px' ,height: '25px'}}/>
+                                                    <Link to="/auth/categories"
+                                                          className="text-dark d-flex align-items-center">
+                                                        <BiSolidCategory className="mx-2 text-green-700"
+                                                                         style={{width: '25px', height: '25px'}}/>
                                                         <span style={{fontWeight: 'bold'}}> Group </span>
                                                     </Link>
                                                 </ListGroup.Item>
@@ -110,7 +121,8 @@ const InformationUser = () => {
 
                                                 <ListGroup.Item className="d-flex align-items-center">
                                                     <Link className="text-dark d-flex align-items-center">
-                                                        <BiLogOut  className="mx-2 text-green-700" style={{width: '25px' ,height: '25px'}}/>
+                                                        <BiLogOut className="mx-2 text-green-700"
+                                                                  style={{width: '25px', height: '25px'}}/>
                                                         <span style={{fontWeight: 'bold'}}>Logout</span>
                                                     </Link>
                                                 </ListGroup.Item>

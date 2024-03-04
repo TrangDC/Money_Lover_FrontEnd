@@ -29,9 +29,6 @@ const Wallet = () => {
         <div>
             <div className="container">
                 <div className="header-wallet">
-                    <div className="icon-back" onClick={() => navigate("/active")}>
-                        <IoIosArrowRoundBack />
-                    </div>
                     <div className="text-my-wallet">
                         <h4>My Wallet</h4>
                     </div>
