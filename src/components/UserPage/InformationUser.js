@@ -47,38 +47,28 @@ const InformationUser = () => {
     }, []);
 
     return (
-        <div style={{backgroundColor: 'lightgray', width:'100%',height:'90vh'}}>
-            <div style={{backgroundColor:'#3CB371', textAlign: 'center'}}>
-                <Container>
-                    <div>
-                        <Image src={avatar} className="mb-3" roundedCircle
-                               style={{width: '70px', height: '70px', margin: 'auto'}}/>
-                        <h5>{user.username}</h5>
-                        <h7>{user.email}</h7>
-                    </div>
-                </Container>
-
-
-            </div>
+        <div>
+        <div style={{ width:'100%',height:'90vh'}}>
+            <div style={{backgroundColor:'#00cc66', textAlign: 'center'}}>
+             </div>
                <div>
-                {/*<section className="vh-500" style={{backgroundColor: 'blue'}}>*/}
-                    <div className="py-5 h-1500" style={{backgroundColor:'lightgray',height:'100%', width:'100%'}}>
+
                         <MDBRow className="justify-content-center align-items-center h-10" >
                             <MDBCol lg="6" className="mb-4 mb-lg-0">
                                 <MDBCard className="mb-3" style={{borderRadius: '.5rem'}}>
                                     <MDBRow className="g-0">
-                                        <MDBCol md="4" className="gradient-custom text-center text-white"
-                                                style={{backgroundColor:'#FFDAB9',borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem'}}>
-                                            <Image
-                                                src={avatar}
-                                                onClick={handleShowImg}
-                                                alt="Avatar" className="my-5" roundedCircle style={{width: '260px', height: '250px'}}
-                                                fluid/>
-                                            <MDBIcon far icon="edit mb-5"/>
-                                        </MDBCol>
+                                        <Container>
+                                            <div>
+                                                <Image src={avatar} className="mb-3" roundedCircle
+                                                       style={{width: '100px', height: '100px', margin: 'auto'}}/>
+                                                <div style={{left:'100px'}}>
+                                                    <h5>{user.username}</h5>
+                                                    <h7>{user.email}</h7>
+                                                </div>
+                                            </div>
+                                        </Container>
 
-
-                                            <MDBCol md="8" style={{backgroundColor:'#FFC0CB'}}>
+                                            <MDBCol md="8" style={{backgroundColor:'white'}}>
                                             <MDBCardBody className="p-5">
                                                 <ListGroup.Item className= "d-flex align-items-center">
                                                     <Link  onClick={handleShow} className="text-dark d-flex align-items-center">
@@ -125,8 +115,7 @@ const InformationUser = () => {
                             </MDBCol>
                         </MDBRow>
                     </div>
-                {/*</section>*/}
-            </div>
+        </div>
 
 
             <Modal
