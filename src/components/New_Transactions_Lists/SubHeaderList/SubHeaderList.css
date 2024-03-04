@@ -1,0 +1,77 @@
+.root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.box {
+    width: 80%;
+    max-width: 1200px; /* Limiting the maximum width */
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.list {
+    position: relative;
+    overflow-y: auto;
+    max-height: 60vh; /* Limiting the maximum height */
+    padding: 10px; /* Adding padding for better spacing */
+}
+
+.list::-webkit-scrollbar {
+    width: 8px; /* Adjust scrollbar width */
+}
+
+.list::-webkit-scrollbar-thumb {
+    background-color: #888; /* Scrollbar thumb color */
+    border-radius: 4px; /* Scrollbar thumb border radius */
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Scrollbar thumb hover color */
+}
+
+.detail-card {
+    position: absolute;
+    top: 0;
+    right: -700px;
+    width: 600px;
+    height: 100vh;
+    background-color: white;
+    border-left: 1px solid #ccc;
+    padding: 20px;
+    transition: right 0.3s ease;
+}
+
+.detail-card.active {
+    right: 50px;
+}
+
+.subheader-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px; /* Adding padding for better spacing */
+    background-color: #4299e1; /* Changing subheader background color */
+    color: #fff; /* Changing subheader text color */
+    border-bottom: 1px solid #ccc; /* Adding a bottom border */
+}
+
+.subheader-buttons > div {
+    flex-grow: 1;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.button-container > button {
+    margin: 0 10px; /* Adjusting margin between buttons */
+}

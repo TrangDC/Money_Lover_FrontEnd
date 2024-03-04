@@ -9,9 +9,8 @@
 
 .box {
     width: 40%;
-    height: 90vh;
+    height: 100vh;
     max-width: calc(60% - 80px);
-    background-color: #f0f0f0;
     border: 2px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
