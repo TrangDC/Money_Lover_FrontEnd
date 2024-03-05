@@ -2,16 +2,13 @@ import React, {useEffect, useState} from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
-import { BsPersonFill } from "react-icons/bs";
 import {MDBInput, MDBTypography} from 'mdb-react-ui-kit';
-import {IoMdArrowRoundBack, IoMdWallet} from "react-icons/io";
-import { FaLayerGroup } from "react-icons/fa6";
-import { LuLogOut } from "react-icons/lu";
+import {FaLayerGroup} from "react-icons/fa6";
+import {LuLogOut} from "react-icons/lu";
 import {Link, useNavigate} from "react-router-dom";
 import Modal from 'react-bootstrap/Modal';
 import Button from "react-bootstrap/Button";
 import Upimage from "../FireBase/Upimage";
-
 import axios from "axios";
 import {useToast} from "@chakra-ui/react";
 import {FaUserEdit} from "react-icons/fa";
@@ -21,7 +18,6 @@ import {HiMiniWallet} from "react-icons/hi2";
 const InformationUser = () => {
     const [show, setShow] = useState(false);
     const [showImg, setShowImg] = useState(false);
-
 
 
     const [editUser, setEditUser] = useState({
@@ -93,33 +89,34 @@ const InformationUser = () => {
         <div style={{textAlign: 'center'}}>
             <Container>
                 <div style={{textAlign: 'center'}}>
-                    <Image src={images} className= "mb-3" roundedCircle style={{width: '70px', height: '70px',margin: 'auto'}} />
+                    <Image src={images} className="mb-3" roundedCircle
+                           style={{width: '70px', height: '70px', margin: 'auto'}}/>
                     <h5>{editUser.username}</h5>
                     <h7>{editUser.email}</h7>
                 </div>
             </Container>
             <div style={{marginTop: '60px'}}>
-                <ListGroup style={{width:'400px',height: '600px',margin: 'auto'}}>
+                <ListGroup style={{width: '400px', height: '600px', margin: 'auto'}}>
                     <ListGroup.Item className="d-flex align-items-center">
-                        <Link  onClick={handleShow} className="text-dark d-flex align-items-center">
-                            <FaUserEdit className="mx-2 text-green-700" style={{ width: '25px', height: '25px' }} />
+                        <Link onClick={handleShow} className="text-dark d-flex align-items-center">
+                            <FaUserEdit className="mx-2 text-green-700" style={{width: '25px', height: '25px'}}/>
                             <span style={{fontWeight: 'bold'}}>Account Management</span>
                         </Link>
                     </ListGroup.Item>
 
-                    <ListGroup.Item variant="secondary"><p></p> </ListGroup.Item>
+                    <ListGroup.Item variant="secondary"><p></p></ListGroup.Item>
 
                     <ListGroup.Item className="d-flex align-items-center">
                         <Link to="/auth/wallets" className="text-dark d-flex align-items-center">
-                            <HiMiniWallet className="mx-2 text-green-700" style={{ width: '25px', height: '25px' }} />
+                            <HiMiniWallet className="mx-2 text-green-700" style={{width: '25px', height: '25px'}}/>
                             <span style={{fontWeight: 'bold'}}>My Wallet</span>
                         </Link>
                     </ListGroup.Item>
-                    <ListGroup.Item variant="secondary"><p></p> </ListGroup.Item>
+                    <ListGroup.Item variant="secondary"><p></p></ListGroup.Item>
                     <ListGroup.Item className="d-flex align-items-center">
-                        <Link to= "/auth/categories" className="text-dark d-flex align-items-center">
+                        <Link to="/auth/categories" className="text-dark d-flex align-items-center">
 
-                            <FaLayerGroup  className="mr-2" style={{width: '25px' ,height: '25px'}}/>
+                            <FaLayerGroup className="mr-2" style={{width: '25px', height: '25px'}}/>
                             <span> Group </span>
 
                         </Link>
@@ -128,7 +125,7 @@ const InformationUser = () => {
 
                     <ListGroup.Item className="d-flex align-items-center">
                         <Link className="text-dark d-flex align-items-center">
-                            <LuLogOut className="mr-2" style={{width: '25px' ,height: '25px'}}/>
+                            <LuLogOut className="mr-2" style={{width: '25px', height: '25px'}}/>
                             <span>Logout</span>
                         </Link>
 
@@ -149,9 +146,12 @@ const InformationUser = () => {
             >
                 <div className="flex ">
                     <div className="flex-1">
-                        <img style={{marginTop: "130px"}} className="justify-center align-items-center" src="https://firebasestorage.googleapis.com/v0/b/upload-img-76277.appspot.com/o/images%2Fstatic%2F1200x630wa.png?alt=media&token=dce9577a-5ee2-416c-ad05-dde82e371407" alt=""/>
+                        <img style={{marginTop: "130px"}} className="justify-center align-items-center"
+                             src="https://firebasestorage.googleapis.com/v0/b/upload-img-76277.appspot.com/o/images%2Fstatic%2F1200x630wa.png?alt=media&token=dce9577a-5ee2-416c-ad05-dde82e371407"
+                             alt=""/>
                     </div>
-                    <div className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
+                    <div
+                        className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
                         <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                             Update User
                         </h2>
