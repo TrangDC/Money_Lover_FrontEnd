@@ -2,9 +2,9 @@ import axios from "axios";
 
 
 class TransactionService {
-    fetchTransactions = async () => {
+    fetchTransactions = async (user) => {
         try {
-            const response = await axios.get('http://localhost:3001/transactions');
+            const response = await axios.get(`http://localhost:8080/api/transactions/user/${user.id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -14,7 +14,6 @@ class TransactionService {
 
     groupTransactionsByDate = (transactions, currentMonthIndex, currentYear) => {
         const groupedTransactions = {};
-
         transactions.forEach(transaction => {
             const date = new Date(transaction.transactionDate);
             const transactionMonth = date.getMonth();

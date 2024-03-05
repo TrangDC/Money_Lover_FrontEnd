@@ -5,24 +5,46 @@ import classNames from "classnames";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import Modal from 'react-bootstrap/Modal';
+import error from "../components/Error";
 import Button from "react-bootstrap/Button";
 import {useToast} from "@chakra-ui/react";
+import Image from "react-bootstrap/Image";
 import {MDBInput} from "mdb-react-ui-kit";
-import {Dropdown, Ripple, initMDB} from "mdb-ui-kit";
-
-initMDB({Dropdown, Ripple});
+import { MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
 const Header = () => {
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [show, setShow] = useState(false);
     const toast = useToast();
-    const handleChangePassword = () => setShowChangePassword(true);
+    const handleChangePassword = () => setShowChangePassword (true);
     const handleClose = () => setShowChangePassword(false);
+    // ------- get wallets ----
+    const [wallets, setWallets] = useState([])
+    const [avatar, setAvatar] = useState('')
+    const [wallet, setWallet] = useState({
+        name: "",
+        balance: ""
+    })
 
+    const [userData, setUserData] = useState({})
+    const fetchWallet = (userdata) => {
+        axios.get('http://localhost:8080/api/users/' + userdata.id)
+            .then((res) => {
+                // window.localStorage.setItem("wallets", JSON.stringify(res.data.wallets));
+                const wallets = JSON.parse(localStorage.getItem("wallets"));
+                setWallets(wallets);
+            })
+    }
+
+    useEffect(() => {
+        const userdata = JSON.parse(localStorage.getItem("user"));
+        setUserData(userdata);
+        fetchWallet(userdata)
+    }, [wallet])
 
     const [ChangePassword, setChangePassword] = useState({
         oldPassword: "",
         newPassword: "",
-        confirmPassword: ""
+        confirmPassword:""
     })
 
     const handleSubmitPassword = async () => {
@@ -60,121 +82,108 @@ const Header = () => {
                 console.log(res.data);
                 setUserLocal(res.data);
                 setImage(res.data.image);
+                localStorage.setItem("categories", JSON.stringify(res.data.categories))
             })
             .catch(err => console.error(err))
     }, [])
+
     const navigate = useNavigate();
 
     return (
         <div className='bg-white h-16 px-4 flex justify-between items-center
                         border-b border-gray-200'>
-            <div className='relative'>
-                {/*    <HiOutlineSearch fontSize={20}*/}
-                {/*                     className='text-gray-400 absolute*/}
-                {/*                            top-1/2 -translate-y-1/2 left-3'/>*/}
-                {/*    <input type='text'*/}
-                {/*           placeholder='Search your wallet...'*/}
-                {/*           className='text-sm focus:outline-none active:outline-none*/}
-                {/*                  h-10 w-[24rem] border border-gray-400 rounded-sm pr-4 pl-11'*/}
-                {/*    />*/}
-                <div className="btn-group">
-                    <button type="button" className="btn btn-success dropdown-toggle" data-mdb-dropdown-init
-                            data-mdb-ripple-init aria-expanded="false">
-                        Action
-                    </button>
-                    <ul className="dropdown-menu">
-                        <li><a className="dropdown-item" href="#">Action</a></li>
-                        <li><a className="dropdown-item" href="#">Another action</a></li>
-                        <li><a className="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider"/>
-                        </li>
-                        {/*<li><Link to="/auth/wallets"><a class="dropdown-item">See more</a><Link/></li>*/}
-                        {/*/auth/wallets*/}
-                    </ul>
+                <div className='relative'>
+                    <MDBDropdown group>
+                        <MDBDropdownToggle color='success'>Your Wallets</MDBDropdownToggle>
+                        <MDBDropdownMenu>
+                            {wallets.slice(0, 3).map((wallet) => (
+                                <MDBDropdownItem link>{wallet.name}</MDBDropdownItem>
+                            ))}
+                            <MDBDropdownItem onClick={() => navigate("wallets")} link>See More</MDBDropdownItem>
+                        </MDBDropdownMenu>
+                    </MDBDropdown>
                 </div>
 
-            </div>
-            <div className='flex items-center gap-2 mr-2'>
+                <div className='flex items-center gap-2 mr-2'>
 
-                <Popover className='relative'>
-                    {({open}) => (
-                        <>
-                            <Popover.Button
-                                className={classNames(
-                                    open && 'bg-gray-100',
-                                    'group inline-flex items-center rounded-sm ' +
-                                    'p-1.5 text-gray-700 hover:text-opacity-100 ' +
-                                    'focus:outline-none active:bg-gray-100'
-                                )}
-                            >
-                                <HiOutlineChatAlt fontSize={24}/>
-                            </Popover.Button>
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-200"
-                                enterFrom="opacity-0 translate-y-1"
-                                enterTo="opacity-100 translate-y-0"
-                                leave="transition ease-in duration-150"
-                                leaveFrom="opacity-100 translate-y-0"
-                                leaveTo="opacity-0 translate-y-1"
-                            >
-                                <Popover.Panel className='absolute right-0 z-10 mt-2.5 w-80'>
-                                    <div className='bg-white rounded-sm shadow-md
+                    <Popover className='relative'>
+                        {({open}) => (
+                            <>
+                                <Popover.Button
+                                    className={classNames(
+                                        open && 'bg-gray-100',
+                                        'group inline-flex items-center rounded-sm ' +
+                                        'p-1.5 text-gray-700 hover:text-opacity-100 ' +
+                                        'focus:outline-none active:bg-gray-100'
+                                    )}
+                                >
+                                    <HiOutlineChatAlt fontSize={24} />
+                                </Popover.Button>
+                                <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-200"
+                                    enterFrom="opacity-0 translate-y-1"
+                                    enterTo="opacity-100 translate-y-0"
+                                    leave="transition ease-in duration-150"
+                                    leaveFrom="opacity-100 translate-y-0"
+                                    leaveTo="opacity-0 translate-y-1"
+                                >
+                                    <Popover.Panel className='absolute right-0 z-10 mt-2.5 w-80'>
+                                        <div className='bg-white rounded-sm shadow-md
                                                     ring-1 ring-black ring-opacity-5
                                                     px-2 py-2.5'
-                                    >
-                                        <strong className='text-gray-700 font-medium'>Message</strong>
-                                        <div className='mt-2 py-1 text-sm'>
-                                            This is message panel
+                                        >
+                                            <strong className='text-gray-700 font-medium'>Message</strong>
+                                            <div className='mt-2 py-1 text-sm'>
+                                                This is message panel
+                                            </div>
                                         </div>
-                                    </div>
-                                </Popover.Panel>
-                            </Transition>
-                        </>
-                    )}
-                </Popover>
-                <Popover className='relative'>
-                    {({open}) => (
-                        <>
-                            <Popover.Button
-                                className={classNames(
-                                    open && 'bg-gray-100',
-                                    'group inline-flex items-center rounded-sm ' +
-                                    'p-1.5 text-gray-700 hover:text-opacity-100 ' +
-                                    'focus:outline-none active:bg-gray-100'
-                                )}
-                            >
-                                <HiOutlineBell fontSize={24}/>
-                            </Popover.Button>
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-200"
-                                enterFrom="opacity-0 translate-y-1"
-                                enterTo="opacity-100 translate-y-0"
-                                leave="transition ease-in duration-150"
-                                leaveFrom="opacity-100 translate-y-0"
-                                leaveTo="opacity-0 translate-y-1"
-                            >
-                                <Popover.Panel className='absolute right-0 z-10 mt-2.5 w-80'>
-                                    <div className='bg-white rounded-sm shadow-md
+                                    </Popover.Panel>
+                                </Transition>
+                            </>
+                        )}
+                    </Popover>
+                    <Popover className='relative'>
+                        {({open}) => (
+                            <>
+                                <Popover.Button
+                                    className={classNames(
+                                        open && 'bg-gray-100',
+                                        'group inline-flex items-center rounded-sm ' +
+                                        'p-1.5 text-gray-700 hover:text-opacity-100 ' +
+                                        'focus:outline-none active:bg-gray-100'
+                                    )}
+                                >
+                                    <HiOutlineBell fontSize={24}/>
+                                </Popover.Button>
+                                <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-200"
+                                    enterFrom="opacity-0 translate-y-1"
+                                    enterTo="opacity-100 translate-y-0"
+                                    leave="transition ease-in duration-150"
+                                    leaveFrom="opacity-100 translate-y-0"
+                                    leaveTo="opacity-0 translate-y-1"
+                                >
+                                    <Popover.Panel className='absolute right-0 z-10 mt-2.5 w-80'>
+                                        <div className='bg-white rounded-sm shadow-md
                                                     ring-1 ring-black ring-opacity-5
                                                     px-2 py-2.5'
-                                    >
-                                        <strong className='text-gray-700 font-medium'>Notifications</strong>
-                                        <div className='mt-2 py-1 text-sm'>
-                                            This is notification panel
+                                        >
+                                            <strong className='text-gray-700 font-medium'>Notifications</strong>
+                                            <div className='mt-2 py-1 text-sm'>
+                                                This is notification panel
+                                            </div>
                                         </div>
-                                    </div>
-                                </Popover.Panel>
-                            </Transition>
-                        </>
-                    )}
-                </Popover>
+                                    </Popover.Panel>
+                                </Transition>
+                            </>
+                        )}
+                    </Popover>
 
-                <Menu as="div" className="relative">
-                    <div>
-                        <Menu.Button className="ml-2 inline-flex rounded-full
+                    <Menu as="div" className="relative">
+                        <div>
+                            <Menu.Button className="ml-2 inline-flex rounded-full
                                                 focus:outline-none focus:ring-2
                                                 focus:ring-neutral-400"
                         >
@@ -201,7 +210,7 @@ const Header = () => {
                                                         mt-2 w-48 rounded-sm shadow-md p-1 bg-white
                                                         ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <Menu.Item>
-                                    {({active}) => (
+                                    {({ active }) => (
                                         <div
                                             className={classNames(
                                                 active && 'bg-gray-100',
@@ -218,7 +227,7 @@ const Header = () => {
                                     )}
                                 </Menu.Item>
                                 <Menu.Item onClick={handleChangePassword}>
-                                    {({active}) => (
+                                    {({ active }) => (
                                         <div
                                             className={classNames(
                                                 active && 'bg-gray-100',
@@ -226,13 +235,13 @@ const Header = () => {
                                                 'px-4 py-2 text-gray-700 cursor-pointer ' +
                                                 'focus:bg-gray-200'
                                             )}
-                                        >
-                                            Change Password
+                                            >
+                                          Change Password
                                         </div>
                                     )}
                                 </Menu.Item>
                                 <Menu.Item>
-                                    {({active}) => (
+                                    {({ active }) => (
                                         <div
                                             className={classNames(
                                                 active && 'bg-gray-100',
@@ -254,7 +263,7 @@ const Header = () => {
                 </Menu>
             </div>
 
-            {/*---------- change pass word -------------*/}
+{/*---------- change pass word -------------*/}
             <Modal
                 show={showChangePassword}
                 onHide={handleClose}
@@ -263,13 +272,11 @@ const Header = () => {
                 style={{height: "600px"}}
             >
                 <div className="flex ">
-                    <div className="flex-1" style={{margin: 'auto'}}>
-                        <img style={{margin: 'auto'}}
-                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn8H2SopcK0uWEabLJYoia07KZOdnUKXsuEViS5kIoug&s"
-                             alt=""/>
+                    <div className="flex-1">
+                        <img style={{marginTop: "130px"}} className="justify-center align-items-center" src="https://firebasestorage.googleapis.com/v0/b/upload-img-76277.appspot.com/o/images%2Fstatic%2F1200x630wa.png?alt=media&token=dce9577a-5ee2-416c-ad05-dde82e371407" alt=""/>
                     </div>
-                    <div className="flex-1 w-full p-6 bg-white rounded-lg shadow md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
-                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
+                    <div className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
+                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Change Password
                         </h2>
                         <div className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
@@ -320,7 +327,7 @@ const Header = () => {
                             <div>
                                 <label
                                     htmlFor="confirm-password"
-                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                    className="block mb-2 text-sm font-medium text-gray-900 "
                                 >
                                     Confirm password
                                 </label>
@@ -380,6 +387,7 @@ const Header = () => {
                             </Button>
                         </div>
                     </div>
+
                 </div>
             </Modal>
         </div>

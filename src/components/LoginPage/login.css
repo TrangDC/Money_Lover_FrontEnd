@@ -6,7 +6,6 @@
 .social-text {
     margin-left: 10px;
 }
-
 .btn {
     display: flex;
     align-items: center;
@@ -23,3 +22,4 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+

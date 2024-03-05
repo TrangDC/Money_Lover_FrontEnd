@@ -168,81 +168,89 @@ const CategoriesPage = () => {
                 borderBottomLeftRadius: '10px',
                 borderBottomRightRadius: '10px'
             }}>
-                <Tabs variant='enclosed'>
-                    <TabList>
-                        <Tab
-                            style={{fontWeight: 'bold', color: '#32CD32'}}
-                            onClick={() => setSelectedType('All')}
-                            isSelected={'All' === selectedType}
-                        >
-                            All
-                        </Tab>
-                        {uniqueTypes.map((type, index) => (
+                    <Tabs variant='enclosed'>
+                        <TabList>
                             <Tab
-                                key={index}
                                 style={{fontWeight: 'bold', color: '#32CD32'}}
-                                onClick={() => setSelectedType(type)}
-                                isSelected={type === selectedType}
+                                onClick={() => setSelectedType('All')}
+                                isSelected={'All' === selectedType}
                             >
-                                {type}
+                                All
                             </Tab>
-                        ))}
-                    </TabList>
-                    <TabPanels>
-                        <TabPanel>
-                            <Table>
-                                <Tbody>
-                                    {categories.map((category, index) => (
-                                        <Tr key={index}>
-                                            <td onClick={() => {
-                                                onOpenModal2();
-                                                setEditCate(category);
-                                            }}>
-                                                <div style={{display: 'flex', alignItems: 'center'}}>
-                                                    <Image
-                                                        borderRadius='full'
-                                                        boxSize='50px'
-                                                        src={category.image}
-                                                        alt='Category Image'
-                                                    />
-                                                    <span style={{marginLeft: '10px'}}>{category.name}</span>
-                                                </div>
-                                            </td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        </TabPanel>
-                        {uniqueTypes.map((type, index) => (
-                            <TabPanel key={index}>
+                            {uniqueTypes.map((type, index) => (
+                                <Tab
+                                    key={index}
+                                    style={{fontWeight: 'bold', color: '#32CD32'}}
+                                    onClick={() => setSelectedType(type)}
+                                    isSelected={type === selectedType}
+                                >
+                                    {type}
+                                </Tab>
+                            ))}
+                        </TabList>
+                        <TabPanels>
+                            <TabPanel>
+                                <div style={{overflowY: 'auto', maxHeight: '380px'}}>
                                 <Table>
                                     <Tbody>
-                                        {categories
-                                            .filter(category => category.type === type)
-                                            .map((category, index) => (
-                                                <Tr key={index}>
-                                                    <td onClick={() => {
-                                                        onOpenModal2();
-                                                        setEditCate(category);
-                                                    }}>
-                                                        <div style={{display: 'flex', alignItems: 'center'}}>
-                                                            <Image
-                                                                borderRadius='full'
-                                                                boxSize='50px'
-                                                                src={category.image}
-                                                                alt='Category Image'
-                                                            />
-                                                            <span style={{marginLeft: '10px'}}>{category.name}</span>
-                                                        </div>
-                                                    </td>
-                                                </Tr>
-                                            ))}
+
+                                        {categories.map((category, index) => (
+                                            <Tr key={index}>
+                                                <td onClick={() => {
+                                                    onOpenModal2();
+                                                    setEditCate(category);
+                                                }}>
+                                                    <div style={{display: 'flex', alignItems: 'center',}}>
+                                                        <Image
+                                                            borderRadius='full'
+                                                            boxSize='50px'
+                                                            src={category.image}
+                                                            alt='Category Image'
+                                                        />
+                                                        <span style={{marginLeft: '10px'}}>{category.name}</span>
+                                                    </div>
+                                                </td>
+                                            </Tr>
+                                        ))}
+
+
                                     </Tbody>
                                 </Table>
+                                </div>
                             </TabPanel>
-                        ))}
-                    </TabPanels>
-                </Tabs>
+                            {uniqueTypes.map((type, index) => (
+                                <TabPanel key={index}>
+                                    <div style={{overflowY: 'auto', maxHeight: '380px'}}>
+                                    <Table>
+                                        <Tbody>
+                                            {categories
+                                                .filter(category => category.type === type)
+                                                .map((category, index) => (
+                                                    <Tr key={index}>
+                                                        <td onClick={() => {
+                                                            onOpenModal2();
+                                                            setEditCate(category);
+                                                        }}>
+                                                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                                                <Image
+                                                                    borderRadius='full'
+                                                                    boxSize='50px'
+                                                                    src={category.image}
+                                                                    alt='Category Image'
+                                                                />
+                                                                <span
+                                                                    style={{marginLeft: '10px'}}>{category.name}</span>
+                                                            </div>
+                                                        </td>
+                                                    </Tr>
+                                                ))}
+                                        </Tbody>
+                                    </Table>
+                                    </div>
+                                </TabPanel>
+                            ))}
+                        </TabPanels>
+                    </Tabs>
             </div>
 
             <Modal isOpen={isOpenModal1} onClose={onCloseModal1}>
@@ -328,9 +336,8 @@ const CategoriesPage = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-
         </div>
     );
 };
-
 export default CategoriesPage;
+

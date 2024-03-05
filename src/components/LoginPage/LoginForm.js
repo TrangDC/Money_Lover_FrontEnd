@@ -53,7 +53,7 @@ const LoginForm = ({ handleLoginSuccess, setIsLoading  }) => {
             });
             setTimeout(() => {
                 setIsLoading(false);
-                navigate('/auth/home');
+                navigate('/auth/transactions');
             }, 2000);
 
         } catch (error) {
@@ -106,7 +106,7 @@ const LoginForm = ({ handleLoginSuccess, setIsLoading  }) => {
                 });
 
                 setTimeout(() => {
-                    navigate("/auth/home");
+                    navigate("/auth/transactions");
                 }, 1000);
             } else {
                 toast({
