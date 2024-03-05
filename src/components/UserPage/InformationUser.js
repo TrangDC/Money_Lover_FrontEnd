@@ -65,7 +65,7 @@ const InformationUser = () => {
         setUser(JSON.parse(userdata))
     }, []);
 
-    const [images, setImage] = useState("")
+    const [images, setImage] = useState("");
 
     const users = JSON.parse(localStorage.getItem('user'));
 
@@ -89,7 +89,7 @@ const InformationUser = () => {
         <div style={{textAlign: 'center'}}>
             <Container>
                 <div style={{textAlign: 'center'}}>
-                    <Image src={images} className="mb-3" roundedCircle
+                    <Image onClick={handleShowImg} src={images} className="mb-3" roundedCircle
                            style={{width: '70px', height: '70px', margin: 'auto'}}/>
                     <h5>{editUser.username}</h5>
                     <h7>{editUser.email}</h7>
@@ -152,7 +152,7 @@ const InformationUser = () => {
                     </div>
                     <div
                         className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
-                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Update User
                         </h2>
                         <div className="mt-4 space-y-4 lg:mt-5 md:space-y-5">

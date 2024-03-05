@@ -32,25 +32,32 @@ import {
 } from '@chakra-ui/react'
 import {Link} from "react-router-dom";
 import axios from "axios";
+import Upimage from "../../components/FireBase/Upimage";
 
 function MydModalWithGrid(props) {
     const navigate = useNavigate();
     const [showLogout, setShowLogout] = useState(false);
     const handleCloseLogout = () => setShowLogout(false);
     const handleShowLogout = () => setShowLogout(true);
-    const [image, setImage] = useState("");
     const user = JSON.parse(localStorage.getItem('user'));
-    const [userLocal, setUserLocal] = useState([]);
+    const [images, setImage] = useState("");
+
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/users/' + user.id)
             .then(res => {
                 console.log(res.data);
-                setUserLocal(res.data);
-                setImage(res.data.image);
+                const userData = res.data;
+                setEditUser({
+                    email: userData.email,
+                    name: userData.name,
+                    username: userData.username,
+                    image: userData.image
+                });
+                setImage(userData.image);
             })
             .catch(err => console.error(err))
-    }, []);
+    }, [user]);
     const handleLogout = async () => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
@@ -69,13 +76,13 @@ function MydModalWithGrid(props) {
     };
     //change password
     const [showChangePassword, setShowChangePassword] = useState(false);
-    const handleChangePassword = () => setShowChangePassword (true);
+    const handleChangePassword = () => setShowChangePassword(true);
     const handleCloseCPassword = () => setShowChangePassword(false);
     const toast = useToast();
     const [ChangePassword, setChangePassword] = useState({
         oldPassword: "",
         newPassword: "",
-        confirmPassword:""
+        confirmPassword: ""
     })
     const handleSubmitPassword = async () => {
         await axios.put(`http://localhost:8080/api/users/${user.id}/change_password`, ChangePassword)
@@ -102,6 +109,47 @@ function MydModalWithGrid(props) {
             })
     }
 
+    //edit user
+    const [showEdit, setShowEdit] = useState(false);
+    const [editUser, setEditUser] = useState({
+        email: "",
+        name: "",
+        username: "",
+        image: ""
+    })
+    const handleCloseEdit = () => setShowEdit(false);
+    const handleShowEdit = () => setShowEdit(true);
+
+    const handleSubmitEdit = () => {
+        axios
+            .put('http://localhost:8080/api/users/' + user.id, editUser)
+            .then(res => {
+                toast({
+                    title: 'Update success!',
+                    description: 'You successfully update a information!',
+                    status: 'success',
+                    duration: 1500,
+                    isClosable: true,
+                });
+                setTimeout(() => {
+                    handleCloseEdit();
+                    navigate("/auth/transactions");
+                }, 1000);
+            }).catch(err => {
+            toast({
+                title: 'Update Failed',
+                description: 'Error: Email is already in use!',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+        })
+    }
+    //update image
+    const [showImg, setShowImg] = useState(false);
+    const handleShowImg = () => setShowImg(true);
+    const showImgClose = () => setShowImg(false);
+
     return (
         <>
             <Modal {...props} aria-labelledby="contained-modal-title-vcenter">
@@ -120,22 +168,26 @@ function MydModalWithGrid(props) {
                         <div style={{textAlign: 'center'}}>
                             <div>
                                 <Image
-                                    src={image}
+                                    src={images}
                                     style={{width: '65px', height: '65px', margin: 'auto'}} roundedCircle/>
                             </div>
                             <div className='mx-2'>
-                                <span style={{fontSize: '20px'}}>{user.username}</span>
+                                <span style={{fontSize: '20px'}}>{editUser.username}</span>
                                 <br/>
-                                <span style={{fontSize: '14px'}}>{user.email}</span>
+                                <span style={{fontSize: '14px'}}>{editUser.email}</span>
                             </div>
                         </div>
                     </Container>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button style={{marginLeft: 160}} variant="outline-success" onClick={handleChangePassword} className="btn-sign-out">
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="outline-success" onClick={handleChangePassword} className="btn-sign-out">
                         Change Password
-                    </Button>{' '}
+                    </Button>
+                    <Button variant="outline-success" onClick={handleShowEdit} className="btn-sign-out">
+                        Update Account
+                    </Button>
                 </Modal.Footer>
+
             </Modal>
 
             <Modal show={showLogout} onHide={handleCloseLogout}>
@@ -164,9 +216,12 @@ function MydModalWithGrid(props) {
             >
                 <div className="flex ">
                     <div className="flex-1">
-                        <img style={{marginTop: "130px"}} className="justify-center align-items-center" src="https://img.freepik.com/free-vector/forgot-password-concept-illustration_114360-1123.jpg?size=338&ext=jpg&ga=GA1.1.1395880969.1709510400&semt=ais" alt=""/>
+                        <img style={{marginTop: "130px"}} className="justify-center align-items-center"
+                             src="https://img.freepik.com/free-vector/forgot-password-concept-illustration_114360-1123.jpg?size=338&ext=jpg&ga=GA1.1.1395880969.1709510400&semt=ais"
+                             alt=""/>
                     </div>
-                    <div className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 sm:p-8">
+                    <div
+                        className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 sm:p-8">
                         <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Change Password
                         </h2>
@@ -237,31 +292,7 @@ function MydModalWithGrid(props) {
                                     }}
                                 />
                             </div>
-                            <div className="flex items-start">
-                                <div className="flex items-center h-5">
-                                    <input
-                                        id="newsletter"
-                                        aria-describedby="newsletter"
-                                        type="checkbox"
-                                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                                        required=""
-                                    />
-                                </div>
-                                <div className="ml-3 text-sm">
-                                    <label
-                                        htmlFor="newsletter"
-                                        className="font-light text-gray-500 dark:text-gray-300"
-                                    >
-                                        I accept the{" "}
-                                        <a
-                                            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                                            href="#"
-                                        >
-                                            Terms and Conditions
-                                        </a>
-                                    </label>
-                                </div>
-                            </div>
+
                             <Button
                                 type="submit"
                                 onClick={handleSubmitPassword}
@@ -281,6 +312,107 @@ function MydModalWithGrid(props) {
 
                 </div>
             </Modal>
+            {/*modal edit user*/}
+            <Modal
+                show={showEdit}
+                onHide={handleCloseEdit}
+                keyboard={false}
+                size="lg"
+                style={{height: "600px"}}
+            >
+                <div className="flex ">
+                    <div className="flex-1">
+                        <Image style={{width: "150px", height: '150px', margin: 'auto', marginTop: "40%"}}
+                               className="justify-center align-items-center" roundedCircle
+                               src={images} onClick={handleShowImg}
+                               alt=""/>
+                    </div>
+                    <div
+                        className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 sm:p-8">
+                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                            Update User
+                        </h2>
+                        <div className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
+                            <div>
+                                <label
+                                    htmlFor="email"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Email
+                                </label>
+                                <MDBInput label='Enter email' id='form1' type='text'
+                                          value={editUser.email} name='email'
+                                          onChange={(event) => {
+                                              setEditUser({...editUser, [event.target.name]: event.target.value})
+                                          }}
+                                />
+
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="password"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Name
+                                </label>
+                                <MDBInput label='Enter name' id='form1' type='text'
+                                          value={editUser.name} name='name'
+                                          onChange={(event) => {
+                                              setEditUser({
+                                                  ...editUser,
+                                                  [event.target.name]: event.target.value
+                                              })
+                                          }}
+                                />
+
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="confirm-password"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    User Name
+                                </label>
+                                <MDBInput label='User Name' id='form1' type='text'
+                                          value={editUser.username} name='username'
+                                          onChange={(event) => {
+                                              setEditUser({
+                                                  ...editUser,
+                                                  [event.target.name]: event.target.value
+                                              })
+                                          }}
+                                />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                onClick={handleSubmitEdit}
+                                className="btn btn-success w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+
+                            >
+                                Submit
+                            </Button>
+                            <Button
+                                onClick={handleCloseEdit}
+                                className="btn btn-success w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+
+                </div>
+            </Modal>
+
+            {/*up image*/}
+            <Modal
+                show={showImg}
+                onHide={showImgClose}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Upimage></Upimage>
+            </Modal>
         </>
     );
 }
@@ -290,7 +422,6 @@ const SideBar = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const [modalShow, setModalShow] = useState(false);
-    const [toggled, setToggled] = React.useState(false);
     const [image, setImage] = useState("");
     const user = JSON.parse(localStorage.getItem('user'));
     const [userLocal, setUserLocal] = useState([]);
@@ -303,24 +434,34 @@ const SideBar = () => {
                 setImage(res.data.image);
             })
             .catch(err => console.error(err))
-    }, []);
+    }, [modalShow]);
+
+    const handleUpdateSuccess = () => {
+        axios.get('http://localhost:8080/api/users/' + user.id)
+            .then(res => {
+                setUserLocal(res.data);
+                setImage(res.data.image);
+            })
+            .catch(err => console.error(err));
+    };
 
     return (
         <div>
-            <MydModalWithGrid show={modalShow} onHide={() => setModalShow(false)}/>
+            <MydModalWithGrid onUpdateSuccess={handleUpdateSuccess} show={modalShow}
+                              onHide={() => setModalShow(false)}/>
             <Offcanvas show={show} onHide={handleClose} style={{width: '27.5%'}}>
                 <Offcanvas.Header style={{margin: 'auto'}}>
                     <Container>
                         <div style={{textAlign: 'center', marginTop: '15%'}}>
                             <div>
                                 <Image
-                                    src={image}
+                                    src={userLocal.image}
                                     style={{width: '65px', height: '65px', margin: 'auto'}} roundedCircle/>
                             </div>
                             <div className='mx-2'>
-                                <span style={{fontSize: '20px'}}>{user.username}</span>
+                                <span style={{fontSize: '20px'}}>{userLocal.username}</span>
                                 <br/>
-                                <span style={{fontSize: '14px'}}>{user.email}</span>
+                                <span style={{fontSize: '14px'}}>{userLocal.email}</span>
                             </div>
                         </div>
                     </Container>
@@ -458,7 +599,7 @@ const SideBar = () => {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Link to= "/auth/transactions">
+                            <Link to="/auth/transactions">
                                 <MdAccountBalanceWallet className="ml-2.5"
                                                         style={{width: '25px', height: '25px', color: '#228B22'}}/>
                             </Link>
