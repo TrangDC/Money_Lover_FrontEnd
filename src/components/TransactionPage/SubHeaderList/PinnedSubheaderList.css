@@ -6,3 +6,10 @@
     padding: 8px 16px; /* Adjust padding as needed */
     font-weight: bold; /* You can adjust the font styles as needed */
 }
+
+.form-container {
+    /* Define styles for the form container */
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(-100%);
+}
+

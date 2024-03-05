@@ -14,6 +14,17 @@ import ActiveAccount from "./components/UserPage/ActiveAccount";
 import CategoriesPage from "./components/UserPage/category/CategoriesPage";
 import SideBar from "./layout/SideBar/SideBar";
 import Transactions from "./components/TransactionPage/Transactions";
+import Detail from "./components/Detail/Detail";
+import TransactionList from "./components/Detail/TransactonsDetail";
+import BasicExample from "./components/Detail/BasicExample";
+
+function DetailPage() {
+    return null;
+}
+
+function TransactionsDetail() {
+    return null;
+}
 
 function App() {
     const [isAuth, setIsAuth] = useState(false);
@@ -43,6 +54,7 @@ function App() {
                     <Route path='/active' element={<ActiveAccount/>}/>
                     <Route path='/sidebar' element={<SideBar/>}/>
                     <Route path='/trans' element={<Transactions/>}/>
+                    <Route path={'basic'} element={<BasicExample/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
