@@ -19,6 +19,7 @@ import {FaCartShopping} from "react-icons/fa6";
 import {FaGreaterThan} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import {Outlet, useNavigate} from 'react-router-dom';
+import { FaChartPie } from "react-icons/fa";
 import {
     Table,
     Thead,
@@ -508,6 +509,24 @@ const SideBar = () => {
                                 </Td>
                                 <Td>
                                     <Link to={"/auth/categories"}>
+                                        <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
+                                    </Link>
+                                </Td>
+                            </Tr>
+
+                            <Tr className="hover-div">
+                                <Td>
+                                    <Link to={"/auth/chart"}>
+                                        <FaChartPie className="icon"/>
+                                    </Link>
+                                </Td>
+                                <Td>
+                                    <Link to={"/auth/chart"} className="text-reset">
+                                        Statistical
+                                    </Link>
+                                </Td>
+                                <Td>
+                                    <Link to={"/auth/chart"}>
                                         <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
                                     </Link>
                                 </Td>

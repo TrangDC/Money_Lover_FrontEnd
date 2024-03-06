@@ -1,4 +1,5 @@
 import {Tabs, TabList, TabPanels, Tab, TabPanel} from '@chakra-ui/react';
+import axios from "axios";
 import React, {useEffect} from 'react';
 import {Doughnut} from 'react-chartjs-3';
 import {
@@ -21,23 +22,26 @@ import {CiCalendarDate} from "react-icons/ci";
 import {IoCalendarNumberOutline} from "react-icons/io5";
 import {BsCalendar2Week} from "react-icons/bs";
 import {LiaCalendarWeekSolid} from "react-icons/lia";
-import axios from "axios";
 
-const ExpensePage = () => {
+const IncomePiechart = () => {
+
     const [show, setShow] = useState(false);
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+
     const [listTransaction, setListTransaction] = useState([]);
-    const [expenseCategory, setExpenseCategory] = useState([])
-    const [expenseAmount, setExpenseAmount] = useState([])
+    const [incomeCategory, setIncomeCategory] = useState([])
+    const [incomeAmount, setIncomeAmount] = useState([])
     const [wallet_id, setWallet_id] = useState("8")
     useEffect(() => {
         const userdata = JSON.parse(localStorage.getItem("user"));
         console.log(userdata)
-        getTransactionExpense(userdata, wallet_id)
+        getTransactionIncome(userdata, wallet_id)
     }, [wallet_id])
-    const getTransactionExpense = (userdata, wallet_id) => {
-        axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/expense_transaction/${wallet_id}`)
+    const getTransactionIncome = (userdata, wallet_id) => {
+        axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/income_transaction/${wallet_id}`)
             .then((res) => {
                 console.log(res)
                 setListTransaction(res.data);
@@ -46,27 +50,28 @@ const ExpensePage = () => {
     }
 
     function getlist(transactions) {
-        const expenseCategory = [];
-        const expenseAmount = [];
+        const incomeCategory = [];
+        const incomeAmount = [];
         transactions.forEach(transaction => {
-
-            if (transaction.category.type === "EXPENSE") {
-                const index = expenseCategory.indexOf(transaction.category.name)
+            // nếu transaction thuộc type income
+            if (transaction.category.type === "INCOME") {
+                const index = incomeCategory.indexOf(transaction.category.name)
                 if (index === -1) {
-                    expenseCategory.push(transaction.category.name);
-                    expenseAmount.push(transaction.amount)
+                    incomeCategory.push(transaction.category.name);
+                    incomeAmount.push(transaction.amount)
                 }
-                expenseAmount[index] += transaction.amount
+                incomeAmount[index] += transaction.amount
             }
         })
-        setExpenseCategory(expenseCategory);
-        setExpenseAmount(expenseAmount)
+        setIncomeCategory(incomeCategory);
+        setIncomeAmount(incomeAmount)
     }
 
+
     const data = {
-        labels: expenseCategory,
+        labels: incomeCategory,
         datasets: [{
-            data: expenseAmount,
+            data: incomeAmount,
             backgroundColor: [
                 '#FF6384',
                 '#36A2EB',
@@ -81,6 +86,7 @@ const ExpensePage = () => {
             ]
         }]
     };
+
 
     return (
         <div>
@@ -176,5 +182,4 @@ const ExpensePage = () => {
         </div>
     );
 };
-
-export default ExpensePage;
+export default IncomePiechart;
