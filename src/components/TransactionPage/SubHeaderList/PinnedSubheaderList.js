@@ -12,7 +12,16 @@ import {
     Card,
     Typography,
 } from "@material-tailwind/react";
-export default function PinnedSubheaderList() {
+import "./PinnedSubheaderList.css"
+
+import {Link} from "react-router-dom";
+import {MDBCardFooter, MDBCardHeader, MDBCardText} from "mdbreact";
+import {MDBBtn, MDBCard, MDBCardBody, MDBCardTitle} from "mdb-react-ui-kit";
+import {MdOutlineClose} from "react-icons/md";
+
+export default function PinnedSubheaderList({wallet_id}) {
+
+
     const [transactions, setTransactions] = useState([]);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [currentMonthIndex, setCurrentMonthIndex] = useState(new Date().getMonth());
@@ -22,15 +31,22 @@ export default function PinnedSubheaderList() {
 
     const user = JSON.parse(localStorage.getItem('user'));
 
+    // display detail
+    const [showDetail, setShowDetail] = useState(false)
+    const handleClickX = () => {
+        setShowDetail(false)
+    }
+
+
     useEffect(() => {
         const fetchData = async () => {
-            const data = await TransactionService.fetchTransactions(user);
+            const data = await TransactionService.fetchTransactions(user, wallet_id);
             setTransactions(data);
             localStorage.setItem("transactions", JSON.stringify(data))
         };
 
         fetchData();
-    }, [currentMonthIndex]);
+    }, [wallet_id]);
 
     useEffect(() => {
         const inflow = TransactionService.calculateTotalInflow(transactions);
@@ -55,6 +71,7 @@ export default function PinnedSubheaderList() {
 
     const handleTransactionClick = (transaction) => {
         setSelectedTransaction(transaction);
+        setShowDetail(true)
     };
 
     const handleCloseClick = () => {
@@ -64,14 +81,21 @@ export default function PinnedSubheaderList() {
     const groupedTransactions = groupTransactionsByDate();
 
     return (
-        <div className="root flex justify-center">
-            <div style={{ width: "600px", height: '500px' }} className="bg-white rounded-lg shadow-lg">
-                <nav>
-                    <div>
+        <div className={`root flex justify-center container_full ${showDetail ? 'selected' : ''}`}>
+            <div className={`bg-white rounded-lg shadow-lg container-left ${showDetail ? 'selected' : ''}`}>
+                <div>
+                    <div className="header">
+                        <Link to={"/auth/create_transaction"}>
+                            <button type="button" className="button">
+                                <span className="button__text">Add Transaction</span>
+                                <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" className="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
+                            </button>
+                        </Link>
                         <div className="flex justify-content-center mt-0.5">
+
                             <Button
                                 variant="text"
-                                class="rounded-none border-b border-blue-gray-50 bg-transparent p-2"
+                                className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                 indicatorProps={{
                                     className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                 }}
@@ -79,13 +103,13 @@ export default function PinnedSubheaderList() {
                                 {currentMonthIndex === 0 ? months[11] : months[currentMonthIndex - 1]} {currentMonthIndex === 0 ? currentYear - 1 : currentYear}
                             </Button>
                             <Button variant="text"
-                                    class="rounded-none border-b border-blue-gray-50 bg-transparent p-2"
+                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month btn-color"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}>{months[currentMonthIndex]} {currentYear}</Button>
                             <Button
                                 variant="text"
-                                class="rounded-none border-b border-blue-gray-50 bg-transparent p-2"
+                                className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                 indicatorProps={{
                                     className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                 }}
@@ -98,13 +122,13 @@ export default function PinnedSubheaderList() {
                             <div className="flex justify-between">
                                 <p className="pl-5">Inflow:</p>
                                 <p style={{ color: 'blue' }} className="pr-5">
-                                    {totalInflow.toLocaleString()} VNĐ
+                                    +{totalInflow.toLocaleString()} VNĐ
                                 </p>
                             </div>
                             <div className="flex justify-between">
                                 <p className="pl-5">Outflow:</p>
                                 <p style={{ color: 'red' }} className="pr-5">
-                                    {totalOutflow.toLocaleString()} VNĐ
+                                    -{totalOutflow.toLocaleString()} VNĐ
                                 </p>
                             </div>
                             <div className="flex justify-between">
@@ -116,7 +140,7 @@ export default function PinnedSubheaderList() {
                         </div>
                     </div>
                     <hr className='my-0.5'/>
-                    <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{ maxHeight: "600px" }}>
+                    <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{ maxHeight: "550px" }}>
                         {groupedTransactions.length === 0 ? (
                             <div style={{ height: "430px" }}>
                                 <ListItem>
@@ -147,7 +171,7 @@ export default function PinnedSubheaderList() {
                                                 key={transaction.id}
                                                 onClick={() => handleTransactionClick(transaction)}>
                                                 <ListItemPrefix className="pl-0">
-                                                    <Avatar variant="circular" alt="candice" src="https://docs.material-tailwind.com/img/face-1.jpg" />
+                                                    <Avatar variant="circular" alt="candice" src={transaction.category.image} />
                                                 </ListItemPrefix>
                                                 <div className="flex justify-between w-full">
                                                     {/* Category name */}
@@ -169,7 +193,53 @@ export default function PinnedSubheaderList() {
                             </List>
                         )}
                     </List>
-                </nav>
+                </div>
+            </div>
+            <div className={`container-right ${showDetail ? 'selected' : ''}`}>
+                {
+                    showDetail && (
+                            <MDBCardBody>
+                                <div className="card ml-5" style={{ width: '90vh', height: '300px' }}>
+                                    <div className="btn-x" onClick={handleClickX}>
+                                        <MdOutlineClose/>
+                                    </div>
+                                    <div className="card-header ml-11">
+                                        <h4>Transaction Details</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <blockquote className="blockquote mb-0">
+                                            <div className="flex">
+                                                <div className="transaction-footer ml-7">
+                                                    <img
+                                                        src={selectedTransaction.image}
+                                                        alt="avatar"
+                                                        className="relative inline-block h-12 w-13 !rounded-full object-cover object-center"
+                                                    />
+                                                </div>
+                                                <div className="ml-7">
+                                                    <h3>{selectedTransaction.category.name}</h3>
+                                                    <div className="transaction-footer">
+                                                        <h6>{selectedTransaction.note}</h6>
+                                                        <cite title="Source Title"></cite>
+                                                    </div>
+                                                    <footer className="transaction-footer text-gray-500">
+                                                        <p className='text-sm'>{selectedTransaction.transactionDate}</p>
+                                                        <cite title="Source Title"></cite>
+                                                    </footer>
+                                                </div>
+                                            </div>
+                                            <hr className="mt-1 mb-2" style={{ width: '250px', borderColor: 'black', borderWidth: '1px' }} />
+                                            <div className={'ml-20'} style={{ color: 'red' }}>
+                                                <Typography variant="h2" style={{ color: selectedTransaction.category.type === 'INCOME' || selectedTransaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
+                                                    {selectedTransaction.category.type === 'INCOME' || selectedTransaction.category.type === 'DEBT' ? '+' : '-'}{selectedTransaction.amount.toLocaleString()} VNĐ
+                                                </Typography>
+                                            </div>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </MDBCardBody>
+                        )
+                    }
             </div>
         </div>
 

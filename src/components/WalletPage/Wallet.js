@@ -223,9 +223,9 @@ const Wallet = () => {
                             </MDBCardBody>
                         </MDBCard>
                         <div style={{overflowY: 'auto', maxHeight: '380px'}}>
-                        {wallets.map(wallet => (
-                            <MDBCard className={`card1 ${selectedWallet ? 'selected' : ''}`}>
-                                <MDBCardBody className="card-body">
+                            {wallets.map(wallet => (
+                                <MDBCard className={`card1 ${selectedWallet ? 'selected' : ''}`}>
+                                    <MDBCardBody className="card-body">
                                         <MDBRow className="wallet">
                                             <MDBCol md='2' onClick={() => handleWalletClick(wallet)}>
                                                 <div className="wallet-icon">
@@ -247,9 +247,9 @@ const Wallet = () => {
                                                              className="text-green-400"/>
                                             </MDBCol>
                                         </MDBRow>
-                                </MDBCardBody>
-                            </MDBCard>
-                        ))}
+                                    </MDBCardBody>
+                                </MDBCard>
+                            ))}
                         </div>
                     </div>
                     <div className={`card2 ${selectedWallet ? 'selected' : ''}`}>
@@ -433,4 +433,3 @@ const Wallet = () => {
     );
 };
 export default Wallet;
-

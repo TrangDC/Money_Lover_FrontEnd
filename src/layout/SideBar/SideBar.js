@@ -7,58 +7,51 @@ import Image from 'react-bootstrap/Image';
 import {FaUserAstronaut} from "react-icons/fa";
 import {PiIntersectThreeBold} from "react-icons/pi";
 import "./sideBar.css";
-import {MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBInput} from 'mdb-react-ui-kit';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import {LuCalendarDays} from "react-icons/lu";
+import {BsCalendar2Date} from "react-icons/bs";
 import {FaSearch} from "react-icons/fa";
-import {TbEyeDollar} from "react-icons/tb";
+import {GiSheikahEye} from "react-icons/gi";
 import {FaCircleQuestion} from "react-icons/fa6";
 import Modal from 'react-bootstrap/Modal';
 import {FaCartShopping} from "react-icons/fa6";
 import {FaGreaterThan} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import {Outlet, useNavigate} from 'react-router-dom';
-import { FaChartPie } from "react-icons/fa";
 import {
     Table,
-    Thead,
-    Tbody,
-    Tfoot,
     Tr,
-    Th,
     Td,
-    TableCaption,
-    TableContainer, useToast,
+    TableContainer,
 } from '@chakra-ui/react'
 import {Link} from "react-router-dom";
+import {
+    Menu,
+    MenuHandler,
+    MenuList,
+    MenuItem,
+} from "@material-tailwind/react";
 import axios from "axios";
-import Upimage from "../../components/FireBase/Upimage";
 
 function MydModalWithGrid(props) {
     const navigate = useNavigate();
     const [showLogout, setShowLogout] = useState(false);
     const handleCloseLogout = () => setShowLogout(false);
     const handleShowLogout = () => setShowLogout(true);
+    const [image, setImage] = useState("");
     const user = JSON.parse(localStorage.getItem('user'));
-    const [images, setImage] = useState("");
+    const [userLocal, setUserLocal] = useState([]);
 
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/users/' + user.id)
             .then(res => {
                 console.log(res.data);
-                const userData = res.data;
-                setEditUser({
-                    email: userData.email,
-                    name: userData.name,
-                    username: userData.username,
-                    image: userData.image
-                });
-                setImage(userData.image);
+                setUserLocal(res.data);
+                setImage(res.data.image);
             })
             .catch(err => console.error(err))
-    }, [user]);
+    }, []);
     const handleLogout = async () => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
@@ -75,82 +68,6 @@ function MydModalWithGrid(props) {
         }
 
     };
-    //change password
-    const [showChangePassword, setShowChangePassword] = useState(false);
-    const handleChangePassword = () => setShowChangePassword(true);
-    const handleCloseCPassword = () => setShowChangePassword(false);
-    const toast = useToast();
-    const [ChangePassword, setChangePassword] = useState({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-    })
-    const handleSubmitPassword = async () => {
-        await axios.put(`http://localhost:8080/api/users/${user.id}/change_password`, ChangePassword)
-            .then(res => {
-                toast({
-                    title: 'Update success!',
-                    description: 'You successfully update a password!',
-                    status: 'success',
-                    duration: 1500,
-                    isClosable: true,
-                });
-                setTimeout(() => {
-
-                    navigate("/login")
-                }, 1000);
-            }).catch(err => {
-                toast({
-                    title: 'Update Failed',
-                    description: 'Error: Password incorrect or you are set up old password!',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                });
-            })
-    }
-
-    //edit user
-    const [showEdit, setShowEdit] = useState(false);
-    const [editUser, setEditUser] = useState({
-        email: "",
-        name: "",
-        username: "",
-        image: ""
-    })
-    const handleCloseEdit = () => setShowEdit(false);
-    const handleShowEdit = () => setShowEdit(true);
-
-    const handleSubmitEdit = () => {
-        axios
-            .put('http://localhost:8080/api/users/' + user.id, editUser)
-            .then(res => {
-                toast({
-                    title: 'Update success!',
-                    description: 'You successfully update a information!',
-                    status: 'success',
-                    duration: 1500,
-                    isClosable: true,
-                });
-                setTimeout(() => {
-                    handleCloseEdit();
-                    navigate("/auth/transactions");
-                }, 1000);
-            }).catch(err => {
-            toast({
-                title: 'Update Failed',
-                description: 'Error: Email is already in use!',
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
-        })
-    }
-    //update image
-    const [showImg, setShowImg] = useState(false);
-    const handleShowImg = () => setShowImg(true);
-    const showImgClose = () => setShowImg(false);
-
     return (
         <>
             <Modal {...props} aria-labelledby="contained-modal-title-vcenter">
@@ -169,26 +86,21 @@ function MydModalWithGrid(props) {
                         <div style={{textAlign: 'center'}}>
                             <div>
                                 <Image
-                                    src={images}
+                                    src={image}
                                     style={{width: '65px', height: '65px', margin: 'auto'}} roundedCircle/>
                             </div>
                             <div className='mx-2'>
-                                <span style={{fontSize: '20px'}}>{editUser.username}</span>
+                                <span style={{fontSize: '20px'}}>{user.username}</span>
                                 <br/>
-                                <span style={{fontSize: '14px'}}>{editUser.email}</span>
+                                <span style={{fontSize: '14px'}}>{user.email}</span>
                             </div>
                         </div>
                     </Container>
                 </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="outline-success" onClick={handleChangePassword} className="btn-sign-out">
-                        Change Password
-                    </Button>
-                    <Button variant="outline-success" onClick={handleShowEdit} className="btn-sign-out">
-                        Update Account
-                    </Button>
+                <Modal.Footer>
+                    <Button style={{marginLeft: 160}} variant="outline-success" className="btn-sign-out">Delete
+                        Account</Button>{' '}
                 </Modal.Footer>
-
             </Modal>
 
             <Modal show={showLogout} onHide={handleCloseLogout}>
@@ -206,226 +118,35 @@ function MydModalWithGrid(props) {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
-            {/*modal change password*/}
-            <Modal
-                show={showChangePassword}
-                onHide={handleCloseCPassword}
-                keyboard={false}
-                size="lg"
-                style={{height: "600px"}}
-            >
-                <div className="flex ">
-                    <div className="flex-1">
-                        <img style={{marginTop: "130px"}} className="justify-center align-items-center"
-                             src="https://img.freepik.com/free-vector/forgot-password-concept-illustration_114360-1123.jpg?size=338&ext=jpg&ga=GA1.1.1395880969.1709510400&semt=ais"
-                             alt=""/>
-                    </div>
-                    <div
-                        className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 sm:p-8">
-                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            Change Password
-                        </h2>
-                        <div className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
-                            <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block mb-2 text-sm font-medium text-gray-900"
-                                >
-                                    Old Password
-                                </label>
-                                <MDBInput
-                                    type="password"
-                                    name="oldPassword"
-                                    id="password"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="••••••••"
-                                    required=""
-                                    onChange={(e) => {
-                                        setChangePassword({
-                                            ...ChangePassword,
-                                            [e.target.name]: e.target.value
-                                        })
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 "
-                                >
-                                    New Password
-                                </label>
-                                <MDBInput
-                                    type="password"
-                                    name="newPassword"
-                                    id="password"
-                                    placeholder="••••••••"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    required=""
-                                    onChange={(e) => {
-                                        setChangePassword({
-                                            ...ChangePassword,
-                                            [e.target.name]: e.target.value
-                                        })
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="confirm-password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 "
-                                >
-                                    Confirm password
-                                </label>
-                                <MDBInput
-                                    type="password"
-                                    name="confirmPassword"
-                                    id="confirm-password"
-                                    placeholder="••••••••"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    required=""
-                                    onChange={(e) => {
-                                        setChangePassword({
-                                            ...ChangePassword,
-                                            [e.target.name]: e.target.value
-                                        })
-                                    }}
-                                />
-                            </div>
-
-                            <Button
-                                type="submit"
-                                onClick={handleSubmitPassword}
-                                className="btn btn-success w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-
-                            >
-                                Reset passwod
-                            </Button>
-                            <Button
-                                onClick={handleCloseCPassword}
-                                className="btn btn-success w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    </div>
-
-                </div>
-            </Modal>
-            {/*modal edit user*/}
-            <Modal
-                show={showEdit}
-                onHide={handleCloseEdit}
-                keyboard={false}
-                size="lg"
-                style={{height: "600px"}}
-            >
-                <div className="flex ">
-                    <div className="flex-1">
-                        <Image style={{width: "150px", height: '150px', margin: 'auto', marginTop: "40%"}}
-                               className="justify-center align-items-center" roundedCircle
-                               src={images} onClick={handleShowImg}
-                               alt=""/>
-                    </div>
-                    <div
-                        className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 sm:p-8">
-                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            Update User
-                        </h2>
-                        <div className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
-                            <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Email
-                                </label>
-                                <MDBInput label='Enter email' id='form1' type='text'
-                                          value={editUser.email} name='email'
-                                          onChange={(event) => {
-                                              setEditUser({...editUser, [event.target.name]: event.target.value})
-                                          }}
-                                />
-
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Name
-                                </label>
-                                <MDBInput label='Enter name' id='form1' type='text'
-                                          value={editUser.name} name='name'
-                                          onChange={(event) => {
-                                              setEditUser({
-                                                  ...editUser,
-                                                  [event.target.name]: event.target.value
-                                              })
-                                          }}
-                                />
-
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="confirm-password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    User Name
-                                </label>
-                                <MDBInput label='User Name' id='form1' type='text'
-                                          value={editUser.username} name='username'
-                                          onChange={(event) => {
-                                              setEditUser({
-                                                  ...editUser,
-                                                  [event.target.name]: event.target.value
-                                              })
-                                          }}
-                                />
-                            </div>
-
-                            <Button
-                                type="submit"
-                                onClick={handleSubmitEdit}
-                                className="btn btn-success w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-
-                            >
-                                Submit
-                            </Button>
-                            <Button
-                                onClick={handleCloseEdit}
-                                className="btn btn-success w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    </div>
-
-                </div>
-            </Modal>
-
-            {/*up image*/}
-            <Modal
-                show={showImg}
-                onHide={showImgClose}
-                backdrop="static"
-                keyboard={false}
-            >
-                <Upimage></Upimage>
-            </Modal>
         </>
     );
 }
 
-const SideBar = () => {
+const SideBar = ({onWalletSelect}) => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const [modalShow, setModalShow] = useState(false);
+    const [toggled, setToggled] = React.useState(false);
     const [image, setImage] = useState("");
     const user = JSON.parse(localStorage.getItem('user'));
     const [userLocal, setUserLocal] = useState([]);
+    const [wallet_list, setWallet] = useState([])
+    const [selectedWallet, setSelectedWallet] = useState([]);
+
+    function fetchWallets() {
+        axios.get('http://localhost:8080/api/wallets/user/' + user.id)
+            .then((response) => {
+                setWallet(response.data);
+            })
+    }
+
+    const handleWalletSelect = (id, data) => {
+        setSelectedWallet(data);
+        onWalletSelect(id);
+    };
+
+    const totalAmount = wallet_list.reduce((total, wallet) => total + Number(wallet.balance), 0);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/users/' + user.id)
@@ -433,36 +154,35 @@ const SideBar = () => {
                 console.log(res.data);
                 setUserLocal(res.data);
                 setImage(res.data.image);
+                fetchWallets();
             })
             .catch(err => console.error(err))
-    }, [modalShow]);
+    }, []);
 
-    const handleUpdateSuccess = () => {
-        axios.get('http://localhost:8080/api/users/' + user.id)
-            .then(res => {
-                setUserLocal(res.data);
-                setImage(res.data.image);
-            })
-            .catch(err => console.error(err));
-    };
+    function handleSelectAll() {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonthIndex = currentDate.getMonth();
+        setSelectedWallet(null);
+        onWalletSelect("all");
+    }
 
     return (
         <div>
-            <MydModalWithGrid onUpdateSuccess={handleUpdateSuccess} show={modalShow}
-                              onHide={() => setModalShow(false)}/>
+            <MydModalWithGrid show={modalShow} onHide={() => setModalShow(false)}/>
             <Offcanvas show={show} onHide={handleClose} style={{width: '27.5%'}}>
                 <Offcanvas.Header style={{margin: 'auto'}}>
                     <Container>
                         <div style={{textAlign: 'center', marginTop: '15%'}}>
                             <div>
                                 <Image
-                                    src={userLocal.image}
+                                    src={image}
                                     style={{width: '65px', height: '65px', margin: 'auto'}} roundedCircle/>
                             </div>
                             <div className='mx-2'>
-                                <span style={{fontSize: '20px'}}>{userLocal.username}</span>
+                                <span style={{fontSize: '20px'}}>{user.username}</span>
                                 <br/>
-                                <span style={{fontSize: '14px'}}>{userLocal.email}</span>
+                                <span style={{fontSize: '14px'}}>{user.email}</span>
                             </div>
                         </div>
                     </Container>
@@ -513,20 +233,19 @@ const SideBar = () => {
                                     </Link>
                                 </Td>
                             </Tr>
-
                             <Tr className="hover-div">
                                 <Td>
-                                    <Link to={"/auth/chart"}>
-                                        <FaChartPie className="icon"/>
+                                    <Link to={"/auth/piechart"}>
+                                        <PiIntersectThreeBold className="icon"/>
                                     </Link>
                                 </Td>
                                 <Td>
-                                    <Link to={"/auth/chart"} className="text-reset">
-                                        Statistical
+                                    <Link to={"/auth/piechart"} className="text-reset">
+                                        Chart
                                     </Link>
                                 </Td>
                                 <Td>
-                                    <Link to={"/auth/chart"}>
+                                    <Link to={"/auth/piechart"}>
                                         <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
                                     </Link>
                                 </Td>
@@ -537,47 +256,94 @@ const SideBar = () => {
             </Offcanvas>
 
             <div style={{position: 'relative', backgroundColor: '#DCDCDC'}} className="w-screen h-screen">
-                <div style={{backgroundColor: 'white', width: '100%'}}>
+                <div style={{backgroundColor: 'white', width: '100%'}} className="mt-50">
                     <Navbar className="bg-body-tertiary">
                         <Container>
                             <Navbar.Brand>
+                                <Menu className="bg-white">
+                                    <MenuHandler>
+                                        <Button style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            backgroundColor: "white",
+                                            width: '200px'
+                                        }}>
 
-                                <MDBDropdown group style={{height: "40px"}}>
-                                    <Image src="https://static.moneylover.me/img/icon/icon.png"
-                                           style={{width: '40px', height: '40px'}} roundedCircle/>
-
-                                    <MDBDropdownToggle style={{backgroundColor: "white"}}>
-                                        <div>
-                                            <p style={{
-                                                marginTop: '10px',
-                                                fontSize: "13px",
-                                                color: 'black'
+                                            {
+                                                selectedWallet ? (
+                                                    <>
+                                                        <img src="https://static.moneylover.me/img/icon/icon.png"
+                                                             alt="Wallet Icon"
+                                                             style={{
+                                                                 width: '40px',
+                                                                 height: '40px',
+                                                                 marginRight: '10px'
+                                                             }}/>
+                                                        <div>
+                                                            <div className='text-black'>{selectedWallet.name}</div>
+                                                            <div className='text-black'>{selectedWallet.balance}</div>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <img
+                                                            src="https://static.moneylover.me/img/icon/ic_category_all.png"
+                                                            alt="Wallet Icon"
+                                                            style={{
+                                                                width: '40px',
+                                                                height: '40px',
+                                                                marginRight: '10px'
+                                                            }}/>
+                                                        <div>
+                                                            <div className='text-black'>Total</div>
+                                                            <div className='text-black'>{totalAmount}</div>
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
+                                        </Button>
+                                    </MenuHandler>
+                                    <MenuList className="max-h-72" style={{marginTop: '10px', width: '100px'}}>
+                                        <MenuItem
+                                            onClick={() => handleSelectAll()}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between'
                                             }}>
-                                                Your Wallets
-                                            </p>
-                                            <p className="text-black"
-                                               style={{
-                                                   marginTop: '-15px',
-                                                   fontSize: "13px"
-                                               }}>
-                                                10000000
-                                            </p>
-                                        </div>
-                                    </MDBDropdownToggle>
-                                    <MDBDropdownMenu>
-                                        <MDBDropdownItem link>1</MDBDropdownItem>
-                                        <MDBDropdownItem link>2</MDBDropdownItem>
-                                        <MDBDropdownItem link>3</MDBDropdownItem>
-                                        <MDBDropdownItem link>See More</MDBDropdownItem>
-                                    </MDBDropdownMenu>
-                                </MDBDropdown>
-
+                                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                                <img src="https://static.moneylover.me/img/icon/ic_category_all.png"
+                                                     alt="Wallet Icon"
+                                                     style={{width: '40px', height: '40px', marginRight: '10px'}}/>
+                                                <div>Total</div>
+                                            </div>
+                                            <div>{totalAmount}</div>
+                                        </MenuItem>
+                                        <hr className='my-3'/>
+                                        {wallet_list.map((data) => (
+                                            <MenuItem key={data.id} onClick={() => handleWalletSelect(data.id, data)}
+                                                      style={{
+                                                          display: 'flex',
+                                                          alignItems: 'center',
+                                                          justifyContent: 'space-between'
+                                                      }}>
+                                                <div style={{display: 'flex', alignItems: 'center'}}>
+                                                    <img src="https://static.moneylover.me/img/icon/icon.png"
+                                                         alt="Wallet Icon"
+                                                         style={{width: '40px', height: '40px', marginRight: '10px'}}/>
+                                                    <div>{data.name}</div>
+                                                </div>
+                                                <div>{data.balance}</div>
+                                            </MenuItem>
+                                        ))}
+                                    </MenuList>
+                                </Menu>
                             </Navbar.Brand>
                             <Navbar.Toggle/>
                             <Navbar.Collapse className="justify-content-end">
-                                <Navbar.Text style={{display: "flex", alignItems: "center", marginRight: '-5%'}}>
-                                    <LuCalendarDays style={{marginRight: 30, fontSize: '20px'}}/>
-                                    <TbEyeDollar style={{marginRight: 30, fontSize: '20px'}}/>
+                                <Navbar.Text style={{display: "flex", alignItems: "center", marginRight: '-10%'}}>
+                                    <BsCalendar2Date style={{marginRight: 30, fontSize: '20px'}}/>
+                                    <GiSheikahEye style={{marginRight: 30, fontSize: '20px'}}/>
                                     <FaSearch style={{fontSize: '20px'}}/>
                                 </Navbar.Text>
                             </Navbar.Collapse>
@@ -656,6 +422,8 @@ const SideBar = () => {
                 </div>
             </div>
         </div>
+
+
     );
 };
 
