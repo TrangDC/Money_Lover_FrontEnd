@@ -14,6 +14,7 @@ import SideBar from "./layout/SideBar/SideBar";
 import Transactions from "./components/TransactionPage/Transactions";
 import Wallet from "./components/WalletPage/Wallet";
 import TransactionPage from "./components/TransactionPage/TransactionPage";
+import ExpensePage from "./components/PageExpense/ExpensePage";
 
 function App() {
     const [isAuth, setIsAuth] = useState(false);
@@ -42,7 +43,7 @@ function App() {
                     <Route path='/active' element={<ActiveAccount/>}/>
                     <Route path='/sidebar' element={<SideBar/>}/>
                     <Route path='/trans' element={<Transactions/>}/>
-                    <Route path='/tranz' element={<TransactionPage/>}/>
+                    <Route path='/expense' element={<ExpensePage/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
