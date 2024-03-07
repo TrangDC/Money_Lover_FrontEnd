@@ -19,7 +19,15 @@ import {MDBCardFooter, MDBCardHeader, MDBCardText} from "mdbreact";
 import {MDBBtn, MDBCard, MDBCardBody, MDBCardTitle} from "mdb-react-ui-kit";
 import {MdOutlineClose} from "react-icons/md";
 import axios from "axios";
-import {useToast} from "@chakra-ui/react";
+import {
+    FormControl, FormLabel, Input,
+    ModalBody, Modal,
+    ModalCloseButton,
+    ModalContent, ModalFooter,
+    ModalHeader,
+    ModalOverlay, useDisclosure,
+    useToast
+} from "@chakra-ui/react";
 import {CgCalendarDates} from "react-icons/cg";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import {CiCalendarDate} from "react-icons/ci";
@@ -39,6 +47,7 @@ import {
     subWeeks,
     subYears
 } from "date-fns";
+import {FaPen} from "react-icons/fa";
 
 export default function PinnedSubheaderList() {
 
@@ -55,6 +64,9 @@ export default function PinnedSubheaderList() {
     const toast = useToast()
     const navigate = useNavigate();
     const [show, setShow] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [startDateRange, setStartDateRange] = useState(null);
+    const [endDateRange, setEndDateRange] = useState(null);
 
     // display detail
     const [showDetail, setShowDetail] = useState(false)
@@ -181,6 +193,35 @@ export default function PinnedSubheaderList() {
     const groupedTransactionsByYear = groupTransactionsByYear(transactions, currentDate);
     const groupedTransactionsArrayYear = Object.entries(groupedTransactionsByYear);
 
+    const handleStartDateSelect = (date) => {
+        setStartDateRange(date);
+    };
+
+// Method to handle selecting end date
+    const handleEndDateSelect = (date) => {
+        setEndDateRange(date);
+    };
+
+// Method to clear selected dates
+    const clearSelectedDates = () => {
+        setStartDateRange(null);
+        setEndDateRange(null);
+    };
+
+    const handleApply = () => {
+        setNavigation('range');
+        // Filter transactions based on the selected time range
+        const filteredTransactions = transactions.filter((transaction) => {
+            const transactionDate = new Date(transaction.transactionDate);
+            return (
+                (!startDateRange || transactionDate >= startDateRange) && // Check if transaction date is after or equal to start date
+                (!endDateRange || transactionDate <= endDateRange) // Check if transaction date is before or equal to end date
+            );
+        });
+        setTransactions(filteredTransactions);
+    };
+
+
     useEffect(() => {
         const fetchData = async () => {
 
@@ -247,6 +288,9 @@ export default function PinnedSubheaderList() {
                         </Link>
                         <CgCalendarDates style={{width: '40px', height: '40px', marginLeft: '100%'}}
                                          onClick={handleShow}/>
+                        <Button style={{width: '40px', height: '40px', marginLeft: '100%'}} onClick={handleShow} variant="contained" color="primary">
+                            Select Time Range
+                        </Button>
                         {navigation === 'month' && (
                             <div className="flex justify-content-center mt-0.5">
                                 <Button
@@ -366,6 +410,12 @@ export default function PinnedSubheaderList() {
                                     {parseInt(formattedYear) + 1} {/* Next year */}
                                 </Button>
 
+                            </div>
+                        )}
+                        {startDateRange && endDateRange && navigation === 'range' && (
+                            <div>
+                                <p>From: {startDateRange}</p>
+                                <p>To: {endDateRange}</p>
                             </div>
                         )}
                         <hr className='my-1'/>
@@ -564,6 +614,44 @@ export default function PinnedSubheaderList() {
                             )}
                         </List>
                     )}
+                    {navigation === "range" && (
+                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
+                            {transactions.length === 0 ? (
+                                <div style={{height: "300px"}}>
+                                    <ListItem>
+                                        No transactions for this day
+                                    </ListItem>
+                                    <Button variant="outlined" onClick={() => goToPresentDay()}>Back to Current Day</Button>
+                                </div>
+                            ) : (
+                                <List className="list" class="border-t border-gray-200">
+                                    {transactions.map(transaction => (
+                                        <ListItem
+                                            class={`flex items-center py-2 px-4 border-t border-gray-200`}
+                                            key={transaction.id}
+                                            onClick={() => handleTransactionClick(transaction)}>
+                                            <ListItemPrefix className="pl-0">
+                                                <Avatar variant="circular" alt="candice" src={transaction.category.image} />
+                                            </ListItemPrefix>
+                                            <div className="flex justify-between w-full">
+                                                {/* Category name */}
+                                                <div>
+                                                    <Typography variant="h6" color="blue-gray" className="pl-3">
+                                                        {transaction.category.name}
+                                                    </Typography>
+                                                </div>
+                                                <div>
+                                                    <Typography variant="h5" style={{ color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
+                                                        {transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? '+' : '-'}{transaction.amount.toLocaleString()} VNĐ
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            )}
+                        </List>
+                    )}
                 </div>
             </div>
             <div className={`container-right ${showDetail ? 'selected' : ''}`}>
@@ -625,26 +713,63 @@ export default function PinnedSubheaderList() {
                     <Offcanvas.Title>Select time range</Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
-                    <div style={{ display: 'flex', alignItems: 'center',marginTop: '-10px' }}>
-                        <CiCalendarDate style={{ height: '40px', width: '40px' }} /> <span style={{ marginLeft: '5px' }}>Day</span>
+                    <div style={{display: 'flex', alignItems: 'center', marginTop: '-10px'}}
+                         onClick={() => setNavigation('day')}>
+                        <CiCalendarDate style={{height: '40px', width: '40px'}}/> <span
+                        style={{marginLeft: '5px'}}>Day</span>
                         <Button onClick={() => setNavigation('day')}>Choose</Button>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-                        <BsCalendar2Week style={{ height: '30px', width: '30px',marginLeft: '5px' }} /> <span style={{ marginLeft: '10px' }}>Week</span>
+                    <div style={{display: 'flex', alignItems: 'center', marginTop: '20px'}}
+                         onClick={() => setNavigation('week')}>
+                        <BsCalendar2Week style={{height: '30px', width: '30px', marginLeft: '5px'}}/> <span
+                        style={{marginLeft: '10px'}}>Week</span>
                         <Button onClick={() => setNavigation('week')}>Week</Button>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-                        <IoCalendarNumberOutline style={{ height: '30px', width: '30px',marginLeft: '5px'  }} /> <span style={{ marginLeft: '10px' }}>Month</span>
+                    <div style={{display: 'flex', alignItems: 'center', marginTop: '20px'}}
+                         onClick={() => setNavigation('month')}>
+                        <IoCalendarNumberOutline style={{height: '30px', width: '30px', marginLeft: '5px'}}/> <span
+                        style={{marginLeft: '10px'}}>Month</span>
                         <Button onClick={() => setNavigation('month')}>Month</Button>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-                        <LiaCalendarWeekSolid style={{ height: '40px', width: '40px' }} /> <span style={{ marginLeft: '5px' }}>Year</span>
+                    <div style={{display: 'flex', alignItems: 'center', marginTop: '20px'}}
+                         onClick={() => setNavigation('year')}>
+                        <LiaCalendarWeekSolid style={{height: '40px', width: '40px'}}/> <span
+                        style={{marginLeft: '5px'}}>Year</span>
                         <Button onClick={() => setNavigation('year')}>Year</Button>
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center', marginTop: '20px'}} onClick={onOpen}>
+                        <FaPen style={{height: '20px', width: '20px', marginLeft: '10px'}}/> <span
+                        style={{marginLeft: '15px'}}>Custom</span>
+                    </div>
+                    <div>
+                        {/* Calendar or Date Picker component for selecting start date */}
+                        <Input
+                            type={'date'}
+                            label="Start Date"
+                            value={startDateRange}
+                            onChange={(date) => setStartDateRange(date)}
+                            placeholderText="Start Date"
+                        />
+                        {/* Calendar or Date Picker component for selecting end date */}
+                        <Input
+                            type={'date'}
+                            label="End Date"
+                            value={endDateRange}
+                            onChange={(date) => setEndDateRange(date)}
+                            placeholderText="End Date"
+                        />
+                        {/* Button to clear selected dates */}
+                        <Button onClick={clearSelectedDates} variant="outlined" color="secondary">
+                            Clear Dates
+                        </Button>
+                        {/* Button to apply selected dates */}
+                        <Button onClick={handleApply} variant="contained" color="primary">
+                            Apply Dates
+                        </Button>
                     </div>
                 </Offcanvas.Body>
             </Offcanvas>
+
         </div>
-
-
     );
 }
