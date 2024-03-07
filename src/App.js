@@ -17,6 +17,7 @@ import IncomePiechart from "./components/IncomePiechart/IncomePiechart";
 import PinnedSubheaderList from "./components/TransactionPage/SubHeaderList/PinnedSubheaderList";
 import ExpensePage from "./components/PageExpense/ExpensePage";
 import ChartPage from "./components/ChartPage/ChartPage";
+import {WalletProvider} from "./components/WalletContext";
 
 
 
@@ -49,11 +50,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path='/' element={<Error/>}></Route>
-                    <Route path='/auth/*' element={(isAuth || user) ? <SideBar
-                        onWalletSelect = {handleWalletSelect}
-                        onMonthIndexSelect = {handleMonthIndex}
-                        onYearSelect = {handleYear}
-                    /> : <Error/>}
+                    <Route path='/auth/*' element={(isAuth || user) ? <WalletProvider><SideBar/></WalletProvider> : <Error/>}>
                     >
                         <Route path="wallets" element={(isAuth || user) ? <Wallet/> : <Error/>}/>
                         <Route path="categories" element={(isAuth || user) ? <CategoriesPage/> : <Error/>}/>

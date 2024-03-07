@@ -1,6 +1,6 @@
-import {Tabs, TabList, TabPanels, Tab, TabPanel, useDisclosure, FormControl, FormLabel, Input} from '@chakra-ui/react';
+import {Tabs, TabList, TabPanels, Tab, TabPanel, FormLabel, FormControl, Input, useDisclosure} from '@chakra-ui/react';
 import axios from "axios";
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Doughnut} from 'react-chartjs-3';
 import {
     Table,
@@ -13,10 +13,18 @@ import {
     TableCaption,
     TableContainer,
 } from '@chakra-ui/react';
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react';
 import { FaPen } from "react-icons/fa";
 import { Image } from '@chakra-ui/react';
 import { CgCalendarDates } from "react-icons/cg";
-import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { CiCalendarDate } from "react-icons/ci";
@@ -26,16 +34,10 @@ import { LiaCalendarWeekSolid } from "react-icons/lia";
 import {MDBCard, MDBCardBody} from "mdb-react-ui-kit";
 import "./IncomePiechart.css"
 import TransactionService from "../../services/transactions.services";
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-} from '@chakra-ui/react'
-const IncomePiechart = ({wallet_id}) => {
+import {ListItem} from "@material-tailwind/react";
+import {useWallet} from "../WalletContext";
+const IncomePiechart = () => {
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [show, setShow] = useState(false);
 
@@ -50,20 +52,22 @@ const IncomePiechart = ({wallet_id}) => {
     const [incomeAmount, setIncomeAmount] = useState([])
     const [currentMonthIndex, setCurrentMonthIndex] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+    const [wallet_id, setWallet_id] = useState('all');
+
+    const { selectedWalletId } = useWallet();
 
     useEffect(() => {
-        if (wallet_id) {
-            const fetchData = async () => {
-                getTransactionIncome(userdata, wallet_id);
-            };
-            fetchData();
-        }
-    }, [wallet_id]);
+        const fetchData = async () => {
+            getTransactionIncome(userdata, selectedWalletId);
+        };
+        fetchData();
+    }, [selectedWalletId, currentYear, currentMonthIndex]);
 
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
     const handlePrevNextMonths = (currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, increment) => {
-        TransactionService.handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, increment)
+        TransactionService.handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, increment);
+
     };
 
     const handleCurrentMonth = (setCurrentMonthIndex, setCurrentYear) => {
@@ -71,7 +75,7 @@ const IncomePiechart = ({wallet_id}) => {
     };
     const getTransactionIncome = (userdata, wallet_id) => {
         if (wallet_id) {
-            axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/income_transaction/${wallet_id}`)
+            axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/income_transaction/${wallet_id}/date/${currentYear}/${currentMonthIndex}`)
                 .then((res) => {
                     console.log(res);
                     setListTransaction(res.data);
@@ -83,10 +87,6 @@ const IncomePiechart = ({wallet_id}) => {
                 });
         }
     };
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const initialRef = React.useRef(null);
-    const finalRef = React.useRef(null);
-
     function getlist(transactions) {
         const incomeCategory = [];
         const incomeAmount = [];
@@ -113,14 +113,12 @@ const IncomePiechart = ({wallet_id}) => {
                 '#36A2EB',
                 '#FFCE56',
                 '#9aff56',
-                '#e056ff',
             ],
             hoverBackgroundColor: [
                 '#FF6384',
                 '#36A2EB',
                 '#FFCE56',
                 '#a2ff56',
-                '#9456ff',
             ]
         }]
     };
@@ -130,60 +128,73 @@ const IncomePiechart = ({wallet_id}) => {
                 <MDBCardBody >
                     <div style={{width: '50%',height: '50%',margin: 'auto'}}>
 
-                        {/*<div className="flex justify-content-center mt-0.5">*/}
+                        <div className="flex justify-content-center mt-0.5">
 
-                        {/*    <Button*/}
-                        {/*        variant="text"*/}
-                        {/*        className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"*/}
-                        {/*        indicatorProps={{*/}
-                        {/*            className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",*/}
-                        {/*        }}*/}
-                        {/*        onClick={() => handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, -1)}>*/}
-                        {/*        {currentMonthIndex === 0 ? months[11] : months[currentMonthIndex - 1]} {currentMonthIndex === 0 ? currentYear - 1 : currentYear}*/}
-                        {/*    </Button>*/}
-                        {/*    <Button variant="text"*/}
-                        {/*            className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month btn-color"*/}
-                        {/*            indicatorProps={{*/}
-                        {/*                className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",*/}
-                        {/*            }}>{months[currentMonthIndex]} {currentYear}</Button>*/}
-                        {/*    <Button*/}
-                        {/*        variant="text"*/}
-                        {/*        className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"*/}
-                        {/*        indicatorProps={{*/}
-                        {/*            className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",*/}
-                        {/*        }}*/}
-                        {/*        onClick={() => handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, 1)}>*/}
-                        {/*        {currentMonthIndex === 11 ? months[0] : months[currentMonthIndex + 1]} {currentMonthIndex === 11 ? currentYear + 1 : currentYear}*/}
-                        {/*    </Button>*/}
-                        {/*</div>*/}
+                            <Button
+                                variant="text"
+                                className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                indicatorProps={{
+                                    className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
+                                }}
+                                onClick={() => handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, -1)}>
+                                {currentMonthIndex === 0 ? months[11] : months[currentMonthIndex - 1]} {currentMonthIndex === 0 ? currentYear - 1 : currentYear}
+                            </Button>
+                            <Button variant="text"
+                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month btn-color"
+                                    indicatorProps={{
+                                        className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
+                                    }}>{months[currentMonthIndex]} {currentYear}</Button>
+                            <Button
+                                variant="text"
+                                className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                indicatorProps={{
+                                    className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
+                                }}
+                                onClick={() => handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, 1)}>
+                                {currentMonthIndex === 11 ? months[0] : months[currentMonthIndex + 1]} {currentMonthIndex === 11 ? currentYear + 1 : currentYear}
+                            </Button>
+                        </div>
                         <Tabs isFitted variant='enclosed'>
                             <CgCalendarDates style={{width: '30px',height: '30px',marginLeft: '100%'}} onClick={handleShow} />
                             <TabPanels>
                                 <TabPanel>
-                                    <Doughnut data={data} />
-                                    <div style={{maxHeight: '300px',margin: 'auto',overflowY: 'auto'}}>
+                                    {listTransaction.length === 0 ? (
+                                        <div style={{ height: "430px" }}>
+                                            <ListItem>
+                                                No transactions for this month
+                                            </ListItem>
+                                            <Button variant="outlined" onClick={() => handleCurrentMonth(setCurrentMonthIndex, setCurrentYear)}>Back to Current Month</Button>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <Doughnut  data={data} />
+                                            <div style={{maxHeight: '300px',margin: 'auto',overflowY: 'auto'}}>
 
-                                        <TableContainer>
-                                            <Table variant='simple'>
-                                                <Tbody>
-                                                    {listTransaction.map((transaction) => (
-                                                        <Tr>
-                                                            <Td style={{ display: 'flex', alignItems: 'center' }}>
-                                                                <Image
-                                                                    borderRadius='full'
-                                                                    boxSize='50px'
-                                                                    src={transaction.category.image}
-                                                                    alt=""
-                                                                />
-                                                                <span style={{ marginLeft: '5px' }}>{transaction.category.name}</span>
-                                                            </Td>
-                                                            <Td style={{ textAlign: 'right' }}>{transaction.amount} vnd </Td>
-                                                        </Tr>
-                                                    ))}
-                                                </Tbody>
-                                            </Table>
-                                        </TableContainer>
-                                    </div>
+                                                <TableContainer>
+                                                    <Table variant='simple'>
+                                                        <Tbody>
+                                                            {listTransaction.map((transaction) => (
+                                                                <Tr>
+                                                                    <Td style={{ display: 'flex', alignItems: 'center' }}>
+                                                                        <Image
+                                                                            borderRadius='full'
+                                                                            boxSize='50px'
+                                                                            src={transaction.category.image}
+                                                                            alt=""
+                                                                        />
+                                                                        <span style={{ marginLeft: '5px' }}>{transaction.category.name}</span>
+                                                                    </Td>
+                                                                    <Td style={{ textAlign: 'right' }}>{transaction.amount} vnd</Td>
+                                                                </Tr>
+                                                            ))}
+                                                        </Tbody>
+                                                    </Table>
+                                                </TableContainer>
+                                            </div>
+                                        </div>
+                                    )
+                                    }
+
                                 </TabPanel>
                                 <TabPanel>
                                     <p>two!</p>
@@ -221,14 +232,12 @@ const IncomePiechart = ({wallet_id}) => {
 
             {/*modal custom*/}
             <Modal
-                initialFocusRef={initialRef}
-                finalFocusRef={finalRef}
                 isOpen={isOpen}
                 onClose={onClose}
             >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Select Time</ModalHeader>
+                    <ModalHeader>Select Date Range</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <FormControl>
@@ -241,7 +250,6 @@ const IncomePiechart = ({wallet_id}) => {
                             <Input type={"date"} placeholder='Today' />
                         </FormControl>
                     </ModalBody>
-
                     <ModalFooter>
                         <Button onClick={onClose} colorScheme='green' variant='outline'>Cancel</Button>
                         <Button colorScheme='greengreen' variant='outline'>
@@ -250,6 +258,7 @@ const IncomePiechart = ({wallet_id}) => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
         </div>
     );
 };

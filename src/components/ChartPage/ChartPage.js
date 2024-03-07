@@ -28,7 +28,7 @@ const ChartPage = ({ wallet_id }) => {
             };
             fetchData();
         }
-    }, [wallet_id]);
+    }, [userdata]);
 
     const getTransactionIncome = (userdata, wallet_id) => {
         if (wallet_id) {
@@ -53,6 +53,7 @@ const ChartPage = ({ wallet_id }) => {
         if (wallet_id) {
             const fetchData = async () => {
                 getTransactionEx(userdata, wallet_id);
+                getTransactionIncome(userdata,wallet_id);
             };
             fetchData();
         }

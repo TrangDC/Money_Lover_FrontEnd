@@ -14,12 +14,21 @@ import {
 } from "@material-tailwind/react";
 import "./PinnedSubheaderList.css"
 
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {MDBCardFooter, MDBCardHeader, MDBCardText} from "mdbreact";
 import {MDBBtn, MDBCard, MDBCardBody, MDBCardTitle} from "mdb-react-ui-kit";
 import {MdOutlineClose} from "react-icons/md";
+import axios from "axios";
+import {useToast} from "@chakra-ui/react";
+import {CgCalendarDates} from "react-icons/cg";
+import Offcanvas from "react-bootstrap/Offcanvas";
+import {CiCalendarDate} from "react-icons/ci";
+import {BsCalendar2Week} from "react-icons/bs";
+import {IoCalendarNumberOutline} from "react-icons/io5";
+import {LiaCalendarWeekSolid} from "react-icons/lia";
+import {useWallet} from "../../WalletContext";
 
-export default function PinnedSubheaderList({wallet_id}) {
+export default function PinnedSubheaderList() {
 
 
     const [transactions, setTransactions] = useState([]);
@@ -28,7 +37,7 @@ export default function PinnedSubheaderList({wallet_id}) {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [totalInflow, setTotalInflow] = useState(0);
     const [totalOutflow, setTotalOutflow] = useState(0);
-
+    const { selectedWalletId } = useWallet();
     const user = JSON.parse(localStorage.getItem('user'));
 
     // display detail
@@ -37,16 +46,28 @@ export default function PinnedSubheaderList({wallet_id}) {
         setShowDetail(false)
     }
 
+    const toast = useToast()
+
+    const navigate = useNavigate();
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await TransactionService.fetchTransactions(user, wallet_id);
-            setTransactions(data);
-            localStorage.setItem("transactions", JSON.stringify(data))
-        };
 
+            const data = await TransactionService.fetchTransactions(user, selectedWalletId);
+            setTransactions(data);
+            localStorage.setItem("transactions", JSON.stringify(data));
+            setCurrentMonthIndex(new Date().getMonth());
+            setCurrentYear(new Date().getFullYear())
+        };
         fetchData();
-    }, [wallet_id]);
+    }, [selectedWalletId]);
 
     useEffect(() => {
         const inflow = TransactionService.calculateTotalInflow(transactions);
@@ -78,7 +99,32 @@ export default function PinnedSubheaderList({wallet_id}) {
         setSelectedTransaction(null);
     };
 
+    const handleDelete = (id) => {
+        const confirm = window.confirm('Are you sủa?');
+        if (confirm) {
+            axios.delete(`http://localhost:8080/api/transactions/user/${user.id}/transaction/${id}`)
+                .then(res => {
+                    toast({
+                        title: 'Delete success!',
+                        description: 'You successfully deleted a transaction!',
+                        status: 'success',
+                        duration: 1500,
+                        isClosable: true,
+                    });
+                    navigate("/auth/wallets");
+                })
+                .catch(err => console.log(err))
+        }
+    }
+
+
+
     const groupedTransactions = groupTransactionsByDate();
+
+    function handleEditTransaction(transaction) {
+        localStorage.setItem("transaction_edit", JSON.stringify(transaction));
+        navigate("/auth/edit_transaction");
+    }
 
     return (
         <div className={`root flex justify-center container_full ${showDetail ? 'selected' : ''}`}>
@@ -91,8 +137,8 @@ export default function PinnedSubheaderList({wallet_id}) {
                                 <span className="button__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" className="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
                             </button>
                         </Link>
+                        <CgCalendarDates style={{width: '40px',height: '40px', marginLeft: '100%'}} onClick={handleShow} />
                         <div className="flex justify-content-center mt-0.5">
-
                             <Button
                                 variant="text"
                                 className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
@@ -198,49 +244,76 @@ export default function PinnedSubheaderList({wallet_id}) {
             <div className={`container-right ${showDetail ? 'selected' : ''}`}>
                 {
                     showDetail && (
-                            <MDBCardBody>
-                                <div className="card ml-5" style={{ width: '90vh', height: '300px' }}>
-                                    <div className="btn-x" onClick={handleClickX}>
-                                        <MdOutlineClose/>
-                                    </div>
-                                    <div className="card-header ml-11">
-                                        <h4>Transaction Details</h4>
-                                    </div>
-                                    <div className="card-body">
-                                        <blockquote className="blockquote mb-0">
-                                            <div className="flex">
-                                                <div className="transaction-footer ml-7">
-                                                    <img
-                                                        src={selectedTransaction.image}
-                                                        alt="avatar"
-                                                        className="relative inline-block h-12 w-13 !rounded-full object-cover object-center"
-                                                    />
-                                                </div>
-                                                <div className="ml-7">
-                                                    <h3>{selectedTransaction.category.name}</h3>
-                                                    <div className="transaction-footer">
-                                                        <h6>{selectedTransaction.note}</h6>
-                                                        <cite title="Source Title"></cite>
-                                                    </div>
-                                                    <footer className="transaction-footer text-gray-500">
-                                                        <p className='text-sm'>{selectedTransaction.transactionDate}</p>
-                                                        <cite title="Source Title"></cite>
-                                                    </footer>
-                                                </div>
-                                            </div>
-                                            <hr className="mt-1 mb-2" style={{ width: '250px', borderColor: 'black', borderWidth: '1px' }} />
-                                            <div className={'ml-20'} style={{ color: 'red' }}>
-                                                <Typography variant="h2" style={{ color: selectedTransaction.category.type === 'INCOME' || selectedTransaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
-                                                    {selectedTransaction.category.type === 'INCOME' || selectedTransaction.category.type === 'DEBT' ? '+' : '-'}{selectedTransaction.amount.toLocaleString()} VNĐ
-                                                </Typography>
-                                            </div>
-                                        </blockquote>
-                                    </div>
+                        <MDBCardBody>
+                            <div className="card ml-5" style={{ width: '90vh', height: '300px' }}>
+                                <div className="btn-x" onClick={handleClickX}>
+                                    <MdOutlineClose/>
                                 </div>
-                            </MDBCardBody>
-                        )
-                    }
+                                <div className="card-header ml-11">
+                                    <h4>Transaction Details</h4>
+                                </div>
+                                <div className="card-body">
+                                    <blockquote className="blockquote mb-0">
+                                        <div className="flex">
+                                            <div className="transaction-footer ml-7">
+                                                <img
+                                                    src={selectedTransaction.category.image}
+                                                    alt="avatar"
+                                                    className="relative inline-block h-12 w-13 !rounded-full object-cover object-center"
+                                                />
+                                            </div>
+                                            <div className="ml-7">
+                                                <h3>{selectedTransaction.category.name}</h3>
+                                                <div className="transaction-footer">
+                                                    <h6>{selectedTransaction.note}</h6>
+                                                    <cite title="Source Title"></cite>
+                                                </div>
+                                                <footer className="transaction-footer text-gray-500">
+                                                    <p className='text-sm'>{selectedTransaction.transactionDate}</p>
+                                                    <cite title="Source Title"></cite>
+                                                </footer>
+                                            </div>
+                                        </div>
+                                        <hr className="mt-1 mb-2" style={{ width: '250px', borderColor: 'black', borderWidth: '1px' }} />
+                                        <div className={'ml-20'} style={{ color: 'red' }}>
+                                            <Typography variant="h2" style={{ color: selectedTransaction.category.type === 'INCOME' || selectedTransaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
+                                                {selectedTransaction.category.type === 'INCOME' || selectedTransaction.category.type === 'DEBT' ? '+' : '-'}{selectedTransaction.amount.toLocaleString()} VNĐ
+                                            </Typography>
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </div>
+                            <MDBBtn className='me-1' color='warning' onClick={()=> handleEditTransaction(selectedTransaction)}>
+                                Edit
+                            </MDBBtn>
+                            <MDBBtn className='me-1' onClick={() => {
+                                handleDelete(selectedTransaction.id);
+                            }} color='danger'>
+                                Delete
+                            </MDBBtn>
+                        </MDBCardBody>
+                    )
+                }
             </div>
+            <Offcanvas style={{width: '20%'}} show={show} onHide={handleClose} placement="end">
+                <Offcanvas.Header closeButton>
+                    <Offcanvas.Title>Select time range</Offcanvas.Title>
+                </Offcanvas.Header>
+                <Offcanvas.Body>
+                    <div style={{ display: 'flex', alignItems: 'center',marginTop: '-10px' }}>
+                        <CiCalendarDate style={{ height: '40px', width: '40px' }} /> <span style={{ marginLeft: '5px' }}>Day</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                        <BsCalendar2Week style={{ height: '30px', width: '30px',marginLeft: '5px' }} /> <span style={{ marginLeft: '10px' }}>Week</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                        <IoCalendarNumberOutline style={{ height: '30px', width: '30px',marginLeft: '5px'  }} /> <span style={{ marginLeft: '10px' }}>Month</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                        <LiaCalendarWeekSolid style={{ height: '40px', width: '40px' }} /> <span style={{ marginLeft: '5px' }}>Year</span>
+                    </div>
+                </Offcanvas.Body>
+            </Offcanvas>
         </div>
 
 

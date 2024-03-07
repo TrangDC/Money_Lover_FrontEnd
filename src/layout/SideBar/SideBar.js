@@ -7,6 +7,7 @@ import Image from 'react-bootstrap/Image';
 import {FaUserAstronaut} from "react-icons/fa";
 import {PiIntersectThreeBold} from "react-icons/pi";
 import "./sideBar.css";
+import {MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBInput} from 'mdb-react-ui-kit';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import {BsCalendar2Date} from "react-icons/bs";
@@ -20,8 +21,13 @@ import {IoMdClose} from "react-icons/io";
 import {Outlet, useNavigate} from 'react-router-dom';
 import {
     Table,
+    Thead,
+    Tbody,
+    Tfoot,
     Tr,
+    Th,
     Td,
+    TableCaption,
     TableContainer, useToast,
 } from '@chakra-ui/react'
 import {Link} from "react-router-dom";
@@ -30,10 +36,12 @@ import {
     MenuHandler,
     MenuList,
     MenuItem,
+    Input
 } from "@material-tailwind/react";
 import axios from "axios";
-import {MDBInput} from "mdb-react-ui-kit";
+import wallet from "../../components/WalletPage/Wallet";
 import Upimage from "../../components/FireBase/Upimage";
+import {useWallet} from "../../components/WalletContext";
 
 function MydModalWithGrid(props) {
     const navigate = useNavigate();
@@ -58,7 +66,7 @@ function MydModalWithGrid(props) {
                 setImage(userData.image);
             })
             .catch(err => console.error(err))
-    }, [user]);
+    }, [user.id]);
     const handleLogout = async () => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
@@ -418,7 +426,9 @@ function MydModalWithGrid(props) {
     );
 }
 
-const SideBar = ({onWalletSelect}) => {
+const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
+
+
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -428,7 +438,30 @@ const SideBar = ({onWalletSelect}) => {
     const user = JSON.parse(localStorage.getItem('user'));
     const [userLocal, setUserLocal] = useState([]);
     const [wallet_list, setWallet] = useState([])
-    const [selectedWallet, setSelectedWallet] = useState([]);
+    const [selected_Wallet, setSelected_Wallet] = useState([]);
+    const [selectedWallet_id, setSelectedWallet_id] = useState("all");
+    const [isUserFetched, setIsUserFetched] = useState(false);
+
+    const { setSelectedWalletId } = useWallet();
+
+
+    useEffect(() => {
+        if (!isUserFetched) {
+            axios.get('http://localhost:8080/api/users/' + user.id)
+                .then(res => {
+                    setUserLocal(res.data);
+                    setImage(res.data.image);
+                    setIsUserFetched(true);
+                })
+                .catch(err => console.error(err))
+        }
+    }, [modalShow]);
+
+    useEffect(() => {
+        if (isUserFetched) {
+            fetchWallets();
+        }
+    }, [isUserFetched]);
 
     function fetchWallets() {
         axios.get('http://localhost:8080/api/wallets/user/' + user.id)
@@ -437,39 +470,40 @@ const SideBar = ({onWalletSelect}) => {
             })
     }
 
-    const handleWalletSelect = (id, data) => {
-        setSelectedWallet(data);
-        onWalletSelect(id);
+
+    const handleWalletSelect = (wallet_id, wallet) => {
+        setSelected_Wallet(wallet)
+        setSelectedWalletId(wallet_id);
+        setSelectedWallet_id(wallet_id);
     };
 
     const totalAmount = wallet_list.reduce((total, wallet) => total + Number(wallet.balance), 0);
 
-    useEffect(() => {
+
+    const handleSelectAll = (wallet_id) => {
+        setSelectedWalletId(wallet_id);
+        setSelectedWallet_id('all');
+
+    }
+
+    const handleUpdateSuccess = () => {
         axios.get('http://localhost:8080/api/users/' + user.id)
             .then(res => {
-                console.log(res.data);
                 setUserLocal(res.data);
                 setImage(res.data.image);
-                fetchWallets();
             })
-            .catch(err => console.error(err))
-    }, []);
+            .catch(err => console.error(err));
+    };
 
-    function handleSelectAll() {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonthIndex = currentDate.getMonth();
-        setSelectedWallet(null);
-        onWalletSelect("all");
-    }
 
     return (
         <div>
-            <MydModalWithGrid show={modalShow} onHide={() => setModalShow(false)}/>
+            <MydModalWithGrid onUpdateSuccess={handleUpdateSuccess} show={modalShow}
+                              onHide={() => setModalShow(false)}/>
             <Offcanvas show={show} onHide={handleClose} style={{width: '27.5%'}}>
                 <Offcanvas.Header style={{margin: 'auto'}}>
                     <Container>
-                        <div style={{textAlign: 'center', marginTop: '15%'}}>
+                        <div style={{textAlign: 'center',marginTop: '15%'}}>
                             <div>
                                 <Image
                                     src={userLocal.image}
@@ -531,17 +565,17 @@ const SideBar = ({onWalletSelect}) => {
                             </Tr>
                             <Tr className="hover-div">
                                 <Td>
-                                    <Link to={"/auth/chart"}>
+                                    <Link to={"/auth/piechart"}>
                                         <PiIntersectThreeBold className="icon"/>
                                     </Link>
                                 </Td>
                                 <Td>
-                                    <Link to={"/auth/chart"} className="text-reset">
+                                    <Link to={"/auth/piechart"} className="text-reset">
                                         Chart
                                     </Link>
                                 </Td>
                                 <Td>
-                                    <Link to={"/auth/chart"}>
+                                    <Link to={"/auth/piechart"}>
                                         <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
                                     </Link>
                                 </Td>
@@ -558,38 +592,23 @@ const SideBar = ({onWalletSelect}) => {
                             <Navbar.Brand>
                                 <Menu className="bg-white">
                                     <MenuHandler>
-                                        <Button style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            backgroundColor: "white",
-                                            width: '200px'
-                                        }}>
+                                        <Button style={{ display: 'flex', alignItems: 'center', backgroundColor: "white", width:'200px' }}>
 
                                             {
-                                                selectedWallet ? (
+                                                selectedWallet_id !== 'all' ? (
                                                     <>
                                                         <img src="https://static.moneylover.me/img/icon/icon.png"
                                                              alt="Wallet Icon"
-                                                             style={{
-                                                                 width: '40px',
-                                                                 height: '40px',
-                                                                 marginRight: '10px'
-                                                             }}/>
+                                                             style={{ width: '40px', height: '40px', marginRight: '10px' }} />
                                                         <div>
-                                                            <div className='text-black'>{selectedWallet.name}</div>
-                                                            <div className='text-black'>{selectedWallet.balance}</div>
+                                                            <div className='text-black'>{selected_Wallet.name}</div>
+                                                            <div className='text-black'>{selected_Wallet.balance}</div>
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <img
-                                                            src="https://static.moneylover.me/img/icon/ic_category_all.png"
-                                                            alt="Wallet Icon"
-                                                            style={{
-                                                                width: '40px',
-                                                                height: '40px',
-                                                                marginRight: '10px'
-                                                            }}/>
+                                                        <img src="https://static.moneylover.me/img/icon/ic_category_all.png" alt="Wallet Icon"
+                                                             style={{ width: '40px', height: '40px', marginRight: '10px' }} />
                                                         <div>
                                                             <div className='text-black'>Total</div>
                                                             <div className='text-black'>{totalAmount}</div>
@@ -599,34 +618,25 @@ const SideBar = ({onWalletSelect}) => {
                                             }
                                         </Button>
                                     </MenuHandler>
-                                    <MenuList className="max-h-72" style={{marginTop: '10px', width: '100px'}}>
+                                    <MenuList className="max-h-72" style={{ marginTop: '10px', width: '100px' }}>
                                         <MenuItem
-                                            onClick={() => handleSelectAll()}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between'
-                                            }}>
-                                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                            onClick={() => handleSelectAll('all')}
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 <img src="https://static.moneylover.me/img/icon/ic_category_all.png"
                                                      alt="Wallet Icon"
-                                                     style={{width: '40px', height: '40px', marginRight: '10px'}}/>
+                                                     style={{ width: '40px', height: '40px', marginRight: '10px' }} />
                                                 <div>Total</div>
                                             </div>
                                             <div>{totalAmount}</div>
                                         </MenuItem>
                                         <hr className='my-3'/>
                                         {wallet_list.map((data) => (
-                                            <MenuItem key={data.id} onClick={() => handleWalletSelect(data.id, data)}
-                                                      style={{
-                                                          display: 'flex',
-                                                          alignItems: 'center',
-                                                          justifyContent: 'space-between'
-                                                      }}>
-                                                <div style={{display: 'flex', alignItems: 'center'}}>
+                                            <MenuItem key={data.id} onClick={() => handleWalletSelect(data.id, data)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                                     <img src="https://static.moneylover.me/img/icon/icon.png"
                                                          alt="Wallet Icon"
-                                                         style={{width: '40px', height: '40px', marginRight: '10px'}}/>
+                                                         style={{ width: '40px', height: '40px', marginRight: '10px' }} />
                                                     <div>{data.name}</div>
                                                 </div>
                                                 <div>{data.balance}</div>
@@ -680,7 +690,7 @@ const SideBar = ({onWalletSelect}) => {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Link to="/auth/transactions">
+                            <Link to= "/auth/transactions">
                                 <MdAccountBalanceWallet className="ml-2.5"
                                                         style={{width: '25px', height: '25px', color: '#228B22'}}/>
                             </Link>
