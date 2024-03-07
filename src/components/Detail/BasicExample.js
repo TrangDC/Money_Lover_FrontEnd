@@ -1,6 +1,5 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-
 function BasicExample() {
     return (
         <div className="card ml-5" style={{ width: '90vh', height: '300px' }}>

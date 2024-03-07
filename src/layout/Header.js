@@ -1,4 +1,3 @@
-
 import React, {Fragment, useEffect, useState} from 'react';
 import {HiOutlineBell, HiOutlineChatAlt, HiOutlineSearch} from "react-icons/hi";
 import {Menu, Popover, Transition} from "@headlessui/react";
@@ -6,25 +5,46 @@ import classNames from "classnames";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import Modal from 'react-bootstrap/Modal';
+import error from "../components/Error";
 import Button from "react-bootstrap/Button";
 import {useToast} from "@chakra-ui/react";
+import Image from "react-bootstrap/Image";
 import {MDBInput} from "mdb-react-ui-kit";
-import {Dropdown, Ripple, initMDB} from "mdb-ui-kit";
-
-
-initMDB({Dropdown, Ripple});
+import { MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
 const Header = () => {
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [show, setShow] = useState(false);
     const toast = useToast();
-    const handleChangePassword = () => setShowChangePassword(true);
+    const handleChangePassword = () => setShowChangePassword (true);
     const handleClose = () => setShowChangePassword(false);
+    // ------- get wallets ----
+    const [wallets, setWallets] = useState([])
+    const [avatar, setAvatar] = useState('')
+    const [wallet, setWallet] = useState({
+        name: "",
+        balance: ""
+    })
 
+    const [userData, setUserData] = useState({})
+    const fetchWallet = (userdata) => {
+        axios.get('http://localhost:8080/api/users/' + userdata.id)
+            .then((res) => {
+                // window.localStorage.setItem("wallets", JSON.stringify(res.data.wallets));
+                const wallets = JSON.parse(localStorage.getItem("wallets"));
+                setWallets(wallets);
+            })
+    }
+
+    useEffect(() => {
+        const userdata = JSON.parse(localStorage.getItem("user"));
+        setUserData(userdata);
+        fetchWallet(userdata)
+    }, [wallet])
 
     const [ChangePassword, setChangePassword] = useState({
         oldPassword: "",
         newPassword: "",
-        confirmPassword: ""
+        confirmPassword:""
     })
 
     const handleSubmitPassword = async () => {
@@ -62,57 +82,30 @@ const Header = () => {
                 console.log(res.data);
                 setUserLocal(res.data);
                 setImage(res.data.image);
+                localStorage.setItem("categories", JSON.stringify(res.data.categories))
             })
             .catch(err => console.error(err))
     }, [])
+
     const navigate = useNavigate();
-    const [avatar, setAvatar] = useState('');
-    useEffect(() => {
-        const avatar = localStorage.getItem("avatar");
-        setAvatar(avatar)
-    }, )
 
     return (
         <div className='bg-white h-16 px-4 flex justify-between items-center
                         border-b border-gray-200'>
             <div className='relative'>
-                <HiOutlineSearch fontSize={20}
-                                 className='text-gray-400 absolute
-                                            top-1/2 -translate-y-1/2 left-3'/>
-                <input type='text'
-                       placeholder='Search your wallet...'
-                       className='text-sm focus:outline-none active:outline-none
-                                  h-10 w-[24rem] border border-gray-400 rounded-sm pr-4 pl-11'
-                />
+                <MDBDropdown group>
+                    <MDBDropdownToggle color='success'>Your Wallets</MDBDropdownToggle>
+                    <MDBDropdownMenu>
+                        {wallets.slice(0, 3).map((wallet) => (
+                            <MDBDropdownItem link>{wallet.name}</MDBDropdownItem>
+                        ))}
+                        <MDBDropdownItem onClick={() => navigate("wallets")} link>See More</MDBDropdownItem>
+                    </MDBDropdownMenu>
+                </MDBDropdown>
             </div>
-            <div className='flex items-center gap-2 mr-2'>
-                {/*    <HiOutlineSearch fontSize={20}*/}
-                {/*                     className='text-gray-400 absolute*/}
-                {/*                            top-1/2 -translate-y-1/2 left-3'/>*/}
-                {/*    <input type='text'*/}
-                {/*           placeholder='Search your wallet...'*/}
-                {/*           className='text-sm focus:outline-none active:outline-none*/}
-                {/*                  h-10 w-[24rem] border border-gray-400 rounded-sm pr-4 pl-11'*/}
-                {/*    />*/}
-                <div className="btn-group">
-                    <button type="button" className="btn btn-success dropdown-toggle" data-mdb-dropdown-init
-                            data-mdb-ripple-init aria-expanded="false">
-                        Action
-                    </button>
-                    <ul className="dropdown-menu">
-                        <li><a className="dropdown-item" href="#">Action</a></li>
-                        <li><a className="dropdown-item" href="#">Another action</a></li>
-                        <li><a className="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider"/>
-                        </li>
-                        {/*<li><Link to="/auth/wallets"><a class="dropdown-item">See more</a><Link/></li>*/}
-                        {/*/auth/wallets*/}
-                    </ul>
-                </div>
 
-            </div>
             <div className='flex items-center gap-2 mr-2'>
+
                 <Popover className='relative'>
                     {({open}) => (
                         <>
@@ -124,7 +117,7 @@ const Header = () => {
                                     'focus:outline-none active:bg-gray-100'
                                 )}
                             >
-                                <HiOutlineChatAlt fontSize={24}/>
+                                <HiOutlineChatAlt fontSize={24} />
                             </Popover.Button>
                             <Transition
                                 as={Fragment}
@@ -195,11 +188,14 @@ const Header = () => {
                                                 focus:ring-neutral-400"
                         >
                             <span className="sr-only">Open user menu</span>
-                                {/*<Image className='h-10 w-10 rounded-full bg-sky-500*/}
-                                {/*            bg-cover bg-no-repeat bg-center'*/}
-                                {/*    src={avatar}*/}
-                                {/*    alt="Avatar" roundedCircle style={{width: '50px', height: '50px'}}*/}
-                                {/*    fluid/>*/}
+                            <div className='h-10 w-10 rounded-full bg-white
+                                            bg-cover bg-no-repeat bg-center'
+                            >
+                                <img src={image} alt={'image'}/>
+                                <span className='sr-only'>
+                                                Hugh Jackson
+                                            </span>
+                            </div>
                         </Menu.Button>
                         <Transition
                             as={Fragment}
@@ -214,7 +210,7 @@ const Header = () => {
                                                         mt-2 w-48 rounded-sm shadow-md p-1 bg-white
                                                         ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <Menu.Item>
-                                    {({active}) => (
+                                    {({ active }) => (
                                         <div
                                             className={classNames(
                                                 active && 'bg-gray-100',
@@ -231,7 +227,7 @@ const Header = () => {
                                     )}
                                 </Menu.Item>
                                 <Menu.Item onClick={handleChangePassword}>
-                                    {({active}) => (
+                                    {({ active }) => (
                                         <div
                                             className={classNames(
                                                 active && 'bg-gray-100',
@@ -245,7 +241,7 @@ const Header = () => {
                                     )}
                                 </Menu.Item>
                                 <Menu.Item>
-                                    {({active}) => (
+                                    {({ active }) => (
                                         <div
                                             className={classNames(
                                                 active && 'bg-gray-100',
@@ -266,6 +262,7 @@ const Header = () => {
                     </div>
                 </Menu>
             </div>
+
             {/*---------- change pass word -------------*/}
             <Modal
                 show={showChangePassword}
@@ -275,13 +272,11 @@ const Header = () => {
                 style={{height: "600px"}}
             >
                 <div className="flex ">
-                    <div className="flex-1" style={{margin: 'auto'}}>
-                        <img style={{margin: 'auto'}}
-                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn8H2SopcK0uWEabLJYoia07KZOdnUKXsuEViS5kIoug&s"
-                             alt=""/>
+                    <div className="flex-1">
+                        <img style={{marginTop: "130px"}} className="justify-center align-items-center" src="https://firebasestorage.googleapis.com/v0/b/upload-img-76277.appspot.com/o/images%2Fstatic%2F1200x630wa.png?alt=media&token=dce9577a-5ee2-416c-ad05-dde82e371407" alt=""/>
                     </div>
-                    <div className="flex-1 w-full p-6 bg-white rounded-lg shadow md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
-                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
+                    <div className="flex-1 w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
+                        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Change Password
                         </h2>
                         <div className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
@@ -332,7 +327,7 @@ const Header = () => {
                             <div>
                                 <label
                                     htmlFor="confirm-password"
-                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                    className="block mb-2 text-sm font-medium text-gray-900 "
                                 >
                                     Confirm password
                                 </label>
@@ -392,6 +387,7 @@ const Header = () => {
                             </Button>
                         </div>
                     </div>
+
                 </div>
             </Modal>
         </div>

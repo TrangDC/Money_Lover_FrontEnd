@@ -2,9 +2,9 @@ import axios from "axios";
 
 
 class TransactionService {
-    fetchTransactions = async () => {
+    fetchTransactions = async (user) => {
         try {
-            const response = await axios.get('http://localhost:3001/transactions');
+            const response = await axios.get(`http://localhost:8080/api/transactions/user/${user.id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -13,8 +13,10 @@ class TransactionService {
     };
 
     groupTransactionsByDate = (transactions, currentMonthIndex, currentYear) => {
+        if (transactions.length === 0) {
+            return [];
+        }
         const groupedTransactions = {};
-
         transactions.forEach(transaction => {
             const date = new Date(transaction.transactionDate);
             const transactionMonth = date.getMonth();
@@ -55,6 +57,9 @@ class TransactionService {
     };
 
     calculateTotalInflow = (transactions) => {
+        if (transactions.length === 0) {
+            return 0;
+        }
         return transactions.reduce((total, transaction) => {
             if (transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT') {
                 return total + transaction.amount;
@@ -64,6 +69,9 @@ class TransactionService {
     };
 
     calculateTotalOutflow = (transactions) => {
+        if (transactions.length === 0) {
+            return 0;
+        }
         return transactions.reduce((total, transaction) => {
             if (transaction.category.type === 'EXPENSE' || transaction.category.type === 'LOAN') {
                 return total + transaction.amount;

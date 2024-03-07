@@ -53,7 +53,7 @@ const LoginForm = ({ handleLoginSuccess, setIsLoading  }) => {
             });
             setTimeout(() => {
                 setIsLoading(false);
-                navigate('/auth/home');
+                navigate('/auth/transactions');
             }, 2000);
 
         } catch (error) {
@@ -104,7 +104,7 @@ const LoginForm = ({ handleLoginSuccess, setIsLoading  }) => {
                     isClosable: true,
                 });
                 setTimeout(() => {
-                    navigate("/auth/home");
+                    navigate("/auth/transactions");
                 }, 1000);
             } else {
                 toast({
@@ -217,11 +217,13 @@ const LoginForm = ({ handleLoginSuccess, setIsLoading  }) => {
                         </Modal>
 
                         <MDBCardBody className='p-5 text-center'>
-                            <h2 className='fw-bold text-black mb-5 text-center' style={{ marginTop: '-30px' }}>
-                                Log In
-                            </h2>
+                            <div className="login-wrapper">
+                                <h2 className='fw-bold text-black mb-5 text-center'>
+                                    Log In
+                                </h2>
+                            </div>
                             <MDBRow>
-                                <MDBCol col='10' md='6'>
+                                <MDBCol col='10' md='6' style={{marginTop: '5%'}}>
                                     <p className='text-black-50 mb-3'>Using social networking accounts</p>
 
                                     <MDBBtn outline rounded className='mb-3 w-100' color='danger'>
@@ -256,7 +258,7 @@ const LoginForm = ({ handleLoginSuccess, setIsLoading  }) => {
                                         <span className="social-text">Sign in with Apple</span>
                                     </MDBBtn>
                                 </MDBCol>
-                                <MDBCol col='6' md='6'>
+                                <MDBCol col='6' md='6' style={{marginTop: '5%'}}>
                                     <p className='text-black-50 mb-3'>Using Money Lover account</p>
                                     <div>
                                         <Field
