@@ -23,11 +23,12 @@ const data = [
 
     }
 ];
+
 const ApexChart = () => {
 
-
-
-    // const userdata = JSON.parse(localStorage.getItem("user"));
+    const [data, setData] = useState([]);
+    const userdata = JSON.parse(localStorage.getItem("user"));
+    const [incomeCategory, setIncomeCategory] = useState([])
     const [listTransaction, setListTransaction] = useState([])
     const [user, setUser] = useState({})
     useEffect(() => {
@@ -35,6 +36,7 @@ const ApexChart = () => {
         setUser(userdata)
         transactions(userdata)
     }, []);
+
     const transactions = (userdata) => {
         axios.get('http://localhost:8080/api/transactions/user/'+userdata?.id+'/income_transaction/7')
             .then((res) => {
@@ -42,11 +44,28 @@ const ApexChart = () => {
                 // const transactions = JSON.parse(localStorage.getItem("transactions"));
                 // setListTransaction(transactions)
                 setListTransaction(res.data);
+
             })
             .catch((error)=>{
                console.error("Error")
             });
 
+    }
+
+    function getlist(transactions) {
+        const incomeCategory = [];
+        const incomeAmount = [];
+        transactions.forEach(transaction => {
+            // nếu transaction thuộc type income
+            if (transaction.category.type === "INCOME") {
+                const index = incomeCategory.indexOf(transaction.category.name)
+                if (index === -1) {
+                    incomeCategory.push(transaction.category.name);
+                    incomeAmount.push(transaction.amount)
+                }
+                incomeAmount[index] += transaction.amount
+            }
+        })
     }
 
 
@@ -71,7 +90,7 @@ const ApexChart = () => {
             <BarChart
                 width={1300}
                 height={500}
-                data={data}
+                data={listTransaction.amount}
                 margin={{top: 15, right: 80, left: 102, bottom: 5}}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
