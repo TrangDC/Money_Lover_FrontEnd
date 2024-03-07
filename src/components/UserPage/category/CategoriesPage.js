@@ -168,29 +168,29 @@ const CategoriesPage = () => {
                 borderBottomLeftRadius: '10px',
                 borderBottomRightRadius: '10px'
             }}>
-                    <Tabs variant='enclosed'>
-                        <TabList>
+                <Tabs variant='enclosed'>
+                    <TabList>
+                        <Tab
+                            style={{fontWeight: 'bold', color: '#32CD32'}}
+                            onClick={() => setSelectedType('All')}
+                            isSelected={'All' === selectedType}
+                        >
+                            All
+                        </Tab>
+                        {uniqueTypes.map((type, index) => (
                             <Tab
+                                key={index}
                                 style={{fontWeight: 'bold', color: '#32CD32'}}
-                                onClick={() => setSelectedType('All')}
-                                isSelected={'All' === selectedType}
+                                onClick={() => setSelectedType(type)}
+                                isSelected={type === selectedType}
                             >
-                                All
+                                {type}
                             </Tab>
-                            {uniqueTypes.map((type, index) => (
-                                <Tab
-                                    key={index}
-                                    style={{fontWeight: 'bold', color: '#32CD32'}}
-                                    onClick={() => setSelectedType(type)}
-                                    isSelected={type === selectedType}
-                                >
-                                    {type}
-                                </Tab>
-                            ))}
-                        </TabList>
-                        <TabPanels>
-                            <TabPanel>
-                                <div style={{overflowY: 'auto', maxHeight: '380px'}}>
+                        ))}
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel>
+                            <div style={{overflowY: 'auto', maxHeight: '380px'}}>
                                 <Table>
                                     <Tbody>
 
@@ -216,11 +216,11 @@ const CategoriesPage = () => {
 
                                     </Tbody>
                                 </Table>
-                                </div>
-                            </TabPanel>
-                            {uniqueTypes.map((type, index) => (
-                                <TabPanel key={index}>
-                                    <div style={{overflowY: 'auto', maxHeight: '380px'}}>
+                            </div>
+                        </TabPanel>
+                        {uniqueTypes.map((type, index) => (
+                            <TabPanel key={index}>
+                                <div style={{overflowY: 'auto', maxHeight: '380px'}}>
                                     <Table>
                                         <Tbody>
                                             {categories
@@ -246,11 +246,11 @@ const CategoriesPage = () => {
                                                 ))}
                                         </Tbody>
                                     </Table>
-                                    </div>
-                                </TabPanel>
-                            ))}
-                        </TabPanels>
-                    </Tabs>
+                                </div>
+                            </TabPanel>
+                        ))}
+                    </TabPanels>
+                </Tabs>
             </div>
 
             <Modal isOpen={isOpenModal1} onClose={onCloseModal1}>
@@ -340,4 +340,3 @@ const CategoriesPage = () => {
     );
 };
 export default CategoriesPage;
-

@@ -2,9 +2,9 @@ import axios from "axios";
 
 
 class TransactionService {
-    fetchTransactions = async (user) => {
+    fetchTransactions = async (user, wallet_id) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/transactions/user/${user.id}`);
+            const response = await axios.get(`http://localhost:8080/api/transactions/user/${user.id}/wallet/${wallet_id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -13,10 +13,11 @@ class TransactionService {
     };
 
     groupTransactionsByDate = (transactions, currentMonthIndex, currentYear) => {
+        const groupedTransactions = {};
         if (transactions.length === 0) {
             return [];
         }
-        const groupedTransactions = {};
+
         transactions.forEach(transaction => {
             const date = new Date(transaction.transactionDate);
             const transactionMonth = date.getMonth();
@@ -45,7 +46,6 @@ class TransactionService {
             newMonthIndex = 0; // January
             newYear++;
         }
-
         setCurrentMonthIndex(newMonthIndex);
         setCurrentYear(newYear);
     };
@@ -58,7 +58,7 @@ class TransactionService {
 
     calculateTotalInflow = (transactions) => {
         if (transactions.length === 0) {
-            return 0;
+            return [];
         }
         return transactions.reduce((total, transaction) => {
             if (transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT') {
@@ -70,7 +70,7 @@ class TransactionService {
 
     calculateTotalOutflow = (transactions) => {
         if (transactions.length === 0) {
-            return 0;
+            return [];
         }
         return transactions.reduce((total, transaction) => {
             if (transaction.category.type === 'EXPENSE' || transaction.category.type === 'LOAN') {

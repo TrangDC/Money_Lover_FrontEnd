@@ -1,5 +1,4 @@
-
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     BarChart,
     Bar,
@@ -10,99 +9,159 @@ import {
     Legend,
     ReferenceLine
 } from "recharts";
-import {List, ListItem, Typography} from "@material-tailwind/react";
-import {Card} from "react-bootstrap";
 import axios from "axios";
-import error from "../Error";
-const data = [
-    {
-        name: "Jan",
-        uv: 4000,
-        pv: -2000,
-        amt: 200,
+import {Image, Table, TableContainer, Tbody, Td, Tr} from "@chakra-ui/react";
+import PropTypes from "prop-types";
 
-    }
-];
+
 
 const ApexChart = () => {
+    const [listTransaction, setListTransaction] = useState([]);
+    const [incomeCategory, setIncomeCategory] = useState([]);
+    const [expenseCategory, setExpenseCategory] = useState([]);
+    const [incomeAmount, setIncomeAmount] = useState(0);
+    const [expenseAmount, setExpenseAmount] = useState(0);
+    const [user, setUser] = useState({});
 
-    const [data, setData] = useState([]);
-    const userdata = JSON.parse(localStorage.getItem("user"));
-    const [incomeCategory, setIncomeCategory] = useState([])
-    const [listTransaction, setListTransaction] = useState([])
-    const [user, setUser] = useState({})
     useEffect(() => {
         const userdata = JSON.parse(localStorage.getItem("user"));
-        setUser(userdata)
-        transactions(userdata)
+        setUser(userdata);
+        transactions(userdata);
+        transaction(userdata);
     }, []);
 
     const transactions = (userdata) => {
-        axios.get('http://localhost:8080/api/transactions/user/'+userdata?.id+'/income_transaction/7')
+        axios.get(`http://localhost:8080/api/transactions/user/${userdata?.id}/income_transaction/7`)
             .then((res) => {
-                // window.localStorage.setItem("transactions", JSON.stringify(res.data));
-                // const transactions = JSON.parse(localStorage.getItem("transactions"));
-                // setListTransaction(transactions)
                 setListTransaction(res.data);
-
+                getIncomeList(res.data);
             })
-            .catch((error)=>{
-               console.error("Error")
+            .catch((error) => {
+                console.error("Error: ", error);
             });
-
     }
 
-    function getlist(transactions) {
-        const incomeCategory = [];
-        const incomeAmount = [];
+    const transaction = (userdata) => {
+        axios.get(`http://localhost:8080/api/transactions/user/${userdata?.id}/expense_transaction/7`)
+            .then((res) => {
+                setListTransaction(res.data);
+                getExpenseList(res.data);
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+            });
+    }
+
+    const getIncomeList = (transactions) => {
+        const incomeCat = [];
+        let incomeAmt = 0;
+
         transactions.forEach(transaction => {
-            // nếu transaction thuộc type income
             if (transaction.category.type === "INCOME") {
-                const index = incomeCategory.indexOf(transaction.category.name)
+                const index = incomeCat.indexOf(transaction.category.name);
                 if (index === -1) {
-                    incomeCategory.push(transaction.category.name);
-                    incomeAmount.push(transaction.amount)
+                    incomeCat.push(transaction.category.name);
+                    incomeAmt += transaction.amount;
+                } else {
+                    incomeAmt += transaction.amount;
                 }
-                incomeAmount[index] += transaction.amount
             }
-        })
+        });
+
+        setIncomeCategory(incomeCat);
+        setIncomeAmount(incomeAmt);
     }
 
+    const getExpenseList = (transactions) => {
+        const expenseCat = [];
+        let expenseAmt = 0;
 
+        transactions.forEach(transaction => {
+            if (transaction.category.type === "EXPENSE") {
+                const index = expenseCat.indexOf(transaction.category.name);
+                if (index === -1) {
+                    expenseCat.push(transaction.category.name);
+                    expenseAmt += transaction.amount;
+                } else {
+                    expenseAmt += transaction.amount;
+                }
+            }
+        });
+
+        setExpenseCategory(expenseCat);
+        setExpenseAmount(expenseAmt);
+    }
+
+    const data = [
+        {
+            name: expenseCategory,
+            income: incomeAmount,
+            expense: -expenseAmount,
+        }
+    ];
+    function Barchart({ listTransaction }) {
+        return (
+            <Table variant='simple'>
+                <Tbody>
+                    {listTransaction.map((transactions) => (
+                        <Tr key={transactions.id}>
+                            <Td style={{ display: 'flex', alignItems: 'center' }}>
+                                <Image
+                                    borderRadius='full'
+                                    boxSize='50px'
+                                    src={transactions.category.image}
+                                    alt=""
+                                />
+                                <span style={{ marginLeft: '5px' }}>{transactions.category.name}</span>
+                            </Td>
+                            <Td style={{ textAlign: 'right' }}>{transactions.amount} vnd</Td>
+                        </Tr>
+                    ))}
+                </Tbody>
+            </Table>
+        );
+    }
+
+    Barchart.propTypes = {
+        listTransaction: PropTypes.array.isRequired
+    };
     return (
         <div>
-            { listTransaction.map((transaction) => (
-                <div>{transaction.amount}</div>
-            ))}
-
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', left: '100px',marginLeft:'46vh' }}>
                 <div>
-                    <Typography variant="h2" color="primary">
-                       Tổng Cộng:
-                    </Typography>
+                    Tổng Cộng:
                 </div>
-                <div style={{marginLeft:'20px',color:'red'}}>
-                    <Typography variant="h2" color="textSecondary">
-                        Tiền
-                    </Typography>
+                <div style={{ marginLeft: '20px', color: 'red' }}>
+                    <span variant="h2" color="textSecondary">
+                        Income: {incomeAmount}, Expense: {expenseAmount}
+                    </span>
                 </div>
             </div>
-            <BarChart
-                width={1300}
-                height={500}
-                data={listTransaction.amount}
-                margin={{top: 15, right: 80, left: 102, bottom: 5}}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <ReferenceLine y={0} stroke="#000" />
-                <Bar dataKey="pv" fill="#8884d8" />
-                <Bar dataKey="uv" fill="#82ca9d" />
-            </BarChart>
+            <div>
+                <BarChart
+                    width={1500}
+                    height={400}
+                    data={data}
+                    margin={{
+                        top: 20,
+                        right: 50,
+                        left: 500,
+                        bottom: 5
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="2 2" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 'dataMax']} />
+                    <Tooltip />
+                    <Legend />
+                    <ReferenceLine y={0} stroke="#000" />
+                    <Bar dataKey="income" fill='#2E8B57 ' barSize={60} left={20} />
+                    <Bar dataKey="expense" fill="red"  barSize={60} />
+                </BarChart>
+                <Barchart listTransaction={listTransaction} />
+            </div>
         </div>
     );
 };
-export default ApexChart;
 
+export default ApexChart;
