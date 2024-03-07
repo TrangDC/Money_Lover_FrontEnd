@@ -16,6 +16,7 @@ import CreateTransaction from "./components/TransactionPage/CreateTransaction";
 import IncomePiechart from "./components/IncomePiechart/IncomePiechart";
 import PinnedSubheaderList from "./components/TransactionPage/SubHeaderList/PinnedSubheaderList";
 import ExpensePage from "./components/PageExpense/ExpensePage";
+import ChartPage from "./components/ChartPage/ChartPage";
 
 
 
@@ -66,13 +67,17 @@ function App() {
                                                                                            monthIndex = {monthIndex}
                                                                                            year = {year}
                         /> : <Error/>}/>
+                        <Route path='chart' element={(isAuth || user) ? <ChartPage wallet_id = {wallet_id}
+                                                                                           monthIndex = {monthIndex}
+                                                                                           year = {year}
+                        /> : <Error/>}/>
                     </Route>
                     <Route path='/login'
                            element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>
                     <Route path='/register' element={<RegisterPage/>}/>
                     <Route path='/upload' element={<UploadImage/>}/>
                     <Route path='/active' element={<ActiveAccount/>}/>
-                    <Route path='/tranz' element={<TransactionPage/>}/>
+                    <Route path='/chart' element={<ChartPage/>}/>
                     <Route path='/piechart' element={<IncomePiechart/>}/>
                     <Route path='/exchart' element={<ExpensePage/>}/>
                 </Routes>

@@ -1,4 +1,4 @@
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import {Tabs, TabList, TabPanels, Tab, TabPanel, useDisclosure, FormControl, FormLabel, Input} from '@chakra-ui/react';
 import axios from "axios";
 import React, {useEffect} from 'react';
 import {Doughnut} from 'react-chartjs-3';
@@ -12,7 +12,8 @@ import {
     Td,
     TableCaption,
     TableContainer,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+import { FaPen } from "react-icons/fa";
 import { Image } from '@chakra-ui/react';
 import { CgCalendarDates } from "react-icons/cg";
 import { useState } from 'react';
@@ -25,6 +26,15 @@ import { LiaCalendarWeekSolid } from "react-icons/lia";
 import {MDBCard, MDBCardBody} from "mdb-react-ui-kit";
 import "./IncomePiechart.css"
 import TransactionService from "../../services/transactions.services";
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react'
 const IncomePiechart = ({wallet_id}) => {
 
     const [show, setShow] = useState(false);
@@ -73,6 +83,10 @@ const IncomePiechart = ({wallet_id}) => {
                 });
         }
     };
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const initialRef = React.useRef(null);
+    const finalRef = React.useRef(null);
+
     function getlist(transactions) {
         const incomeCategory = [];
         const incomeAmount = [];
@@ -197,11 +211,45 @@ const IncomePiechart = ({wallet_id}) => {
                             <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
                                 <LiaCalendarWeekSolid style={{ height: '40px', width: '40px' }} /> <span style={{ marginLeft: '5px' }}>Year</span>
                             </div>
+                            <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }} onClick={onOpen}>
+                                <FaPen style={{ height: '20px', width: '20px',marginLeft: '10px' }} /> <span style={{ marginLeft: '15px' }}>Custom</span>
+                            </div>
                         </Offcanvas.Body>
                     </Offcanvas>
                 </MDBCardBody>
             </MDBCard>
 
+            {/*modal custom*/}
+            <Modal
+                initialFocusRef={initialRef}
+                finalFocusRef={finalRef}
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Select Time</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody pb={6}>
+                        <FormControl>
+                            <FormLabel>From</FormLabel>
+                            <Input type={"date"} placeholder='Today' />
+                        </FormControl>
+
+                        <FormControl mt={4}>
+                            <FormLabel>To</FormLabel>
+                            <Input type={"date"} placeholder='Today' />
+                        </FormControl>
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button onClick={onClose} colorScheme='green' variant='outline'>Cancel</Button>
+                        <Button colorScheme='greengreen' variant='outline'>
+                            Select Time
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </div>
     );
 };
