@@ -565,17 +565,17 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                             </Tr>
                             <Tr className="hover-div">
                                 <Td>
-                                    <Link to={"/auth/piechart"}>
+                                    <Link to={"/auth/chart"}>
                                         <PiIntersectThreeBold className="icon"/>
                                     </Link>
                                 </Td>
                                 <Td>
-                                    <Link to={"/auth/piechart"} className="text-reset">
+                                    <Link to={"/auth/chart"} className="text-reset">
                                         Chart
                                     </Link>
                                 </Td>
                                 <Td>
-                                    <Link to={"/auth/piechart"}>
+                                    <Link to={"/auth/chart"}>
                                         <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
                                     </Link>
                                 </Td>

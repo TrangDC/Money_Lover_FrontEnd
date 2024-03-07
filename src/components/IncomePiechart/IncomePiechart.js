@@ -38,7 +38,8 @@ import {ListItem} from "@material-tailwind/react";
 import {useWallet} from "../WalletContext";
 const IncomePiechart = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -127,7 +128,12 @@ const IncomePiechart = () => {
             <MDBCard className="card-chart">
                 <MDBCardBody >
                     <div style={{width: '50%',height: '50%',margin: 'auto'}}>
-
+                        {startDate && endDate && (
+                            <div>
+                                <p>From: {startDate}</p>
+                                <p>To: {endDate}</p>
+                            </div>
+                        )}
                         <div className="flex justify-content-center mt-0.5">
 
                             <Button
@@ -242,12 +248,12 @@ const IncomePiechart = () => {
                     <ModalBody pb={6}>
                         <FormControl>
                             <FormLabel>From</FormLabel>
-                            <Input type={"date"} placeholder='Today' />
+                            <Input type={"date"} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                         </FormControl>
 
                         <FormControl mt={4}>
                             <FormLabel>To</FormLabel>
-                            <Input type={"date"} placeholder='Today' />
+                            <Input type={"date"} value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                         </FormControl>
                     </ModalBody>
                     <ModalFooter>
