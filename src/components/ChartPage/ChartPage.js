@@ -178,7 +178,7 @@ const ChartPage = () => {
                             </MDBCardBody>
                             <MDBCardFooter>
                                 <Link to= "/auth/piechart" className='text-dark' >
-                                    <span>See Detail</span>
+                                    <span>See Income Detail</span>
                                 </Link>
                             </MDBCardFooter>
                         </MDBCard>
@@ -214,7 +214,7 @@ const ChartPage = () => {
                             </MDBCardBody>
                             <MDBCardFooter>
                                 <Link to= "/auth/exchart" className='text-dark' >
-                                    <span>See Detail</span>
+                                    <span>See Expense Detail</span>
                                 </Link>
                             </MDBCardFooter>
                         </MDBCard>
