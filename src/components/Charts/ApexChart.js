@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import {Image, Table, TableContainer, Tbody, Td, Tr} from "@chakra-ui/react";
 import PropTypes from "prop-types";
+import TransactionService from "../../services/transactions.services";
 
 
 
@@ -29,7 +30,6 @@ const ApexChart = () => {
         transactions(userdata);
         transaction(userdata);
     }, []);
-
     const transactions = (userdata) => {
         axios.get(`http://localhost:8080/api/transactions/user/${userdata?.id}/income_transaction/7`)
             .then((res) => {
@@ -101,7 +101,8 @@ const ApexChart = () => {
     ];
     function Barchart({ listTransaction }) {
         return (
-            <Table variant='simple'>
+                <Table variant='simple'>
+                    <div style={{marginLeft:'37vh',}}>
                 <Tbody>
                     {listTransaction.map((transactions) => (
                         <Tr key={transactions.id}>
@@ -112,13 +113,15 @@ const ApexChart = () => {
                                     src={transactions.category.image}
                                     alt=""
                                 />
-                                <span style={{ marginLeft: '5px' }}>{transactions.category.name}</span>
+                                <span style={{ marginLeft: '90vh' }}>{transactions.category.name}</span>
                             </Td>
                             <Td style={{ textAlign: 'right' }}>{transactions.amount} vnd</Td>
                         </Tr>
                     ))}
                 </Tbody>
+                    </div>
             </Table>
+
         );
     }
 
@@ -127,14 +130,14 @@ const ApexChart = () => {
     };
     return (
         <div>
-            <div style={{ display: 'flex', left: '100px',marginLeft:'46vh' }}>
-                <div>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '42vh' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
                     Tổng Cộng:
                 </div>
-                <div style={{ marginLeft: '20px', color: 'red' }}>
+                <div style={{ marginLeft: '20px', color: 'red', fontSize: '24px', fontWeight: 'bold' }}>
                     <span variant="h2" color="textSecondary">
-                        Income: {incomeAmount}, Expense: {expenseAmount}
-                    </span>
+              Income: {incomeAmount}  Expense: {expenseAmount}
+        </span>
                 </div>
             </div>
             <div>
@@ -143,7 +146,7 @@ const ApexChart = () => {
                     height={400}
                     data={data}
                     margin={{
-                        top: 20,
+                        top: 40,
                         right: 50,
                         left: 500,
                         bottom: 5
