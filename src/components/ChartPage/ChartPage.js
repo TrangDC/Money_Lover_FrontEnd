@@ -11,32 +11,34 @@ import {
 } from 'mdb-react-ui-kit';
 import {MDBCardText} from "mdbreact";
 import {Link} from "react-router-dom";
+import {useWallet} from "../WalletContext";
 
-const ChartPage = ({ wallet_id }) => {
+const ChartPage = () => {
     const userdata = JSON.parse(localStorage.getItem("user"));
+    const {selectedWalletId} = useWallet();
 
-    // Income transactions
     const [listTransactionIncome, setListTransactionIncome] = useState([]);
     const [incomeCategory, setIncomeCategory] = useState([]);
     const [incomeAmount, setIncomeAmount] = useState([]);
 
     useEffect(() => {
-        if (wallet_id) {
+        if (selectedWalletId) {
             const fetchData = async () => {
-                getTransactionIncome(userdata, wallet_id);
-                getTransactionEx(userdata, wallet_id);
+                getTransactionIncome(userdata, selectedWalletId);
+                getTransactionEx(userdata, selectedWalletId);
             };
             fetchData();
         }
-    }, [userdata]);
+    }, [selectedWalletId]);
 
-    const getTransactionIncome = (userdata, wallet_id) => {
-        if (wallet_id) {
-            axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/income_transaction/${wallet_id}`)
+    // Income transactions
+    const getTransactionIncome = (userdata, selectedWalletId) => {
+        if (selectedWalletId) {
+            axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/income_transaction/${selectedWalletId}`)
                 .then((res) => {
                     console.log(res);
                     setListTransactionIncome(res.data);
-                    getlist(res.data, setIncomeCategory, setIncomeAmount);
+                    getlistIncome(res.data, setIncomeCategory, setIncomeAmount);
                 })
                 .catch((error) => {
                     console.error("Error fetching income transaction data:", error);
@@ -44,28 +46,35 @@ const ChartPage = ({ wallet_id }) => {
         }
     };
 
+    function getlistIncome(transactions, setCategory, setAmount) {
+        const category = [];
+        const amount = [];
+        transactions.forEach(transaction => {
+            if (transaction.category.type === "INCOME") {
+                const index = category.indexOf(transaction.category.name)
+                if (index === -1) {
+                    category.push(transaction.category.name);
+                    amount.push(transaction.amount);
+                }
+                else amount[index] += transaction.amount
+            }
+        })
+        setCategory(category);
+        setAmount(amount)
+    }
+
     // Expense transactions
     const [listTransactionEx, setListTransactionEx] = useState([]);
     const [exCategory, setExCategory] = useState([]);
     const [exAmount, setExAmount] = useState([]);
 
-    useEffect(() => {
-        if (wallet_id) {
-            const fetchData = async () => {
-                getTransactionEx(userdata, wallet_id);
-                getTransactionIncome(userdata,wallet_id);
-            };
-            fetchData();
-        }
-    }, [wallet_id]);
-
-    const getTransactionEx = (userdata, wallet_id) => {
-        if (wallet_id) {
-            axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/expense_transaction/${wallet_id}`)
+    const getTransactionEx = (userdata, selectedWalletId) => {
+        if (selectedWalletId) {
+            axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/expense_transaction/${selectedWalletId}`)
                 .then((res) => {
                     console.log(res);
                     setListTransactionEx(res.data);
-                    getlist(res.data, setExCategory, setExAmount);
+                    getlistExpesen(res.data, setExCategory, setExAmount);
                 })
                 .catch((error) => {
                     console.error("Error fetching expense transaction data:", error);
@@ -73,11 +82,11 @@ const ChartPage = ({ wallet_id }) => {
         }
     };
 
-    function getlist(transactions, setCategory, setAmount) {
+    function getlistExpesen(transactions, setCategory, setAmount) {
         const category = [];
         const amount = [];
         transactions.forEach(transaction => {
-            if (transaction.category.type === "INCOME" || transaction.category.type === "EXPENSE") {
+            if (transaction.category.type === "EXPENSE") {
                 const index = category.indexOf(transaction.category.name)
                 if (index === -1) {
                     category.push(transaction.category.name);

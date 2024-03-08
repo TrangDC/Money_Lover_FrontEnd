@@ -11,7 +11,6 @@ import ActiveAccount from "./components/UserPage/ActiveAccount";
 import CategoriesPage from "./components/UserPage/category/CategoriesPage";
 import Wallet from "./components/WalletPage/Wallet";
 import SideBar from "./layout/SideBar/SideBar";
-import TransactionPage from "./components/TransactionPage/TransactionPage";
 import CreateTransaction from "./components/TransactionPage/CreateTransaction";
 import IncomePiechart from "./components/IncomePiechart/IncomePiechart";
 import PinnedSubheaderList from "./components/TransactionPage/SubHeaderList/PinnedSubheaderList";
@@ -54,20 +53,11 @@ function App() {
                     >
                         <Route path="wallets" element={(isAuth || user) ? <Wallet/> : <Error/>}/>
                         <Route path="categories" element={(isAuth || user) ? <CategoriesPage/> : <Error/>}/>
-                        <Route path="transactions" element={(isAuth || user) ? <PinnedSubheaderList wallet_id = {wallet_id}/> : <Error/>}/>
+                        <Route path="transactions" element={(isAuth || user) ? <PinnedSubheaderList /> : <Error/>}/>
                         <Route path="create_transaction" element={(isAuth || user) ? <CreateTransaction/> : <Error/>}/>
-                        <Route path='piechart' element={(isAuth || user) ? <IncomePiechart wallet_id = {wallet_id}
-                                                                                           monthIndex = {monthIndex}
-                                                                                           year = {year}
-                        /> : <Error/>}/>
-                        <Route path='exchart' element={(isAuth || user) ? <ExpensePage wallet_id = {wallet_id}
-                                                                                           monthIndex = {monthIndex}
-                                                                                           year = {year}
-                        /> : <Error/>}/>
-                        <Route path='chart' element={(isAuth || user) ? <ChartPage wallet_id = {wallet_id}
-                                                                                           monthIndex = {monthIndex}
-                                                                                           year = {year}
-                        /> : <Error/>}/>
+                        <Route path='piechart' element={(isAuth || user) ? <IncomePiechart/> : <Error/>}/>
+                        <Route path='exchart' element={(isAuth || user) ? <ExpensePage/> : <Error/>}/>
+                        <Route path='chart' element={(isAuth || user) ? <ChartPage/> : <Error/>}/>
                     </Route>
                     <Route path='/login'
                            element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>

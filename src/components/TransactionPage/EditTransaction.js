@@ -9,12 +9,12 @@ import {MdOutlineAttachMoney} from "react-icons/md";
 import axios from "axios";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-const CreateTransaction = () => {
+const EditTransaction = () => {
 
     const toast = useToast();
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user"))
-
+    const transaction_edit = JSON.parse(localStorage.getItem("transaction_edit"));
     const [transaction, setTransaction] = useState({
         amount: "",
         note: "",
@@ -56,11 +56,11 @@ const CreateTransaction = () => {
         };
         if (select_category === "EXPENSE" || select_category === "INCOME") {
             console.log(transactionData)
-            axios.post(`http://localhost:8080/api/transactions/user/${user.id}/expense_income`, transactionData)
+            axios.put(`http://localhost:8080/api/transactions/user/${user.id}/expense_income/${transaction_edit.id}`, transactionData)
                 .then(res => {
                     console.log(res);
                     toast({
-                        title: 'Create success!',
+                        title: 'Edit success!',
                         description: 'You successfully created a transaction!',
                         status: 'success',
                         duration: 1500,
@@ -72,7 +72,7 @@ const CreateTransaction = () => {
                 .catch(err => {
                     console.error(err);
                     toast({
-                        title: 'Create Failed',
+                        title: 'Edit Failed',
                         description: 'Failed to create a transaction!',
                         status: 'error',
                         duration: 3000,
@@ -82,11 +82,11 @@ const CreateTransaction = () => {
         }
         if (select_category === "DEBT" || select_category === "LOAN") {
             console.log(transactionData)
-            axios.post(`http://localhost:8080/api/transactions/user/${user.id}/debt_loan`, transactionData)
+            axios.put(`http://localhost:8080/api/transactions/user/${user.id}/debt_loan/${transaction_edit.id}`, transactionData)
                 .then(res => {
                     console.log(res);
                     toast({
-                        title: 'Create success!',
+                        title: 'Edit success!',
                         description: 'You successfully created a transaction!',
                         status: 'success',
                         duration: 1500,
@@ -98,7 +98,7 @@ const CreateTransaction = () => {
                 .catch(err => {
                     console.error(err);
                     toast({
-                        title: 'Create Failed',
+                        title: 'Edit Failed',
                         description: 'Failed to create a transaction!',
                         status: 'error',
                         duration: 3000,
@@ -119,14 +119,24 @@ const CreateTransaction = () => {
                 // Gọi API để lấy danh sách category
                 const categories_data = await axios.get('http://localhost:8080/api/categories/user/' + user.id);
                 setCategories(categories_data.data);
-
+                setTransaction({
+                    amount: parseInt(transaction_edit.amount),
+                    note: transaction_edit.note,
+                    transactionDate: transaction_edit.transactionDate,
+                    endDate: transaction_edit.endDate,
+                    lender: transaction_edit.lender,
+                    borrower: transaction_edit.borrower,
+                    wallet_id: parseInt(transaction_edit.wallet.id),
+                    category_id: parseInt(transaction_edit.category.id)
+                })
+                setCategory(transaction_edit.category.type)
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
 
         fetchData();
-    }, [transaction]);
+    }, [user.id]);
 
     return (
         <div>
@@ -162,13 +172,13 @@ const CreateTransaction = () => {
                             </Select>
 
                             {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'LOAN' && (
-                                <MDBInput onChange={handleChange} wrapperClass='mb-4' id='form6Example3' label='Lender' name='lender'/>
+                                <MDBInput value={transaction.lender} onChange={handleChange} wrapperClass='mb-4' id='form6Example3' label='Lender' name='lender'/>
                             )}
                             {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'DEBT' && (
-                                <MDBInput onChange={handleChange} wrapperClass='mb-4' id='form6Example4' label='Borrower' name='borrower' />
+                                <MDBInput  value={transaction.borrower} onChange={handleChange} wrapperClass='mb-4' id='form6Example4' label='Borrower' name='borrower' />
                             )}
 
-                            <MDBInput onChange={handleChange} name="note" wrapperClass='mb-4' textarea id='form6Example7' rows={4} label='Note' style={{ height: "100px" }} />
+                            <MDBInput value={transaction.note}  onChange={handleChange} name="note" wrapperClass='mb-4' textarea id='form6Example7' rows={4} label='Note' style={{ height: "100px" }} />
 
                         </MDBCol>
                         <MDBCol>
@@ -221,4 +231,4 @@ const CreateTransaction = () => {
     );
 };
 
-export default CreateTransaction;
+export default EditTransaction;

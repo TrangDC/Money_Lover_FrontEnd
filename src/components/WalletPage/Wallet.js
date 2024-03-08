@@ -109,8 +109,8 @@ const Wallet = () => {
                         duration: 1500,
                         isClosable: true,
                     });
-                    setShowCard2(false); // Đóng lại phần card khi xóa thành công
-                    setSelectedWallet(null); // Xóa dữ liệu ví đã chọn
+                    setShowCard2(false);
+                    setSelectedWallet(null);
                 })
                 .catch(err => toast({
                     title: 'Delete Failed',
