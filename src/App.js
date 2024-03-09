@@ -17,6 +17,7 @@ import PinnedSubheaderList from "./components/TransactionPage/SubHeaderList/Pinn
 import ExpensePage from "./components/PageExpense/ExpensePage";
 import ChartPage from "./components/ChartPage/ChartPage";
 import {WalletProvider} from "./components/WalletContext";
+import Budget from "./components/Budget/Budget";
 
 
 
@@ -58,6 +59,7 @@ function App() {
                         <Route path='piechart' element={(isAuth || user) ? <IncomePiechart/> : <Error/>}/>
                         <Route path='exchart' element={(isAuth || user) ? <ExpensePage/> : <Error/>}/>
                         <Route path='chart' element={(isAuth || user) ? <ChartPage/> : <Error/>}/>
+                        <Route path='budget' element={<Budget/>}/>
                     </Route>
                     <Route path='/login'
                            element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>

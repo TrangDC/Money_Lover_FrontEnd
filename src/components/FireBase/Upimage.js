@@ -74,14 +74,7 @@ function UploadImage() {
             .catch(err => console.error(err))
     },)
     return (
-            // <div>
-            //     <img src={images}/>
-            // </div>
-            //
-            // <div style={{margin: "50px 20px"}}>
-            //     <input type="file" onChange={(e) => {setImageUpload((e.target.files[0]))}}/>
-            //     <button onClick={uploadImage} type="button" className="btn btn-primary" data-mdb-ripple-init>Upload Image</button>
-            // </div>
+
 
             <div>
                 <Modal.Header closeButton>

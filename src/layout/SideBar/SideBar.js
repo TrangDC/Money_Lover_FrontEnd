@@ -9,16 +9,19 @@ import {PiIntersectThreeBold} from "react-icons/pi";
 import "./sideBar.css";
 import {MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBInput} from 'mdb-react-ui-kit';
 import Container from 'react-bootstrap/Container';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Alert from 'react-bootstrap/Alert';
 import Navbar from 'react-bootstrap/Navbar';
 import {BsCalendar2Date} from "react-icons/bs";
 import {FaSearch} from "react-icons/fa";
-import {GiSheikahEye} from "react-icons/gi";
 import {FaCircleQuestion} from "react-icons/fa6";
 import Modal from 'react-bootstrap/Modal';
 import {FaCartShopping} from "react-icons/fa6";
 import {FaGreaterThan} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import {Outlet, useNavigate} from 'react-router-dom';
+import { IoCamera } from "react-icons/io5";
+import { LuBellRing } from "react-icons/lu";
 import {
     Table,
     Thead,
@@ -187,10 +190,13 @@ function MydModalWithGrid(props) {
                 <Modal.Body className="grid-example">
                     <Container>
                         <div style={{textAlign: 'center'}}>
-                            <div>
+                            <div className= "image-container" >
                                 <Image
-                                    src={images}
+                                    src={images} onClick={handleShowImg}
                                     style={{width: '65px', height: '65px', margin: 'auto'}} roundedCircle/>
+                                <span className= "icon-image">
+                                    <IoCamera />
+                                </span>
                             </div>
                             <div className='mx-2'>
                                 <span style={{fontSize: '20px'}}>{editUser.username}</span>
@@ -343,9 +349,9 @@ function MydModalWithGrid(props) {
             >
                 <div className="flex ">
                     <div className="flex-1">
-                        <Image style={{width: "150px", height: '150px', margin: 'auto', marginTop: "40%"}}
-                               className="justify-center align-items-center" roundedCircle
-                               src={images} onClick={handleShowImg}
+                        <Image style={{width: "250px", height: '250px', margin: 'auto', marginTop: "25%"}}
+                               className="justify-center align-items-center" thumbnail
+                               src={images}
                                alt=""/>
                     </div>
                     <div
@@ -514,6 +520,13 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
             .catch(err => console.error(err));
     };
 
+    //display alert budget
+    const [showListAlert, setShowListAlert] = useState(false);
+
+    const toggleMenu = () => {
+        setShowListAlert(!showListAlert);
+    };
+
 
     return (
         <div>
@@ -668,7 +681,27 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                             <Navbar.Collapse className="justify-content-end">
                                 <Navbar.Text style={{display: "flex", alignItems: "center", marginRight: '-10%'}}>
                                     <BsCalendar2Date style={{marginRight: 30, fontSize: '20px'}}/>
-                                    <GiSheikahEye style={{marginRight: 30, fontSize: '20px'}}/>
+                                    <div>
+                                        <LuBellRing  style={{marginRight: 30, fontSize: '20px'}} onClick={toggleMenu}/>
+                                        {showListAlert && (
+                                            <Dropdown.Menu show={showListAlert} style={{marginLeft: '80%'}} className="custom-dropdown-menu">
+                                                <Dropdown.Item>
+                                                    <Alert variant="success">
+                                                        This is a alert—check budget!
+                                                    </Alert>
+                                                </Dropdown.Item>
+                                                <Dropdown.Item>
+                                                    <Alert variant="success">
+                                                        This is a alert—check budget!
+                                                    </Alert>
+                                                </Dropdown.Item>
+                                                <Dropdown.Item><Alert variant="success">
+                                                    This is a alert—check budget!
+                                                </Alert></Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        )}
+                                    </div>
+
                                     <FaSearch style={{fontSize: '20px'}}/>
                                 </Navbar.Text>
                             </Navbar.Collapse>

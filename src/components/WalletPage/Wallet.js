@@ -98,7 +98,7 @@ const Wallet = () => {
     const handleDelete = (id) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this wallet?');
         if (confirmDelete) {
-            axios.delete(`http://localhost:8080/api/wallets/user/${user.id}/delete/${id}`)
+            axios.put(`http://localhost:8080/api/wallets/user/${user.id}/deactivate/${id}`)
                 .then(res => {
                     navigate("/auth/wallets");
                     fetchWallets(user);
@@ -109,8 +109,8 @@ const Wallet = () => {
                         duration: 1500,
                         isClosable: true,
                     });
-                    setShowCard2(false);
-                    setSelectedWallet(null);
+                    setShowCard2(false); // Đóng lại phần card khi xóa thành công
+                    setSelectedWallet(null); // Xóa dữ liệu ví đã chọn
                 })
                 .catch(err => toast({
                     title: 'Delete Failed',
@@ -222,7 +222,7 @@ const Wallet = () => {
                                 <MDBCardTitle>Wallets</MDBCardTitle>
                             </MDBCardBody>
                         </MDBCard>
-                        <div style={{overflowY: 'auto', maxHeight: '380px'}}>
+                        <div style={{overflowY: 'auto', maxHeight: '600px'}}>
                             {wallets.map(wallet => (
                                 <MDBCard className={`card1 ${selectedWallet ? 'selected' : ''}`}>
                                     <MDBCardBody className="card-body">
