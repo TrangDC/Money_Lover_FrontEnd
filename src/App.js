@@ -17,7 +17,7 @@ import PinnedSubheaderList from "./components/TransactionPage/SubHeaderList/Pinn
 import ExpensePage from "./components/PageExpense/ExpensePage";
 import ChartPage from "./components/ChartPage/ChartPage";
 import {WalletProvider} from "./components/WalletContext";
-import Budget from "./components/Budget/Budget";
+import Budget from "./components/Budgets/Budget";
 
 
 

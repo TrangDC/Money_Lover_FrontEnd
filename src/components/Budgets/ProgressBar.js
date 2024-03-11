@@ -12,12 +12,13 @@ function ProgressBar({ completed }) {
     const fillerStyles = {
         height: '100%',
         width: `${completed}%`,
-        backgroundColor: "#6a1b9a",
+        backgroundColor: "#33f806",
         borderRadius: 'inherit',
 
     }
 
     const labelStyles = {
+        textAlign: 'center',
         padding: 5,
         color: 'white',
         fontWeight: 'bold'

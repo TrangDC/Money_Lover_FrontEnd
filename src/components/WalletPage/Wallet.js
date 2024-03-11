@@ -44,7 +44,6 @@ const Wallet = () => {
         axios.get('http://localhost:8080/api/wallets/user/' + userdata.id)
             .then((res) => {
                 console.log(res.data);
-
                 window.localStorage.setItem("wallets", JSON.stringify(res.data));
                 const wallets = JSON.parse(localStorage.getItem("wallets"));
                 setWallets(wallets);

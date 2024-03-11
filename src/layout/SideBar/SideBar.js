@@ -34,6 +34,7 @@ import {
     TableContainer, useToast,
 } from '@chakra-ui/react'
 import {Link} from "react-router-dom";
+import { FaSwatchbook } from "react-icons/fa";
 import {
     Menu,
     MenuHandler,
@@ -608,6 +609,23 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                                 </Td>
                                 <Td>
                                     <Link to={"/auth/chart"}>
+                                        <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
+                                    </Link>
+                                </Td>
+                            </Tr>
+                            <Tr className="hover-div">
+                                <Td>
+                                    <Link to={"/auth/budget"}>
+                                        <FaSwatchbook className="icon"/>
+                                    </Link>
+                                </Td>
+                                <Td>
+                                    <Link to={"/auth/budget"} className="text-reset">
+                                        Budget
+                                    </Link>
+                                </Td>
+                                <Td>
+                                    <Link to={"/auth/budget"}>
                                         <FaGreaterThan style={{marginLeft: 'auto'}} className="icon-1"/>
                                     </Link>
                                 </Td>

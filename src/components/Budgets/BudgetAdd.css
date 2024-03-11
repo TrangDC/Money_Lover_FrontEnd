@@ -1,0 +1,43 @@
+.form-body {
+    background-color: white;
+    padding: 60px;
+    border-radius: 8px;
+    width: 800px;
+    margin: auto;
+}
+.btn-x {
+    text-align: right;
+    position: relative;
+}
+.sub-btn-x {
+    position: absolute;
+    right: 0px;
+}
+.add-money {
+    font-size: 36px;
+}
+.title {
+    margin-bottom: 40px;
+}
+.form-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-x {
+    margin-bottom: 20px;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.left-container {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.right-container {
+    flex: 1;
+}
