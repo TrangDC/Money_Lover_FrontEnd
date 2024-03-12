@@ -29,27 +29,37 @@ import ProgressBar from "./ProgressBar";
 import {MdCalendarMonth} from "react-icons/md";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import BudgetEdit from "./BudgetEdit";
 import axios from "axios";
 
 function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
     const percentage = Math.min((value / maxValue) * 100, 100);
     // budget detail
     const [showCard2, setShowCard2] = useState(false);
-    const [selectedWallet, setSelectedWallet] = useState(false);
+    const [selectedBudget, setSelectedBudget] = useState(false);
+    const [selectedBudgetId, setSelectedBudgetId] = useState(null);
+    const [editBudget, setEditBudget] = useState({
+        amount: '',
+        category_id: '',
+        wallet_id: '',
+        startDate: '',
+        endDate: ''
+    });
     const handleClickX = () => {
         setShowCard2(false);
-        setSelectedWallet(false);
+        setSelectedBudget(false);
         handleCloseCard();
     };
 
-    const handleTrans = () => {
+    const handleTrans = (budgetId) => {
+        setSelectedBudgetId(budgetId);
         setShowCard2(true);
-        setSelectedWallet(true);
+        setSelectedBudget(true);
         handleTransClick();
+        const budget = budgets.find(b => b.id === budgetId);
+        setEditBudget(budget);
+        console.log(editBudget);
     };
-    //edit budget
-    const { isOpen, onOpen, onClose } = useDisclosure();
+
     //show custom time
     const [showInputs, setShowInputs] = useState(false);
     const handleSelectChange = (event) => {
@@ -58,7 +68,6 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
 
 // Xử lý sự kiện thay đổi cho các trường Input trong modal
     const handleInputChange = () => {
-        // Tạm thời không cần làm gì ở đây, bạn có thể xử lý sau này nếu cần thiết
     };
 
     // const handleSelectChange = (event) => {
@@ -79,6 +88,12 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
 
         fetchBudgets();
     }, [user.id]);
+
+    //modal edit budget
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     return (
         <>
@@ -124,13 +139,13 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                     </div>
                 </div>
                 {/*phần hiển thị danh sách budget*/}
-                <div style={{ marginTop: '20px', width: '450px' }}>
-                    <TableContainer style={{ marginLeft: '-25%', overflowY: 'auto', maxHeight: '180px' }}>
+                <div style={{ marginLeft: '-20%', marginTop: '20px', width: '450px' }}>
+                    <TableContainer style={{ overflowY: 'auto', maxHeight: '180px' }}>
                         <Table variant='simple' style={{ width: '300px' }}>
                             <Tbody>
                                 {budgets.map((budget) => (
                                     <Tr key={budget.id}>
-                                        <Td style={{ display: 'flex', alignItems: 'center' }} onClick={() => handleTrans()}>
+                                        <Td style={{ display: 'flex', alignItems: 'center' }} onClick={() => handleTrans(budget.id)}>
                                             <Image
                                                 borderRadius='full'
                                                 boxSize='50px'
@@ -148,7 +163,9 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                 </div>
 
             </div>
-            <div className={`card2 ${selectedWallet ? 'selected' : ''}`}
+
+            {/*phần hiển thị thông tin budget */}
+            <div className={`card2 ${selectedBudget ? 'selected' : ''}`}
                  style={{
                      width: '400px',
                      position: 'absolute',
@@ -158,7 +175,6 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                  }}>
                 {showCard2 && (
                     <MDBCard>
-
                         <MDBCardBody>
                             <MDBRow>
                                 <div style={{display: 'flex'}}>
@@ -166,7 +182,7 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                                     style={{marginTop: '-2px', fontSize: '30px', marginLeft: '-10px'}}/>
                                     <MDBCardTitle style={{margin: 'auto'}}>Budget Details</MDBCardTitle>
                                     <div style={{marginLeft: 'auto', display: 'flex', gap: '5px'}}>
-                                        <FaPen onClick={onOpen} style={{fontSize: '20px', marginRight: '1px'}}/>
+                                        <FaPen onClick={handleShow} style={{fontSize: '20px', marginRight: '1px'}}/>
                                         <MdDelete style={{
                                             fontSize: '25px',
                                             marginRight: '-1px',
@@ -186,42 +202,42 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                             alt=''
                                         />
                                         <div style={{marginLeft: '10px', display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{marginBottom: '5px'}}>Education</span>
-                                            <span>7,000,000 đ</span>
+                                            <span style={{marginBottom: '5px'}}>{editBudget.category.name}</span>
+                                            <span>{editBudget.amount} đ</span>
                                         </div>
                                     </div>
                                     <div style={{width: '250px'}}>
-                                        <Table variant='simple' style={{width: '100%'}}>
+                                        <Table variant='simple' style={{width: '350px',marginTop:'10px'}}>
                                             <Tbody>
                                                 <Tr>
                                                     <Td style={{
                                                         padding: '8px',
                                                         textAlign: 'left',
                                                         borderBottom: '1px solid #fff'
-                                                    }}>inches</Td>
+                                                    }}>Spent</Td>
                                                     <Td style={{
                                                         padding: '8px',
                                                         textAlign: 'right',
                                                         borderBottom: '1px solid #fff'
-                                                    }}>millimetres (mm)</Td>
+                                                    }}>Left</Td>
                                                 </Tr>
                                                 <Tr>
                                                     <Td style={{
                                                         padding: '8px',
                                                         textAlign: 'left',
                                                         borderBottom: '1px solid #fff'
-                                                    }}>inches</Td>
+                                                    }}>70,000 đ</Td>
                                                     <Td style={{
                                                         padding: '8px',
                                                         textAlign: 'right',
                                                         borderBottom: '1px solid #fff'
-                                                    }}>millimetres (mm)</Td>
+                                                    }}>6,930,000 đ</Td>
                                                 </Tr>
                                             </Tbody>
                                         </Table>
                                     </div>
-                                    <div>
-                                        <ProgressBar style={{marginLeft: '-40px', marginTop: '-25px'}} completed={60}/>
+                                    <div style={{marginLeft: '20px', marginTop: '10px'}}>
+                                        <ProgressBar completed={60}/>
                                     </div>
 
                                 </MDBRow>
@@ -229,13 +245,13 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                 <div style={{display: 'inline-flex', alignItems: 'center'}}>
                                     <MdCalendarMonth style={{fontSize: '20px'}}/>
                                     <span style={{marginLeft: '35px'}}>
-                                        11/03 - 18/03
+                                        {editBudget.startDate} to {editBudget.endDate}
                                     </span>
                                 </div>
                                 <div style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    marginTop: '5px',
+                                    marginTop: '10px',
                                     marginLeft: '-5px'
                                 }}>
                                     <Image
@@ -244,11 +260,11 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                         src='https://static.moneylover.me/img/icon/ic_category_salary.png'
                                         alt=''
                                     />
-                                    <span style={{marginLeft: '15px'}}>Name Wallet</span>
+                                    <span style={{marginLeft: '15px'}}>{editBudget.wallet.name}</span>
                                 </div>
                                 <hr style={{width: '350px', marginTop: '10px'}}/>
-                                <div style={{marginTop: '10px', width: '350px'}}>
-                                    <TableContainer style={{marginLeft: '-10%', overflowY: 'auto', maxHeight: '150px'}}>
+                                <div style={{marginTop: '5px', width: '350px',marginLeft: '5%'}}>
+                                    <TableContainer style={{ overflowY: 'auto', maxHeight: '130px'}}>
                                         <Table variant='simple' style={{width: '300px'}}>
                                             <Tbody>
                                                 <Tr>
@@ -322,79 +338,19 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                 )}
 
                 {/*modal edit budget*/}
-                <Modal isOpen={isOpen} onClose={onClose}>
-                    <ModalOverlay />
-                    <ModalContent>
-                        <ModalHeader>Edit Budget</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody>
-                            <Select placeholder='Select Type'>
-                                <option value='option1'>Expense</option>
-                                <option value='option2'>Loan</option>
-                            </Select>
-                            <Select placeholder='Select Category' style={{marginTop: '10px'}}>
-                                <option value='option1'>Category 1</option>
-                                <option value='option2'>Category 2</option>
-                                <option value='option3'>Category 3</option>
-                            </Select>
-
-                            <InputGroup  style={{marginTop: '10px'}}>
-                                <InputLeftElement
-                                    pointerEvents='none'
-                                    color='gray.300'
-                                    fontSize='1.2em'
-                                >
-                                    $
-                                </InputLeftElement>
-                                <Input placeholder='Enter amount' />
-                            </InputGroup>
-
-                            <div>
-                                <Select
-                                    placeholder='Select Time'
-                                    style={{ marginTop: '10px' }}
-                                    onChange={handleSelectChange}
-                                >
-                                    <option value='option1'>This Month</option>
-                                    <option value='option2'>Custom</option>
-                                </Select>
-                                {showInputs && (
-                                    <>
-                                        <Input
-                                            placeholder="Select Date and Time"
-                                            size="md"
-                                            type="date"
-                                            style={{ marginTop: '10px' }}
-                                            onChange={handleInputChange}
-                                        />
-                                        <Input
-                                            placeholder="Select Date and Time"
-                                            size="md"
-                                            type="date"
-                                            style={{ marginTop: '10px' }}
-                                            onChange={handleInputChange}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                            <Select
-                                placeholder='Select Wallet'
-                                style={{ marginTop: '10px' }}
-                                onChange={handleSelectChange}
-                            >
-                                <option value='option1'>Wallet 1</option>
-                                <option value='option2'>Wallet 2</option>
-                            </Select>
-
-                        </ModalBody>
-
-                        <ModalFooter>
-                            <Button variant='success' mr={3} onClick={onClose}>
-                                Close
-                            </Button>
-                            <Button colorScheme='green'>Submit</Button>
-                        </ModalFooter>
-                    </ModalContent>
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={handleClose}>
+                            Save Changes
+                        </Button>
+                    </Modal.Footer>
                 </Modal>
             </div>
 
