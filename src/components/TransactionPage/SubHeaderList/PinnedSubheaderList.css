@@ -52,6 +52,7 @@
 .button:active .button__icon {
     background-color: #2e8644;
 }
+
 .button:active {
     border: 1px solid #2e8644;
 }
@@ -86,4 +87,7 @@
 }
 .btn-color {
     color: chocolate;
+}
+.btn-nav-right:hover {
+    cursor: pointer;
 }

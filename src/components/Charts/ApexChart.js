@@ -17,6 +17,11 @@ import TransactionService from "../../services/transactions.services";
 
 
 const ApexChart = () => {
+
+
+    const [dailyTransactions, setDailyTransactions] = useState({});
+    const [monthlyTransactions, setMonthlyTransactions] = useState({});
+    const [yearlyTransactions, setYearlyTransactions] = useState({});
     const [listTransaction, setListTransaction] = useState([]);
     const [incomeCategory, setIncomeCategory] = useState([]);
     const [expenseCategory, setExpenseCategory] = useState([]);
@@ -52,6 +57,78 @@ const ApexChart = () => {
             });
     }
 
+    const calculateTransactions = (transactions) => {
+        const dailyTransactions = calculateDailyTransactions(transactions);
+        setDailyTransactions(dailyTransactions);
+
+        const monthlyTransactions = calculateMonthlyTransactions(transactions);
+        setMonthlyTransactions(monthlyTransactions);
+
+        const yearlyTransactions = calculateYearlyTransactions(transactions);
+        setYearlyTransactions(yearlyTransactions);
+    };
+
+    const calculateDailyTransactions = (transactions) => {
+        const dailyTransactions = {};
+
+        transactions.forEach(transaction => {
+            const date = new Date(transaction.date).toISOString().slice(0, 10); // Lấy ngày (YYYY-MM-DD)
+
+            if (!dailyTransactions[date]) {
+                dailyTransactions[date] = { income: 0, expense: 0 };
+            }
+
+            if (transaction.category.type === "INCOME") {
+                dailyTransactions[date].income += transaction.amount;
+            } else if (transaction.category.type === "EXPENSE") {
+                dailyTransactions[date].expense += transaction.amount;
+            }
+        });
+
+        return dailyTransactions;
+    };
+
+    const calculateMonthlyTransactions = (transactions) => {
+        const monthlyTransactions = {};
+
+        transactions.forEach(transaction => {
+            const date = new Date(transaction.date);
+            const yearMonth = `${date.getFullYear()}-${date.getMonth() + 1}`;
+
+            if (!monthlyTransactions[yearMonth]) {
+                monthlyTransactions[yearMonth] = { income: 0, expense: 0 };
+            }
+
+            if (transaction.category.type === "INCOME") {
+                monthlyTransactions[yearMonth].income += transaction.amount;
+            } else if (transaction.category.type === "EXPENSE") {
+                monthlyTransactions[yearMonth].expense += transaction.amount;
+            }
+        });
+
+        return monthlyTransactions;
+    };
+
+    const calculateYearlyTransactions = (transactions) => {
+        const yearlyTransactions = {};
+
+        transactions.forEach(transaction => {
+            const date = new Date(transaction.date);
+            const year = date.getFullYear();
+
+            if (!yearlyTransactions[year]) {
+                yearlyTransactions[year] = { income: 0, expense: 0 };
+            }
+
+            if (transaction.category.type === "INCOME") {
+                yearlyTransactions[year].income += transaction.amount;
+            } else if (transaction.category.type === "EXPENSE") {
+                yearlyTransactions[year].expense += transaction.amount;
+            }
+        });
+
+        return yearlyTransactions;
+    };
     const getIncomeList = (transactions) => {
         const incomeCat = [];
         let incomeAmt = 0;
@@ -75,7 +152,6 @@ const ApexChart = () => {
     const getExpenseList = (transactions) => {
         const expenseCat = [];
         let expenseAmt = 0;
-
         transactions.forEach(transaction => {
             if (transaction.category.type === "EXPENSE") {
                 const index = expenseCat.indexOf(transaction.category.name);
@@ -101,25 +177,25 @@ const ApexChart = () => {
     ];
     function Barchart({ listTransaction }) {
         return (
-                <Table variant='simple'>
-                    <div style={{marginLeft:'37vh',}}>
-                <Tbody>
-                    {listTransaction.map((transactions) => (
-                        <Tr key={transactions.id}>
-                            <Td style={{ display: 'flex', alignItems: 'center' }}>
-                                <Image
-                                    borderRadius='full'
-                                    boxSize='50px'
-                                    src={transactions.category.image}
-                                    alt=""
-                                />
-                                <span style={{ marginLeft: '90vh' }}>{transactions.category.name}</span>
-                            </Td>
-                            <Td style={{ textAlign: 'right' }}>{transactions.amount} vnd</Td>
-                        </Tr>
-                    ))}
-                </Tbody>
-                    </div>
+            <Table variant='simple'>
+                <div style={{marginLeft:'37vh',}}>
+                    <Tbody>
+                        {listTransaction.map((transactions) => (
+                            <Tr key={transactions.id}>
+                                <Td style={{ display: 'flex', alignItems: 'center' }}>
+                                    <Image
+                                        borderRadius='full'
+                                        boxSize='50px'
+                                        src={transactions.category.image}
+                                        alt=""
+                                    />
+                                    <span style={{ marginLeft: '90vh' }}>{transactions.category.name}</span>
+                                </Td>
+                                <Td style={{ textAlign: 'right' }}>{transactions.amount} vnd</Td>
+                            </Tr>
+                        ))}
+                    </Tbody>
+                </div>
             </Table>
 
         );

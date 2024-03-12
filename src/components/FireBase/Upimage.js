@@ -1,16 +1,20 @@
-
-import { useState, useEffect } from "react";
-import { storage } from "./firebase";
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import { v4 } from 'uuid';
+import {useState, useEffect} from "react";
+import {storage} from "./firebase";
+import {ref, uploadBytes, listAll, getDownloadURL} from "firebase/storage";
+import {v4} from 'uuid';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image';
+import Modal from 'react-bootstrap/Modal';
+import {useToast} from "@chakra-ui/react";
+
 function UploadImage() {
-    const[imageUpload, setImageUpload] = useState(null)
+    const [imageUpload, setImageUpload] = useState(null)
     const imageListRef = ref(storage, "images/")
     const [imageList, setImageList] = useState([])
     const navigate = useNavigate();
-
+    const toast = useToast();
     const [user, setUser] = useState([]);
     const uploadImage = () => {
         if (imageUpload == null) return;
@@ -22,14 +26,23 @@ function UploadImage() {
                     userId: user.id,
                     image: url
                 }).then(() => {
-                    localStorage.setItem("avatar", url);
-                    alert("Image Uploaded");
+                    toast({
+                        title: 'Update success!',
+                        description: 'You successfully update a image!',
+                        status: 'success',
+                        duration: 1500,
+                        isClosable: true,
+                    });
                 }).catch((error) => {
                     console.error("Error uploading image URL:", error);
-                    alert("Error uploading image URL");
+                    toast({
+                        title: 'Update Failed',
+                        description: 'Error: Error uploading image!',
+                        status: 'error',
+                        duration: 3000,
+                        isClosable: true,
+                    });
                 });
-                alert("Image Uploaded");
-                navigate("/auth/home");
             });
         })
     }
@@ -59,30 +72,38 @@ function UploadImage() {
                 setImage(res.data.image);
             })
             .catch(err => console.error(err))
-    }, )
+    },)
     return (
-        // <div className="App" style={{display: "flex"}}>
-        //     <div>
-        //         <img src={images}/>
-        //     </div>
+        // <div>
+        //     <img src={images}/>
+        // </div>
         //
-        //     <div style={{margin: "50px 20px"}}>
-        //         <input type="file" onChange={(e) => {setImageUpload((e.target.files[0]))}}/>
-        //         <button onClick={uploadImage} type="button" className="btn btn-primary" data-mdb-ripple-init>Upload Image</button>
-        //     </div>
-        //
+        // <div style={{margin: "50px 20px"}}>
+        //     <input type="file" onChange={(e) => {setImageUpload((e.target.files[0]))}}/>
+        //     <button onClick={uploadImage} type="button" className="btn btn-primary" data-mdb-ripple-init>Upload Image</button>
         // </div>
 
-        <div style={{ padding: "20px" }}>
-            <img src="https://note.moneylover.me/content/images/2017/05/Money-Lover---Logo.png" style={{ margin: 'auto', marginBottom: '20px'}}/>
-            <div style={{margin: "auto", display: "flex", alignItems: "center"}}>
-                <input type="file" onChange={(e) => {
-                    setImageUpload(e.target.files[0])
-                }} style={{ marginRight: "20px", padding: "10px", fontSize: "14px", border: "1px solid #ccc", borderRadius: "5px" }} />
-                <button onClick={uploadImage} type="button" className="btn btn-primary" style={{backgroundColor: "blue", color: "white", padding: "10px", fontSize: "16px", borderRadius: "5px"}}>
-                    Upload Image
-                </button>
-            </div>
+        <div>
+            <Modal.Header closeButton>
+                <Modal.Title>Update Avatar</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div>
+                    <Image  style={{width: '100px', height: '100px',margin: 'auto'}} roundedCircle src={images}/>
+                </div>
+                <div style={{margin: "50px 20px"}}>
+                    <input type="file" onChange={(e) => {
+                        setImageUpload((e.target.files[0]))
+                    }}/>
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={uploadImage}
+                        type="button"
+                        className="btn btn-primary"
+                        data-mdb-ripple-init>Upload Image</Button>
+
+            </Modal.Footer>
         </div>
     );
 }
