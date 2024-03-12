@@ -21,15 +21,15 @@ import axios from "axios";
 import Form from 'react-bootstrap/Form';
 import {Input, InputGroup} from '@chakra-ui/react';
 
-function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
+function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newBudgetCreated, onBudgetCreated}) {
     // budget detail
     const [showCard2, setShowCard2] = useState(false);
     const [selectedBudget, setSelectedBudget] = useState(false);
     const [selectedBudgetId, setSelectedBudgetId] = useState(null);
     const [editBudget, setEditBudget] = useState({
         amount: '',
-        category_id: '',
-        wallet_id: '',
+        category: '',
+        wallet: '',
         startDate: '',
         endDate: ''
     });
@@ -63,7 +63,7 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
     useEffect(() => {
         fetchData();
         fetchBudgets();
-    }, [user.id]);
+    }, [newBudgetCreated]);
 
     //modal edit budget
     const [show, setShow] = useState(false);
@@ -80,15 +80,12 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
     const [select_category, setCategory] = useState('');
     const fetchData = async () => {
         try {
-
             // Gọi API để lấy danh sách ví
             const wallets_data = await axios.get('http://localhost:8080/api/wallets/user/' + user.id);
             setWallets(wallets_data.data);
-
             // Gọi API để lấy danh sách category
             const categories_data = await axios.get('http://localhost:8080/api/categories/user/' + user.id);
             setCategories(categories_data.data);
-
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -201,22 +198,23 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
 
                 </div>
                 {/*phần hiển thị danh sách budget*/}
-                <div style={{ marginLeft: '-30%', marginTop: '20px', width: '400px' }}>
-                    <TableContainer style={{ overflowY: 'auto', maxHeight: '180px' }}>
-                        <Table variant='simple' style={{ width: '300px' }}>
+                <div style={{marginLeft: '-30%', marginTop: '20px', width: '400px'}}>
+                    <TableContainer style={{overflowY: 'auto', maxHeight: '180px'}}>
+                        <Table variant='simple' style={{width: '300px'}}>
                             <Tbody>
                                 {budgets.map((budget) => (
                                     <Tr key={budget.id}>
-                                        <Td style={{ display: 'flex', alignItems: 'center' }} onClick={() => handleTrans(budget.id)}>
+                                        <Td style={{display: 'flex', alignItems: 'center'}}
+                                            onClick={() => handleTrans(budget.id)}>
                                             <Image
                                                 borderRadius='full'
                                                 boxSize='50px'
                                                 src={budget.category.image}
                                                 alt=''
                                             />
-                                            <span style={{ marginLeft: '15px' }}>{budget.name}</span>
+                                            <span style={{marginLeft: '15px'}}>{budget.name}</span>
                                         </Td>
-                                        <Td style={{ textAlign: 'right' }}>{budget.amount.toLocaleString()} đ</Td>
+                                        <Td style={{textAlign: 'right'}}>{budget.amount.toLocaleString()} đ</Td>
                                     </Tr>
                                 ))}
                             </Tbody>
@@ -244,7 +242,8 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                                     style={{marginTop: '-2px', fontSize: '30px', marginLeft: '-10px'}}/>
                                     <MDBCardTitle style={{margin: 'auto'}}>Budget Details</MDBCardTitle>
                                     <div style={{marginLeft: 'auto', display: 'flex', gap: '5px'}}>
-                                        <FaPen onClick={() => handleShow(editBudget)} style={{fontSize: '20px', marginRight: '1px'}}/>
+                                        <FaPen onClick={() => handleShow(editBudget)}
+                                               style={{fontSize: '20px', marginRight: '1px'}}/>
                                         <MdDelete style={{
                                             fontSize: '25px',
                                             marginRight: '-1px',
@@ -271,7 +270,7 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                         </div>
                                     </div>
                                     <div style={{width: '250px'}}>
-                                        <Table variant='simple' style={{width: '350px',marginTop:'10px'}}>
+                                        <Table variant='simple' style={{width: '350px', marginTop: '10px'}}>
                                             <Tbody>
                                                 <Tr>
                                                     <Td style={{
@@ -327,8 +326,8 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                     <span style={{marginLeft: '15px'}}>{editBudget.wallet.name}</span>
                                 </div>
                                 <hr style={{width: '350px', marginTop: '10px'}}/>
-                                <div style={{marginTop: '5px', width: '350px',marginLeft: '5%'}}>
-                                    <TableContainer style={{ overflowY: 'auto', maxHeight: '130px'}}>
+                                <div style={{marginTop: '5px', width: '350px', marginLeft: '5%'}}>
+                                    <TableContainer style={{overflowY: 'auto', maxHeight: '130px'}}>
                                         <Table variant='simple' style={{width: '300px'}}>
                                             <Tbody>
                                                 <Tr>
@@ -421,15 +420,18 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                    onChange={handleChange}/>
                         </InputGroup>
 
-                        <span>Type</span>
-                        <Form.Select aria-label="Default select example" onChange={handleCategoryChange} >
-                            <option>Change Type</option>
-                            <option value='EXPENSE'>EXPENSE</option>
-                            <option value='LOAN'>LOAN</option>
-                        </Form.Select>
+                        <div  style={{marginTop: '10px'}}>
+                            <span className="text-green-900">Type : {editBudget.category.type}</span>
+                            <Form.Select onChange={handleCategoryChange} >
+                                <option>Change Type</option>
+                                <option value='EXPENSE'>EXPENSE</option>
+                                <option value='LOAN'>LOAN</option>
+                            </Form.Select>
+                        </div>
 
-                        <span>Category</span>
-                        <Form.Select name='category_id' onChange={handleChange}>
+                        <div  style={{marginTop: '10px'}}>
+                        <span className="text-green-900">Category : {editBudget.category.name}</span>
+                        <Form.Select name='category_id' onChange={handleChange} >
                             <option>Open this select category</option>
                             {categories.filter(category => category.type === select_category)
                                 .map((category) => (
@@ -438,21 +440,25 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                     </option>
                                 ))}
                         </Form.Select>
+                        </div>
 
-                        <span>Wallet</span>
-                        <Form.Select  onChange={handleChange}
-                                      name='wallet_id'>
+                        <div style={{marginTop: '10px'}}>
+                        <span className="text-green-900">Wallet : {editBudget.wallet.name}</span>
+                        <Form.Select onChange={handleChange}
+                                     name='wallet_id'>
                             <option>Open this select wallet</option>
                             {wallets.map((wallet) => (
                                 <option key={wallet.id} value={wallet.id}>{wallet.name}</option>
                             ))}
                         </Form.Select>
+                        </div>
 
+                        <div style={{marginTop: '10px'}}>
                         <span>Start Date</span>
                         <InputGroup className="mb-3">
                             <Form.Control
                                 placeholder="Start Date"
-                                type= "date"
+                                type="date"
                                 name='startDate' onChange={handleChange}
                                 value={editBudget.startDate}
                             />
@@ -461,19 +467,19 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                         <InputGroup className="mb-3">
                             <Form.Control
                                 onChange={handleChange}
-                                type= "date"
+                                type="date"
                                 name='endDate'
                                 aria-describedby="basic-addon2"
                                 value={editBudget.endDate}
                             />
                         </InputGroup>
-
+                        </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="outline-success" onClick={handleClose}>
                             Close
                         </Button>
-                        <Button variant="success"  onClick={handleEditBudget}>
+                        <Button variant="success" onClick={handleEditBudget}>
                             Save Changes
                         </Button>
                     </Modal.Footer>

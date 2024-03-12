@@ -30,10 +30,12 @@ const Budget = () => {
     const [isCardOpen, setIsCardOpen] = useState(false);
     const handleTransClick = () => {
         setIsCardOpen(true);
+        fetchBudgets();
     };
 
     const handleCloseCard = () => {
         setIsCardOpen(false);
+        fetchBudgets();
     };
     //show custom time
     const [showInputs, setShowInputs] = useState(false);
@@ -64,6 +66,8 @@ const Budget = () => {
             .then(res => {
                 console.log(res);
                 onClose();
+                handleBudgetCreated();
+                fetchBudgets();
                 toast({
                     title: 'Create success!',
                     description: 'You successfully created a budget!',
@@ -96,6 +100,13 @@ const Budget = () => {
     const [categories, setCategories] = useState([]);
     const [wallets, setWallets] = useState([]);
     const [select_category, setCategory] = useState('');
+
+    const [newBudgetCreated, setNewBudgetCreated] = useState(false);
+
+    // Callback function để cập nhật danh sách budget trên trang con
+    const handleBudgetCreated = () => {
+        setNewBudgetCreated(!newBudgetCreated);
+    };
     const fetchData = async () => {
         try {
 
@@ -149,10 +160,8 @@ const Budget = () => {
             }}>
                 <Tabs position="relative" variant="unstyled">
                     <TabList>
-                        <Tab>This Month</Tab>
-                        <Tab>Two</Tab>
-                        <Tab>Three</Tab>
-                        <IoMdAdd onClick={onOpen} style={{fontSize: '30px', marginTop: '10px', marginLeft: '45%'}}/>
+                        <Tab>BUDGETS</Tab>
+                        <IoMdAdd onClick={onOpen} style={{fontSize: '30px', marginTop: '10px', marginLeft: '70%'}}/>
                     </TabList>
                     <TabIndicator
                         mt="-1.5px"
@@ -164,14 +173,8 @@ const Budget = () => {
                         <TabPanel>
                             <div>
                                 <ProgressCircle value={8000000} maxValue={moneyBudget} handleTransClick={handleTransClick}
-                                                handleCloseCard={handleCloseCard}/>
+                                                handleCloseCard={handleCloseCard} newBudgetCreated={newBudgetCreated} onBudgetCreated={handleBudgetCreated}/>
                             </div>
-                        </TabPanel>
-                        <TabPanel>
-                            <p>two!</p>
-                        </TabPanel>
-                        <TabPanel>
-                            <p>three!</p>
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
