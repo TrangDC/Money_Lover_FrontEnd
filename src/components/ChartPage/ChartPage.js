@@ -26,6 +26,7 @@ const ChartPage = () => {
             const fetchData = async () => {
                 getTransactionIncome(userdata, selectedWalletId);
                 getTransactionEx(userdata, selectedWalletId);
+
             };
             fetchData();
         }
@@ -60,6 +61,7 @@ const ChartPage = () => {
         }
     }, [selectedWalletId]);
 
+
     const getTransactionEx = (userdata, selectedWalletId) => {
         if (selectedWalletId) {
             axios.get(`http://localhost:8080/api/transactions/user/${userdata.id}/expense_transaction/${selectedWalletId}`)
@@ -73,6 +75,8 @@ const ChartPage = () => {
                 });
         }
     };
+
+
 
     function getlist(transactions, setCategory, setAmount) {
         const category = [];
@@ -214,6 +218,10 @@ const ChartPage = () => {
                     <MDBCol style={{ width: '33%' }}>
                         <MDBCard className='h-100'>
                             {/* Content for the third card */}
+
+                            <Link to= "/auth/colchart" className='text-dark' >
+                                <span>See Detail</span>
+                            </Link>
 
                             {/*end*/}
                         </MDBCard>

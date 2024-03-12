@@ -17,6 +17,9 @@ import ExpensePage from "./components/PageExpense/ExpensePage";
 import ChartPage from "./components/ChartPage/ChartPage";
 import {WalletProvider} from "./components/WalletContext";
 import IncomePiechart from "./components/IncomePiechart/IncomePiechart";
+import ApexChart from "./components/Charts/ApexChart";
+
+import ChartPage2 from "./components/Charts/ChartPage2";
 
 
 
@@ -46,6 +49,9 @@ function App() {
                         /> : <Error/>}/>
                         <Route path='chart' element={(isAuth || user) ? <ChartPage
                         /> : <Error/>}/>
+                        <Route path='colchart' element={(isAuth || user) ? <ApexChart
+                        /> : <Error/>}/><Route path='colchart2' element={(isAuth || user) ? <ChartPage2
+                        /> : <Error/>}/>
                     </Route>
                     <Route path='/login'
                            element={<LoginPage handleLoginSuccess={handleLoginSuccess} isAuth={isAuth}/>}/>
@@ -55,7 +61,8 @@ function App() {
                     <Route path='/chart' element={<ChartPage/>}/>
                     <Route path='/piechart' element={<IncomePiechart/>}/>
                     <Route path='/exchart' element={<ExpensePage/>}/>
-                    <Route path='/report' element={<Express/>}/>
+                    <Route path='/colchart2' element={<ChartPage2/>}/>
+
 
                 </Routes>
             </BrowserRouter>

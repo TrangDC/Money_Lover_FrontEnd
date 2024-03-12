@@ -181,7 +181,7 @@ const IncomePiechart = () => {
                         )}
                         { navigator === 'month' && (
                             <div className="flex justify-content-center mt-0.5">
-
+//
                                 <Button
                                     variant="text"
                                     className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
@@ -205,6 +205,7 @@ const IncomePiechart = () => {
                                     onClick={() => handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, 1)}>
                                     {currentMonthIndex === 11 ? months[0] : months[currentMonthIndex + 1]} {currentMonthIndex === 11 ? currentYear + 1 : currentYear}
                                 </Button>
+//
                             </div>
                         )}
                         {navigator === "day" && (

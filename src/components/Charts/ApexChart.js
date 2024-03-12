@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ReferenceLine
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
 import axios from "axios";
-import {Image, Table, TableContainer, Tbody, Td, Tr} from "@chakra-ui/react";
+import {
+    Image,
+    Table,
+    Tbody,
+    Td,
+    Tr
+} from "@chakra-ui/react";
 import PropTypes from "prop-types";
-import TransactionService from "../../services/transactions.services";
 
-
+import {useWallet} from "../WalletContext";
 
 const ApexChart = () => {
-
 
     const [dailyTransactions, setDailyTransactions] = useState({});
     const [monthlyTransactions, setMonthlyTransactions] = useState({});
@@ -28,14 +23,17 @@ const ApexChart = () => {
     const [incomeAmount, setIncomeAmount] = useState(0);
     const [expenseAmount, setExpenseAmount] = useState(0);
     const [user, setUser] = useState({});
+    const {selectedWalletId} = useWallet();
+    const userdata = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
-        const userdata = JSON.parse(localStorage.getItem("user"));
         setUser(userdata);
-        transactions(userdata);
-        transaction(userdata);
-    }, []);
-    const transactions = (userdata) => {
+        getTransactionsIncome(userdata,selectedWalletId);
+        getTransactionExpense(userdata,selectedWalletId);
+
+    }, [selectedWalletId]);
+
+    const getTransactionsIncome = (userdata) => {
         axios.get(`http://localhost:8080/api/transactions/user/${userdata?.id}/income_transaction/7`)
             .then((res) => {
                 setListTransaction(res.data);
@@ -46,7 +44,7 @@ const ApexChart = () => {
             });
     }
 
-    const transaction = (userdata) => {
+    const getTransactionExpense = (userdata) => {
         axios.get(`http://localhost:8080/api/transactions/user/${userdata?.id}/expense_transaction/7`)
             .then((res) => {
                 setListTransaction(res.data);
@@ -175,14 +173,18 @@ const ApexChart = () => {
             expense: -expenseAmount,
         }
     ];
+    const calculateNetIncome = () => {
+        return incomeAmount - expenseAmount;
+    };
+
     function Barchart({ listTransaction }) {
         return (
             <Table variant='simple'>
-                <div style={{marginLeft:'37vh',}}>
+                <div style={{marginLeft:'35vh',}}>
                     <Tbody>
                         {listTransaction.map((transactions) => (
                             <Tr key={transactions.id}>
-                                <Td style={{ display: 'flex', alignItems: 'center' }}>
+                                <Td style={{ display: 'flex', alignItems: 'center',marginLeft:'' }}>
                                     <Image
                                         borderRadius='full'
                                         boxSize='50px'
@@ -211,8 +213,8 @@ const ApexChart = () => {
                     Tổng Cộng:
                 </div>
                 <div style={{ marginLeft: '20px', color: 'red', fontSize: '24px', fontWeight: 'bold' }}>
-                    <span variant="h2" color="textSecondary">
-              Income: {incomeAmount}  Expense: {expenseAmount}
+        <span variant="h2" color="textSecondary">
+         Net Income: {calculateNetIncome()}
         </span>
                 </div>
             </div>

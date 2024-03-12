@@ -54,7 +54,6 @@ const ExpensePieChart = () => {
     const [currentMonthIndex, setCurrentMonthIndex] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [wallet_id, setWallet_id] = useState('all');
-
     const { selectedWalletId } = useWallet();
 
     useEffect(() => {
@@ -62,13 +61,13 @@ const ExpensePieChart = () => {
             getTransactionIncome(userdata, selectedWalletId);
         };
         fetchData();
-    }, [selectedWalletId, currentYear, currentMonthIndex]);
+    }
+    , [selectedWalletId, currentYear, currentMonthIndex]);
 
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
     const handlePrevNextMonths = (currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, increment) => {
         TransactionService.handlePrevNextMonths(currentMonthIndex, setCurrentMonthIndex, currentYear, setCurrentYear, increment);
-
     };
 
     const handleCurrentMonth = (setCurrentMonthIndex, setCurrentYear) => {
@@ -237,6 +236,7 @@ const ExpensePieChart = () => {
             </MDBCard>
 
             {/*modal custom*/}
+
             <Modal
                 isOpen={isOpen}
                 onClose={onClose}
