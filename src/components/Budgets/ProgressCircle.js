@@ -3,25 +3,13 @@ import {CircularProgressbar, buildStyles} from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {
     Table,
-    Thead,
     Tbody,
-    Tfoot,
     Tr,
-    Th,
     Td,
     Image,
-    TableCaption,
-    TableContainer,
-    useDisclosure,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    Select,
-    InputGroup, InputLeftElement, Input, ModalFooter,
+    TableContainer, InputLeftElement, useToast,
 } from '@chakra-ui/react'
-import {MDBCard, MDBCardBody, MDBCardText, MDBCardTitle, MDBCol, MDBRow} from "mdb-react-ui-kit";
+import {MDBCard, MDBCardBody, MDBCardTitle, MDBRow} from "mdb-react-ui-kit";
 import {MdOutlineClose} from "react-icons/md";
 import {FaPen} from "react-icons/fa";
 import {MdDelete} from "react-icons/md";
@@ -30,9 +18,10 @@ import {MdCalendarMonth} from "react-icons/md";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
+import Form from 'react-bootstrap/Form';
+import {Input, InputGroup} from '@chakra-ui/react';
 
 function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
-    const percentage = Math.min((value / maxValue) * 100, 100);
     // budget detail
     const [showCard2, setShowCard2] = useState(false);
     const [selectedBudget, setSelectedBudget] = useState(false);
@@ -60,40 +49,116 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
         console.log(editBudget);
     };
 
-    //show custom time
-    const [showInputs, setShowInputs] = useState(false);
-    const handleSelectChange = (event) => {
-        setShowInputs(event.target.value === 'option2');
-    };
-
-// Xử lý sự kiện thay đổi cho các trường Input trong modal
-    const handleInputChange = () => {
-    };
-
-    // const handleSelectChange = (event) => {
-    //     setShowInputs(event.target.value === 'option2');
-    // };
-
     const [budgets, setBudgets] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
-    useEffect(() => {
-        const fetchBudgets = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/budgets/user/${user.id}`);
-                setBudgets(response.data);
-            } catch (error) {
-                console.error('Error fetching budgets:', error);
-            }
-        };
+    const fetchBudgets = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/budgets/user/${user.id}`);
+            setBudgets(response.data);
+        } catch (error) {
+            console.error('Error fetching budgets:', error);
+        }
+    };
 
+    useEffect(() => {
+        fetchData();
         fetchBudgets();
     }, [user.id]);
 
     //modal edit budget
     const [show, setShow] = useState(false);
+    const [budgetE, setBudgetE] = useState()
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+
+    const handleShow = (budgetE) => {
+        setShow(true);
+        console.log(budgetE);
+    };
+    const [categories, setCategories] = useState([]);
+    const [wallets, setWallets] = useState([])
+    const [select_category, setCategory] = useState('');
+    const fetchData = async () => {
+        try {
+
+            // Gọi API để lấy danh sách ví
+            const wallets_data = await axios.get('http://localhost:8080/api/wallets/user/' + user.id);
+            setWallets(wallets_data.data);
+
+            // Gọi API để lấy danh sách category
+            const categories_data = await axios.get('http://localhost:8080/api/categories/user/' + user.id);
+            setCategories(categories_data.data);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    const handleCategoryChange = (event) => {
+        setCategory(event.target.value);
+    };
+
+    const handleChange = (e) => {
+        console.log(e)
+        setEditBudget({
+            ...editBudget,
+            [e.target.name]: e.target.value
+        });
+    };
+    //hàm edit budget
+    const toast = useToast();
+    const handleEditBudget = async () => {
+        try {
+            const response = await axios.put(`http://localhost:8080/api/budgets/user/${user.id}/edit/${selectedBudgetId}`, editBudget);
+            handleClose();
+            fetchBudgets();
+            toast({
+                title: 'Update success!',
+                description: 'You successfully updated a budget!',
+                status: 'success',
+                duration: 1500,
+                isClosable: true,
+            });
+        } catch (error) {
+            console.error('Error updating budget:', error);
+            toast({
+                title: 'Update Failed',
+                description: 'Failed to updated a budget!',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+
+        }
+    };
+
+    const handleDelete = (id) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this budget?');
+        if (confirmDelete) {
+            axios.delete(`http://localhost:8080/api/budgets/user/${user.id}/delete/${id}`)
+                .then(res => {
+                    fetchBudgets();
+                    handleClickX();
+                    toast({
+                        title: 'Delete Successful',
+                        description: 'You have successfully deleted the budget!',
+                        status: 'success',
+                        duration: 1500,
+                        isClosable: true,
+                    });
+                    setSelectedBudget(null);
+                })
+                .catch(err => toast({
+                    title: 'Delete Failed',
+                    description: 'Failed to delete the budget!',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                }));
+        }
+    };
+
+    //bieu do
+    const percentage = Math.min((value / maxValue) * 100, 100);
 
     return (
         <>
@@ -120,7 +185,7 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                         paddingRight: '10px',
                         marginLeft: '-45%'
                     }}>
-                        <span style={{display: "block", marginBottom: 5}}>+8 M đ</span>
+                        <span style={{display: "block", marginBottom: 5}}>+ {maxValue.toLocaleString()} đ</span>
                         <span>Total budgets</span>
                     </div>
                     <div style={{
@@ -131,15 +196,12 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                         paddingRight: '10px'
                     }}>
                         <span style={{display: "block", marginBottom: 5}}>+8 M đ</span>
-                        <span>Total budgets</span>
+                        <span>Total spent</span>
                     </div>
-                    <div style={{flex: 1, textAlign: "center", paddingLeft: '10px'}}>
-                        <span style={{display: "block", marginBottom: 5}}>+8 M đ</span>
-                        <span>Total budgets</span>
-                    </div>
+
                 </div>
                 {/*phần hiển thị danh sách budget*/}
-                <div style={{ marginLeft: '-20%', marginTop: '20px', width: '450px' }}>
+                <div style={{ marginLeft: '-30%', marginTop: '20px', width: '400px' }}>
                     <TableContainer style={{ overflowY: 'auto', maxHeight: '180px' }}>
                         <Table variant='simple' style={{ width: '300px' }}>
                             <Tbody>
@@ -149,12 +211,12 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                             <Image
                                                 borderRadius='full'
                                                 boxSize='50px'
-                                                src='https://static.moneylover.me/img/icon/ic_category_salary.png'
+                                                src={budget.category.image}
                                                 alt=''
                                             />
                                             <span style={{ marginLeft: '15px' }}>{budget.name}</span>
                                         </Td>
-                                        <Td style={{ textAlign: 'right' }}>{budget.amount}</Td>
+                                        <Td style={{ textAlign: 'right' }}>{budget.amount.toLocaleString()} đ</Td>
                                     </Tr>
                                 ))}
                             </Tbody>
@@ -182,13 +244,15 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                                     style={{marginTop: '-2px', fontSize: '30px', marginLeft: '-10px'}}/>
                                     <MDBCardTitle style={{margin: 'auto'}}>Budget Details</MDBCardTitle>
                                     <div style={{marginLeft: 'auto', display: 'flex', gap: '5px'}}>
-                                        <FaPen onClick={handleShow} style={{fontSize: '20px', marginRight: '1px'}}/>
+                                        <FaPen onClick={() => handleShow(editBudget)} style={{fontSize: '20px', marginRight: '1px'}}/>
                                         <MdDelete style={{
                                             fontSize: '25px',
                                             marginRight: '-1px',
                                             marginTop: '-2px',
                                             color: 'red'
-                                        }}/>
+                                        }}
+                                                  onClick={() => handleDelete(editBudget.id)}
+                                        />
                                     </div>
                                 </div>
 
@@ -198,12 +262,12 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                         <Image
                                             borderRadius='full'
                                             boxSize='50px'
-                                            src='https://static.moneylover.me/img/icon/ic_category_salary.png'
+                                            src={editBudget.category.image}
                                             alt=''
                                         />
                                         <div style={{marginLeft: '10px', display: 'flex', flexDirection: 'column'}}>
                                             <span style={{marginBottom: '5px'}}>{editBudget.category.name}</span>
-                                            <span>{editBudget.amount} đ</span>
+                                            <span>{editBudget.amount.toLocaleString()} đ</span>
                                         </div>
                                     </div>
                                     <div style={{width: '250px'}}>
@@ -257,7 +321,7 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                                     <Image
                                         borderRadius='full'
                                         boxSize='50px'
-                                        src='https://static.moneylover.me/img/icon/ic_category_salary.png'
+                                        src='https://static.moneylover.me/img/icon/icon.png'
                                         alt=''
                                     />
                                     <span style={{marginLeft: '15px'}}>{editBudget.wallet.name}</span>
@@ -340,14 +404,76 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard}) {
                 {/*modal edit budget*/}
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
+                        <Modal.Title>Update Budget</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+
+                    <Modal.Body>
+                        <span>Amount</span>
+                        <InputGroup style={{marginTop: '10px'}}>
+                            <InputLeftElement
+                                pointerEvents='none'
+                                color='gray.300'
+                                fontSize='1.2em'
+                            >
+                                $
+                            </InputLeftElement>
+                            <Input placeholder='Enter amount' name="amount" value={editBudget.amount}
+                                   onChange={handleChange}/>
+                        </InputGroup>
+
+                        <span>Type</span>
+                        <Form.Select aria-label="Default select example" onChange={handleCategoryChange} >
+                            <option>Change Type</option>
+                            <option value='EXPENSE'>EXPENSE</option>
+                            <option value='LOAN'>LOAN</option>
+                        </Form.Select>
+
+                        <span>Category</span>
+                        <Form.Select name='category_id' onChange={handleChange}>
+                            <option>Open this select category</option>
+                            {categories.filter(category => category.type === select_category)
+                                .map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        <span>{category.name}</span>
+                                    </option>
+                                ))}
+                        </Form.Select>
+
+                        <span>Wallet</span>
+                        <Form.Select  onChange={handleChange}
+                                      name='wallet_id'>
+                            <option>Open this select wallet</option>
+                            {wallets.map((wallet) => (
+                                <option key={wallet.id} value={wallet.id}>{wallet.name}</option>
+                            ))}
+                        </Form.Select>
+
+                        <span>Start Date</span>
+                        <InputGroup className="mb-3">
+                            <Form.Control
+                                placeholder="Start Date"
+                                type= "date"
+                                name='startDate' onChange={handleChange}
+                                value={editBudget.startDate}
+                            />
+                        </InputGroup>
+                        <span>End Date</span>
+                        <InputGroup className="mb-3">
+                            <Form.Control
+                                onChange={handleChange}
+                                type= "date"
+                                name='endDate'
+                                aria-describedby="basic-addon2"
+                                value={editBudget.endDate}
+                            />
+                        </InputGroup>
+
+                    </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <Button variant="outline-success" onClick={handleClose}>
                             Close
                         </Button>
-                        <Button variant="primary" onClick={handleClose}>
+                        <Button variant="success"  onClick={handleEditBudget}>
                             Save Changes
                         </Button>
                     </Modal.Footer>

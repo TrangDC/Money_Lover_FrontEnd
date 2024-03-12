@@ -11,23 +11,22 @@ import {
     InputLeftElement, useToast
 } from '@chakra-ui/react';
 import ProgressCircle from './ProgressCircle';
-import { IoMdAdd } from "react-icons/io";
+import {IoMdAdd} from "react-icons/io";
 import {
     Modal,
-    ModalOverlay,
     ModalContent,
     ModalHeader,
     ModalFooter,
     ModalBody,
     ModalCloseButton,
 } from '@chakra-ui/react';
-import { Select } from '@chakra-ui/react';
-import { Input, InputGroup } from '@chakra-ui/react';
-import Offcanvas from 'react-bootstrap/Offcanvas';
+import {Select} from '@chakra-ui/react';
+import {Input, InputGroup} from '@chakra-ui/react';
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const Budget = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const {isOpen, onOpen, onClose} = useDisclosure()
     const [isCardOpen, setIsCardOpen] = useState(false);
     const handleTransClick = () => {
         setIsCardOpen(true);
@@ -52,6 +51,8 @@ const Budget = () => {
         startDate: '',
         endDate: ''
     });
+
+    const navigate = useNavigate()
 
     // Handle form submit
     const handleSubmit = (event) => {
@@ -93,7 +94,7 @@ const Budget = () => {
     //lay danh sach category va wallet
     const user = JSON.parse(localStorage.getItem("user"));
     const [categories, setCategories] = useState([]);
-    const [wallets, setWallets] = useState([])
+    const [wallets, setWallets] = useState([]);
     const [select_category, setCategory] = useState('');
     const fetchData = async () => {
         try {
@@ -110,26 +111,48 @@ const Budget = () => {
             console.error('Error fetching data:', error);
         }
     };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const handleCategoryChange = (event) => {
         setCategory(event.target.value);
     };
 
+    useEffect(() => {
+        fetchData();
+        fetchBudgets();
+    }, [user.id]);
+
+    //số liệu biểu đồ
+    const [budgets, setBudgets] = useState([]);
+    const [moneyBudget, setMoneyBudget] = useState(0);
+    const [moneyTrans, setMoneyTrans] = useState(0);
+    const fetchBudgets = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/budgets/user/${user.id}`);
+            setBudgets(response.data);
+            // Tính tổng số tiền của các định mức
+            let totalAmount = 0;
+            response.data.forEach((budget) => {
+                totalAmount += parseInt(budget.amount);
+            });
+            setMoneyBudget(totalAmount);
+        } catch (error) {
+            console.error('Error fetching budgets:', error);
+        }
+    };
+
+
     return (
-        <div style={{ marginLeft: isCardOpen ? '-300px' : '0', transition: 'margin-left 0.5s' }}>
-            <div style={{maxHeight: '600px',maxWidth: '500px',
-                backgroundColor: 'white',margin: 'auto',
-                borderRadius: '10px'}}>
+        <div style={{marginLeft: isCardOpen ? '-300px' : '0', transition: 'margin-left 0.5s'}}>
+            <div style={{
+                maxHeight: '600px', maxWidth: '500px',
+                backgroundColor: 'white', margin: 'auto',
+                borderRadius: '10px'
+            }}>
                 <Tabs position="relative" variant="unstyled">
                     <TabList>
                         <Tab>This Month</Tab>
                         <Tab>Two</Tab>
                         <Tab>Three</Tab>
-                        <IoMdAdd onClick={onOpen} style={{fontSize:'30px',marginTop: '10px',marginLeft: '45%'}}/>
+                        <IoMdAdd onClick={onOpen} style={{fontSize: '30px', marginTop: '10px', marginLeft: '45%'}}/>
                     </TabList>
                     <TabIndicator
                         mt="-1.5px"
@@ -140,7 +163,8 @@ const Budget = () => {
                     <TabPanels>
                         <TabPanel>
                             <div>
-                                <ProgressCircle value={8000} maxValue={10000} handleTransClick={handleTransClick} handleCloseCard={handleCloseCard}/>
+                                <ProgressCircle value={8000000} maxValue={moneyBudget} handleTransClick={handleTransClick}
+                                                handleCloseCard={handleCloseCard}/>
                             </div>
                         </TabPanel>
                         <TabPanel>
@@ -156,9 +180,10 @@ const Budget = () => {
                 <form onSubmit={handleSubmit}>
                     <ModalContent>
                         <ModalHeader>Add Budget</ModalHeader>
-                        <ModalCloseButton />
+                        <ModalCloseButton/>
                         <ModalBody>
-                            <InputGroup  style={{marginTop: '10px'}}>
+                            <span>Amount</span>
+                            <InputGroup style={{marginTop: '10px'}}>
                                 <InputLeftElement
                                     pointerEvents='none'
                                     color='gray.300'
@@ -166,29 +191,31 @@ const Budget = () => {
                                 >
                                     $
                                 </InputLeftElement>
-                                <Input placeholder='Enter amount' name= "amount" value={budget.amount} onChange={handleChange} />
+                                <Input placeholder='Enter amount' name="amount" value={budget.amount}
+                                       onChange={handleChange}/>
                             </InputGroup>
-
+                            <span>Type Category</span>
                             <Select placeholder='Select Type' style={{marginTop: '10px'}}
                                     value={select_category} onChange={handleCategoryChange}>
                                 <option value='EXPENSE'>EXPENSE</option>
-                                <option value='DEBT'>DEBT</option>
                                 <option value='LOAN'>LOAN</option>
                             </Select>
-                            <Select name='category_id' className="form-select" aria-label="Default select example" onChange={handleChange}>
+                            <span>Category</span>
+                            <Select name='category_id' className="form-select" aria-label="Default select example"
+                                    onChange={handleChange}>
                                 <option>Select category</option>
                                 {categories.filter(category => category.type === select_category)
                                     .map((category) => (
-                                        <option key={category.id} value={category.id} >
+                                        <option key={category.id} value={category.id}>
                                             <span>{category.name}</span>
                                         </option>
                                     ))}
                             </Select>
-
+                            <span>Time(Start to End)</span>
                             <div>
                                 <Select
                                     placeholder='Select Time'
-                                    style={{ marginTop: '10px' }}
+                                    style={{marginTop: '10px'}}
                                     onChange={handleSelectChange}
                                 >
                                     <option value='option1'>This Month</option>
@@ -200,20 +227,22 @@ const Budget = () => {
                                             placeholder="Select Date and Time"
                                             size="md"
                                             type="date"
-                                            style={{ marginTop: '10px' }}
+                                            style={{marginTop: '10px'}}
                                             name='startDate' value={budget.startDate} onChange={handleChange}
                                         />
                                         <Input
                                             placeholder="Select Date and Time"
                                             size="md"
                                             type="date"
-                                            style={{ marginTop: '10px' }}
+                                            style={{marginTop: '10px'}}
                                             name='endDate' value={budget.endDate} onChange={handleChange}
                                         />
                                     </>
                                 )}
                             </div>
-                            <Select name='wallet_id' className="form-select" aria-label="Default select example" onChange={handleChange}>
+                            <span>Wallet</span>
+                            <Select name='wallet_id' className="form-select" aria-label="Default select example"
+                                    onChange={handleChange}>
                                 <option>Select wallet</option>
                                 {wallets.map((wallet) => (
                                     <option key={wallet.id} value={wallet.id}>{wallet.name}</option>
@@ -226,11 +255,10 @@ const Budget = () => {
                             <Button variant='success' mr={3} onClick={onClose}>
                                 Close
                             </Button>
-                            <Button colorScheme='green' type= "submit">Submit</Button>
+                            <Button colorScheme='green' type="submit">Submit</Button>
                         </ModalFooter>
                     </ModalContent>
                 </form>
-
             </Modal>
         </div>
     );
