@@ -2,15 +2,18 @@ import React, {useEffect, useState} from 'react';
 import {MDBBtn, MDBCheckbox, MDBCol, MDBInput, MDBRow} from "mdb-react-ui-kit";
 import "./CreateTransaction.css";
 import {MDBCardText} from "mdbreact";
-import {Input, Select, useToast} from "@chakra-ui/react";
+import {Image, Input, Select, useToast} from "@chakra-ui/react";
 import {FaRegCalendarAlt} from "react-icons/fa";
 import {BsWallet} from "react-icons/bs";
 import {MdOutlineAttachMoney} from "react-icons/md";
 import axios from "axios";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
+
+import {useChangeNotification} from "../../ChangeNotificationContext";
 const EditTransaction = () => {
 
+    const { notifyTransactionChange } = useChangeNotification();
     const toast = useToast();
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user"))
@@ -42,7 +45,7 @@ const EditTransaction = () => {
         });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const transactionData = {
             amount: parseInt(transaction.amount),
@@ -54,57 +57,66 @@ const EditTransaction = () => {
             wallet_id: parseInt(transaction.wallet_id),
             category_id: parseInt(transaction.category_id)
         };
-        if (select_category === "EXPENSE" || select_category === "INCOME") {
-            console.log(transactionData)
-            axios.put(`http://localhost:8080/api/transactions/user/${user.id}/expense_income/${transaction_edit.id}`, transactionData)
-                .then(res => {
-                    console.log(res);
-                    toast({
-                        title: 'Edit success!',
-                        description: 'You successfully created a transaction!',
-                        status: 'success',
-                        duration: 1500,
-                        isClosable: true,
-                    });
-                    navigate("/auth/transactions");
+        try {
+            await axios.put(`http://localhost:8080/api/transactions/user/${user.id}/transaction/${transaction_edit.id}`);
 
-                })
-                .catch(err => {
-                    console.error(err);
-                    toast({
-                        title: 'Edit Failed',
-                        description: 'Failed to create a transaction!',
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true,
-                    });
+            if (select_category === "EXPENSE" || select_category === "INCOME") {
+                console.log(transactionData);
+                const res = await axios.put(`http://localhost:8080/api/transactions/user/${user.id}/expense_income/${transaction_edit.id}`, transactionData);
+                console.log(res);
+                if (select_category === "EXPENSE") {
+                    await axios.post(`http://localhost:8080/api/budgets/user/${user.id}/check`, {
+                        wallet_id: parseInt(transaction.wallet_id),
+                        category_id: parseInt(transaction.category_id),
+                        startDate: transaction.transactionDate
+                    })
+                        .then((res) => {
+                            console.log(res.data)
+                        })
+                }
+                notifyTransactionChange();
+                toast({
+                    title: 'Edit success!',
+                    description: 'You successfully created a transaction!',
+                    status: 'success',
+                    duration: 1500,
+                    isClosable: true,
                 });
-        }
-        if (select_category === "DEBT" || select_category === "LOAN") {
-            console.log(transactionData)
-            axios.put(`http://localhost:8080/api/transactions/user/${user.id}/debt_loan/${transaction_edit.id}`, transactionData)
-                .then(res => {
-                    console.log(res);
-                    toast({
-                        title: 'Edit success!',
-                        description: 'You successfully created a transaction!',
-                        status: 'success',
-                        duration: 1500,
-                        isClosable: true,
-                    });
-                    navigate("/auth/transactions");
+                navigate("/auth/transactions");
+            }
+            if (select_category === "DEBT" || select_category === "LOAN") {
+                console.log(transactionData);
+                const res = await axios.put(`http://localhost:8080/api/transactions/user/${user.id}/debt_loan/${transaction_edit.id}`, transactionData);
+                console.log(res);
+                if (select_category === "LOAN") {
+                    await axios.post(`http://localhost:8080/api/budgets/user/${user.id}/check`, {
+                        wallet_id: parseInt(transaction.wallet_id),
+                        category_id: parseInt(transaction.category_id),
+                        startDate: transaction.transactionDate
+                    })
+                        .then((res) => {
+                            console.log(res.data)
+                        })
+                }
 
-                })
-                .catch(err => {
-                    console.error(err);
-                    toast({
-                        title: 'Edit Failed',
-                        description: 'Failed to create a transaction!',
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true,
-                    });
+                toast({
+                    title: 'Edit success!',
+                    description: 'You successfully created a transaction!',
+                    status: 'success',
+                    duration: 1500,
+                    isClosable: true,
                 });
+                navigate("/auth/transactions");
+            }
+        } catch (err) {
+            console.error(err);
+            toast({
+                title: 'Edit Failed',
+                description: 'Failed to create a transaction!',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -145,56 +157,84 @@ const EditTransaction = () => {
                     <MDBRow className='mb-4'>
                         <MDBCol>
                             <MDBRow>
-                                <MDBCol className="mb-4" sm="1" style={{ fontSize: "35px", color: select_category === 'INCOME' || select_category === 'LOAN' ? "blue" : "red" }}>
-                                    <MdOutlineAttachMoney />
+                                <MDBCol className="mb-4" sm="1" style={{
+                                    fontSize: "35px",
+                                    color: select_category === 'INCOME' || select_category === 'DEBT' ? "blue" : "red"
+                                }}>
+                                    <MdOutlineAttachMoney/>
                                 </MDBCol>
                                 <MDBCol>
-                                    <MDBInput id='form6Example1' label='Money number' sm="11" name='amount' value={transaction.amount} onChange={handleChange} />
+                                    <MDBInput id='form6Example1' label='Money number' sm="11" name='amount'
+                                              value={transaction.amount} onChange={handleChange}/>
                                 </MDBCol>
                             </MDBRow>
                             <MDBCardText className="text-muted">Category</MDBCardText>
-                            <Select name='category_type' className="form-select" aria-label="Default select example" value={select_category} onChange={handleCategoryChange}>
-                                <option disabled>---Select category---</option>
+                            <Select name='category_type' className="form-select" aria-label="Default select example"
+                                    value={select_category} onChange={handleCategoryChange}>
+                                <option value='all'>---Select category---</option>
                                 <option value='INCOME'>INCOME</option>
                                 <option value='EXPENSE'>EXPENSE</option>
                                 <option value='DEBT'>DEBT</option>
                                 <option value='LOAN'>LOAN</option>
                             </Select>
-                            <MDBCardText className="text-muted">Sub Category</MDBCardText>
-                            <Select name='category_id' className="form-select" aria-label="Default select example" onChange={handleChange}>
-                                <option>Select category</option>
-                                {categories.filter(category => category.type === select_category) // Lọc danh sách chỉ giữ lại các danh mục có type là "INCOME"
-                                    .map((category) => (
-                                        <option key={category.id} value={category.id} >
-                                            <img src={category.image} alt={"image"}/>  <span>{category.name}</span>
-                                        </option>
-                                    ))}
-                            </Select>
+                            {
+                                select_category !== 'all' && (
+                                    <>
+                                        <MDBCardText className="text-muted">Sub Category</MDBCardText>
+                                        <Select name='category_id' className="form-select" aria-label="Default select example" onChange={handleChange}>
+                                            <option>Select category</option>
+                                            {categories.filter(category => category.type === select_category) // Filter the list to include only categories with the selected type
+                                                .map((category) => (
+                                                    <option key={category.id} value={category.id}>
+                                                        <img src={category.image} alt={category.name} /> {/* Display the image */}
+                                                        <span>{category.name}</span> {/* Display the name */}
+                                                    </option>
+                                                ))}
+                                        </Select>
+                                    </>
+                                )
+                            }
 
-                            {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'LOAN' && (
-                                <MDBInput value={transaction.lender} onChange={handleChange} wrapperClass='mb-4' id='form6Example3' label='Lender' name='lender'/>
+                            {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'LOAN' && select_category !== 'all' && (
+                                <MDBInput onChange={handleChange} wrapperClass='mb-4' id='form6Example3' label='Lender' value={transaction.lender}
+                                          name='lender'/>
                             )}
-                            {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'DEBT' && (
-                                <MDBInput  value={transaction.borrower} onChange={handleChange} wrapperClass='mb-4' id='form6Example4' label='Borrower' name='borrower' />
+                            {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'DEBT' && select_category !== 'all' && (
+                                <MDBInput onChange={handleChange} wrapperClass='mb-4' id='form6Example4' value={transaction.borrower}
+                                          label='Borrower' name='borrower'/>
                             )}
-
-                            <MDBInput value={transaction.note}  onChange={handleChange} name="note" wrapperClass='mb-4' textarea id='form6Example7' rows={4} label='Note' style={{ height: "100px" }} />
-
+                            {
+                                select_category !== 'all' && (
+                                    <>
+                                        <MDBInput onChange={handleChange} name="note" wrapperClass='mb-4' textarea value={transaction.note}
+                                                  id='form6Example7' rows={4} label='Note' style={{height: "100px"}}/>
+                                    </>
+                                )
+                            }
                         </MDBCol>
                         <MDBCol>
-                            <>
-                                <MDBCardText className="text-muted">Start Date</MDBCardText>
-                                <MDBRow>
-                                    <MDBCol sm="2" style={{ fontSize: "30px" }}><FaRegCalendarAlt /></MDBCol>
-                                    <MDBCol sm="10"><Input required type={'date'} name='transactionDate' value={transaction.transactionDate} onChange={handleChange}></Input></MDBCol>
-                                </MDBRow>
-                            </>
-                            {select_category !== 'EXPENSE' && select_category !== 'INCOME' && (
+                            {
+                                select_category !== 'all' && (
+                                    <>
+                                        <MDBCardText className="text-muted">Start Date</MDBCardText>
+                                        <MDBRow>
+                                            <MDBCol sm="2" style={{fontSize: "30px"}}><FaRegCalendarAlt/></MDBCol>
+                                            <MDBCol sm="10"><Input required type={'date'} name='transactionDate'
+                                                                   value={transaction.transactionDate}
+                                                                   onChange={handleChange}></Input></MDBCol>
+                                        </MDBRow>
+                                    </>
+                                )
+                            }
+
+                            {select_category !== 'EXPENSE' && select_category !== 'INCOME' && select_category !== 'all' && (
                                 <>
                                     <MDBCardText className="text-muted">End Date</MDBCardText>
                                     <MDBRow>
-                                        <MDBCol sm="2" style={{ fontSize: "30px" }}><FaRegCalendarAlt /></MDBCol>
-                                        <MDBCol sm="10"><Input required type={'date'} name='endDate' value={transaction.endDate} onChange={handleChange}></Input></MDBCol>
+                                        <MDBCol sm="2" style={{fontSize: "30px"}}><FaRegCalendarAlt/></MDBCol>
+                                        <MDBCol sm="10"><Input required type={'date'} name='endDate'
+                                                               value={transaction.endDate}
+                                                               onChange={handleChange}></Input></MDBCol>
                                     </MDBRow>
                                 </>
                             )}
@@ -202,28 +242,35 @@ const EditTransaction = () => {
                     </MDBRow>
                     <MDBRow>
                         <MDBCol>
-                            <>
-                                <MDBCardText className="text-muted">Wallets</MDBCardText>
-                                <MDBRow>
-                                    <MDBCol className="mb-4" sm="2" style={{ fontSize: "30px" }}><BsWallet /></MDBCol>
-                                    <MDBCol sm="10" >
-                                        <div className='relative'>
-                                            <Select name='wallet_id' className="form-select" aria-label="Default select example" onChange={handleChange}>
-                                                <option>Select wallet</option>
-                                                {wallets.map((wallet) => (
-                                                    <option key={wallet.id} value={wallet.id}>{wallet.name}</option>
-                                                ))}
-                                            </Select>
-                                        </div>
-                                    </MDBCol>
-                                </MDBRow>
-                            </>
+                            {select_category !== 'all' && (
+                                <>
+                                    <MDBCardText className="text-muted">Wallets</MDBCardText>
+                                    <MDBRow>
+                                        <MDBCol className="mb-4" sm="2" style={{fontSize: "30px"}}><BsWallet/></MDBCol>
+                                        <MDBCol sm="10">
+                                            <div className='relative'>
+                                                <Select name='wallet_id' className="form-select"
+                                                        aria-label="Default select example" onChange={handleChange}>
+                                                    <option>Select wallet</option>
+                                                    {wallets.map((wallet) => (
+                                                        <option key={wallet.id} value={wallet.id}>{wallet.name}</option>
+                                                    ))}
+                                                </Select>
+                                            </div>
+                                        </MDBCol>
+                                    </MDBRow>
+                                </>
+                            )}
                         </MDBCol>
-                        <MDBCol className="btn_submit">
-                            <MDBBtn type="submit" className='me-1' color='success'>
-                                Submit
-                            </MDBBtn>
-                        </MDBCol>
+                        {
+                            select_category !== 'all' && (
+                                <MDBCol className="btn_submit">
+                                    <MDBBtn type="submit" className='me-1' color='success'>
+                                        Submit
+                                    </MDBBtn>
+                                </MDBCol>
+                            )
+                        }
                     </MDBRow>
                 </form>
             </div>
