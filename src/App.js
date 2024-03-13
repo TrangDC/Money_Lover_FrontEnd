@@ -20,6 +20,8 @@ import IncomePiechart from "./components/IncomePiechart/IncomePiechart";
 import EditTransaction from "./components/TransactionPage/EditTransaction";
 import {ChangeNotificationProvider} from "./ChangeNotificationContext";
 import Budget from "./components/Budgets/Budget";
+import apexChart from "./components/Charts/ApexChart";
+import ApexChart from "./components/Charts/ApexChart";
 
 
 
@@ -53,6 +55,9 @@ function App() {
                             /> : <Error/>}/>
                             <Route path='budget' element={(isAuth || user) ? <Budget
                             /> : <Error/>}/>
+                            <Route path='chart2' element={(isAuth || user) ? <ApexChart
+                            /> : <Error/>}/>
+
 
                         </Route>
                         <Route path='/login'

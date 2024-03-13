@@ -13,7 +13,6 @@ import PropTypes from "prop-types";
 import {useWallet} from "../WalletContext";
 
 const ApexChart = () => {
-
     const [dailyTransactions, setDailyTransactions] = useState({});
     const [monthlyTransactions, setMonthlyTransactions] = useState({});
     const [yearlyTransactions, setYearlyTransactions] = useState({});
@@ -65,6 +64,7 @@ const ApexChart = () => {
         const yearlyTransactions = calculateYearlyTransactions(transactions);
         setYearlyTransactions(yearlyTransactions);
     };
+
 
     const calculateDailyTransactions = (transactions) => {
         const dailyTransactions = {};
@@ -236,8 +236,8 @@ const ApexChart = () => {
                     <Tooltip />
                     <Legend />
                     <ReferenceLine y={0} stroke="#000" />
-                    <Bar dataKey="income" fill='#2E8B57 ' barSize={60} left={20} />
-                    <Bar dataKey="expense" fill="red"  barSize={60} />
+                    <Bar dataKey="income" fill='#36A2EB ' barSize={60} left={20} />
+                    <Bar dataKey="expense" fill="#FF6384"  barSize={60} />
                 </BarChart>
                 <Barchart listTransaction={listTransaction} />
             </div>
