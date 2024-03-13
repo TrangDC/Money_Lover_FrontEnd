@@ -20,12 +20,14 @@ import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 import Form from 'react-bootstrap/Form';
 import {Input, InputGroup} from '@chakra-ui/react';
+import {useWallet} from "../WalletContext";
 
 function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newBudgetCreated, onBudgetCreated}) {
     // budget detail
     const [showCard2, setShowCard2] = useState(false);
     const [selectedBudget, setSelectedBudget] = useState(false);
     const [selectedBudgetId, setSelectedBudgetId] = useState(null);
+    const { selectedWalletId } = useWallet();
     const [editBudget, setEditBudget] = useState({
         amount: '',
         category: '',
@@ -39,21 +41,21 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newB
         handleCloseCard();
     };
 
-    const handleTrans = (budgetId) => {
+    const handleTrans = (budgetId, selectedWalletId) => {
         setSelectedBudgetId(budgetId);
         setShowCard2(true);
         setSelectedBudget(true);
         handleTransClick();
         const budget = budgets.find(b => b.id === budgetId);
         setEditBudget(budget);
-        console.log(editBudget);
+        fetchExpenseTransactions(user, budgetId,selectedWalletId);
     };
 
     const [budgets, setBudgets] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
-    const fetchBudgets = async () => {
+    const fetchBudgets = async (wallet_id) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/budgets/user/${user.id}`);
+            const response = await axios.get(`http://localhost:8080/api/budgets/user/${user.id}/wallet/${wallet_id}`);
             setBudgets(response.data);
         } catch (error) {
             console.error('Error fetching budgets:', error);
@@ -62,8 +64,8 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newB
 
     useEffect(() => {
         fetchData();
-        fetchBudgets();
-    }, [newBudgetCreated]);
+        fetchBudgets(selectedWalletId);
+    }, [newBudgetCreated, selectedWalletId]);
 
     //modal edit budget
     const [show, setShow] = useState(false);
@@ -157,6 +159,18 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newB
     //bieu do
     const percentage = Math.min((value / maxValue) * 100, 100);
 
+    //hiển thị danh sách giao dịch
+    const [expenseTransactions, setExpenseTransactions] = useState([]);
+    const fetchExpenseTransactions = async (user, budget_id, wallet_id) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/transactions/user/${user.id}/budget_transaction/${wallet_id}/time_range/${budget_id}` );
+            setExpenseTransactions(response.data);
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error fetching expense transactions:', error);
+        }
+    };
+
     return (
         <>
             <div style={{width: '200px', margin: 'auto', marginTop: '2%'}}>
@@ -205,7 +219,7 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newB
                                 {budgets.map((budget) => (
                                     <Tr key={budget.id}>
                                         <Td style={{display: 'flex', alignItems: 'center'}}
-                                            onClick={() => handleTrans(budget.id)}>
+                                            onClick={() => handleTrans(budget.id, budget.wallet.id)}>
                                             <Image
                                                 borderRadius='full'
                                                 boxSize='50px'
@@ -326,70 +340,30 @@ function ProgressCircle({value, maxValue, handleTransClick, handleCloseCard,newB
                                     <span style={{marginLeft: '15px'}}>{editBudget.wallet.name}</span>
                                 </div>
                                 <hr style={{width: '350px', marginTop: '10px'}}/>
+
+                                {/*hiển thị danh sách giao dịch có type = expense*/}
                                 <div style={{marginTop: '5px', width: '350px', marginLeft: '5%'}}>
                                     <TableContainer style={{overflowY: 'auto', maxHeight: '130px'}}>
                                         <Table variant='simple' style={{width: '300px'}}>
                                             <Tbody>
-                                                <Tr>
-                                                    <Td style={{display: 'flex', alignItems: 'center'}}>
-                                                        <Image
-                                                            borderRadius='full'
-                                                            boxSize='50px'
-                                                            src='https://static.moneylover.me/img/icon/ic_category_salary.png'
-                                                            alt=''
-                                                        />
-                                                        <span style={{marginLeft: '15px'}}>Name Category</span>
-                                                    </Td>
-                                                    <Td style={{textAlign: 'right'}}>1.000.000</Td>
-                                                </Tr>
-                                                <Tr>
-                                                    <Td style={{display: 'flex', alignItems: 'center'}}>
-                                                        <Image
-                                                            borderRadius='full'
-                                                            boxSize='50px'
-                                                            src='https://static.moneylover.me/img/icon/ic_category_salary.png'
-                                                            alt=''
-                                                        />
-                                                        <span style={{marginLeft: '15px'}}>Name Category</span>
-                                                    </Td>
-                                                    <Td style={{textAlign: 'right'}}>1.000.000</Td>
-                                                </Tr>
-                                                <Tr>
-                                                    <Td style={{display: 'flex', alignItems: 'center'}}>
-                                                        <Image
-                                                            borderRadius='full'
-                                                            boxSize='50px'
-                                                            src='https://static.moneylover.me/img/icon/ic_category_salary.png'
-                                                            alt=''
-                                                        />
-                                                        <span style={{marginLeft: '15px'}}>Name Category</span>
-                                                    </Td>
-                                                    <Td style={{textAlign: 'right'}}>1.000.000</Td>
-                                                </Tr>
-                                                <Tr>
-                                                    <Td style={{display: 'flex', alignItems: 'center'}}>
-                                                        <Image
-                                                            borderRadius='full'
-                                                            boxSize='50px'
-                                                            src='https://static.moneylover.me/img/icon/ic_category_salary.png'
-                                                            alt=''
-                                                        />
-                                                        <span style={{marginLeft: '15px'}}>Name Category</span>
-                                                    </Td>
-                                                    <Td style={{textAlign: 'right'}}>1.000.000</Td>
-                                                </Tr>
-                                                <Tr>
-                                                    <Td style={{display: 'flex', alignItems: 'center'}}>
-                                                        <Image
-                                                            borderRadius='full'
-                                                            boxSize='50px'
-                                                            src='https://static.moneylover.me/img/icon/ic_category_salary.png'
-                                                            alt=''
-                                                        />
-                                                        <span style={{marginLeft: '15px'}}>Name Category</span>
-                                                    </Td>
-                                                    <Td style={{textAlign: 'right'}}>1.000.000</Td>
-                                                </Tr>
+                                                {expenseTransactions.map(transaction => (
+                                                    <Tr key={transaction.id}>
+                                                        <Td style={{display: 'flex', alignItems: 'center'}}>
+                                                            <Image
+                                                                borderRadius='full'
+                                                                boxSize='50px'
+                                                                src='https://static.moneylover.me/img/icon/ic_category_salary.png'
+                                                                alt=''
+                                                            />
+                                                            <span style={{marginLeft: '15px'}}>{transaction.category.name}</span>
+                                                            <span style={{marginLeft: '15px'}}>{transaction.note}</span>
+                                                            <span style={{marginLeft: '15px'}}>{transaction.transactionDate}</span>
+                                                        </Td>
+                                                        <Td style={{textAlign: 'right'}}>{transaction.amount} đ</Td>
+
+                                                    </Tr>
+                                                ))}
+
                                             </Tbody>
 
                                         </Table>

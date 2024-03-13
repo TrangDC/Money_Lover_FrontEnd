@@ -2,26 +2,24 @@ import React, {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import {IoReorderThree} from "react-icons/io5";
+import { IoCamera } from "react-icons/io5";
 import {MdAccountBalanceWallet} from "react-icons/md";
 import Image from 'react-bootstrap/Image';
-import {FaUserAstronaut} from "react-icons/fa";
+import {FaSwatchbook, FaUserAstronaut} from "react-icons/fa";
 import {PiIntersectThreeBold} from "react-icons/pi";
 import "./sideBar.css";
 import {MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBInput} from 'mdb-react-ui-kit';
 import Container from 'react-bootstrap/Container';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Alert from 'react-bootstrap/Alert';
 import Navbar from 'react-bootstrap/Navbar';
 import {BsCalendar2Date} from "react-icons/bs";
 import {FaSearch} from "react-icons/fa";
+import {GiSheikahEye} from "react-icons/gi";
 import {FaCircleQuestion} from "react-icons/fa6";
 import Modal from 'react-bootstrap/Modal';
 import {FaCartShopping} from "react-icons/fa6";
 import {FaGreaterThan} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import {Outlet, useNavigate} from 'react-router-dom';
-import { IoCamera } from "react-icons/io5";
-import { LuBellRing } from "react-icons/lu";
 import {
     Table,
     Thead,
@@ -34,7 +32,6 @@ import {
     TableContainer, useToast,
 } from '@chakra-ui/react'
 import {Link} from "react-router-dom";
-import { FaSwatchbook } from "react-icons/fa";
 import {
     Menu,
     MenuHandler,
@@ -47,6 +44,7 @@ import wallet from "../../components/WalletPage/Wallet";
 import Upimage from "../../components/FireBase/Upimage";
 import {useWallet} from "../../components/WalletContext";
 import {show} from "react-modal/lib/helpers/ariaAppHider";
+import {useChangeNotification} from "../../ChangeNotificationContext";
 
 function MydModalWithGrid(props) {
     const navigate = useNavigate();
@@ -350,9 +348,9 @@ function MydModalWithGrid(props) {
             >
                 <div className="flex ">
                     <div className="flex-1">
-                        <Image style={{width: "250px", height: '250px', margin: 'auto', marginTop: "25%"}}
-                               className="justify-center align-items-center" thumbnail
-                               src={images}
+                        <Image style={{width: "150px", height: '150px', margin: 'auto', marginTop: "40%"}}
+                               className="justify-center align-items-center" roundedCircle
+                               src={images} onClick={handleShowImg}
                                alt=""/>
                     </div>
                     <div
@@ -445,8 +443,10 @@ function MydModalWithGrid(props) {
     );
 }
 
-const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
+const SideBar = () => {
 
+    const { transactionChanged, walletChanged } = useChangeNotification();
+    const [shouldRerender, setShouldRerender] = useState(false);
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -459,35 +459,21 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
     const [wallet_list, setWallet] = useState([])
     const [selected_Wallet, setSelected_Wallet] = useState([]);
     const [selectedWallet_id, setSelectedWallet_id] = useState("all");
-    const [isUserFetched, setIsUserFetched] = useState(false);
 
-    const { setSelectedWalletId } = useWallet();
-
+    const [walletBalance, setWalletBalance] = useState(null);
+    const { setSelectedWalletId} = useWallet();
 
     useEffect(() => {
-        // if (!isUserFetched) {
-        //     axios.get('http://localhost:8080/api/users/' + user.id)
-        //         .then(res => {
-        //             setUserLocal(res.data);
-        //             setImage(res.data.image);
-        //             setIsUserFetched(true);
-        //         })
-        //         .catch(err => console.error(err))
-        // }
         axios.get('http://localhost:8080/api/users/' + user.id)
             .then(res => {
                 setUserLocal(res.data);
                 setImage(res.data.image);
+                setWallet(res.data.wallets)
+                setShouldRerender(prev => !prev);
                 fetchWallets();
             })
             .catch(err => console.error(err))
-    }, [modalShow]);
-
-    // useEffect(() => {
-    //     if (isUserFetched) {
-    //         fetchWallets();
-    //     }
-    // }, [isUserFetched,  modalShow]);
+    }, [modalShow, transactionChanged, walletChanged]);
 
     function fetchWallets() {
         axios.get('http://localhost:8080/api/wallets/user/' + user.id)
@@ -496,11 +482,21 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
             })
     }
 
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/wallets/user/' + user.id + '/details/' + selected_Wallet.id)
+            .then(response => setWalletBalance(response.data.balance))
+            .catch(error => {
+                console.error('Error fetching wallet balance from API:', error);
+                setWalletBalance(null); // Handle error case
+            });
+    }, [selectedWallet_id, transactionChanged, walletChanged]);
+
 
     const handleWalletSelect = (wallet_id, wallet) => {
         setSelected_Wallet(wallet)
         setSelectedWalletId(wallet_id);
         setSelectedWallet_id(wallet_id);
+        fetchWallets();
     };
 
     const totalAmount = wallet_list.reduce((total, wallet) => total + Number(wallet.balance), 0);
@@ -519,13 +515,6 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                 setImage(res.data.image);
             })
             .catch(err => console.error(err));
-    };
-
-    //display alert budget
-    const [showListAlert, setShowListAlert] = useState(false);
-
-    const toggleMenu = () => {
-        setShowListAlert(!showListAlert);
     };
 
 
@@ -642,7 +631,7 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                             <Navbar.Brand>
                                 <Menu className="bg-white">
                                     <MenuHandler>
-                                        <Button style={{ display: 'flex', alignItems: 'center', backgroundColor: "white", width:'200px' }}>
+                                        <Button style={{ display: 'flex', alignItems: 'center', backgroundColor: "white", width:'250px', height:'70px' }}>
 
                                             {
                                                 selectedWallet_id !== 'all' ? (
@@ -652,7 +641,7 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                                                              style={{ width: '40px', height: '40px', marginRight: '10px' }} />
                                                         <div>
                                                             <div className='text-black'>{selected_Wallet.name}</div>
-                                                            <div className='text-black'>{selected_Wallet.balance}</div>
+                                                            <div className='text-black' style={{fontSize: '15px', fontWeight: '500'}}>{walletBalance !== null ? walletBalance : 'Loading...'} VNĐ</div>
                                                         </div>
                                                     </>
                                                 ) : (
@@ -683,7 +672,7 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                                         <hr className='my-3'/>
                                         {wallet_list.map((data) => (
                                             <MenuItem key={data.id} onClick={() => handleWalletSelect(data.id, data)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' , marginRight: '10px'}}>
                                                     <img src="https://static.moneylover.me/img/icon/icon.png"
                                                          alt="Wallet Icon"
                                                          style={{ width: '40px', height: '40px', marginRight: '10px' }} />
@@ -699,27 +688,7 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                             <Navbar.Collapse className="justify-content-end">
                                 <Navbar.Text style={{display: "flex", alignItems: "center", marginRight: '-10%'}}>
                                     <BsCalendar2Date style={{marginRight: 30, fontSize: '20px'}}/>
-                                    <div>
-                                        <LuBellRing  style={{marginRight: 30, fontSize: '20px'}} onClick={toggleMenu}/>
-                                        {showListAlert && (
-                                            <Dropdown.Menu show={showListAlert} style={{marginLeft: '80%'}} className="custom-dropdown-menu">
-                                                <Dropdown.Item>
-                                                    <Alert variant="success">
-                                                        This is a alert—check budget!
-                                                    </Alert>
-                                                </Dropdown.Item>
-                                                <Dropdown.Item>
-                                                    <Alert variant="success">
-                                                        This is a alert—check budget!
-                                                    </Alert>
-                                                </Dropdown.Item>
-                                                <Dropdown.Item><Alert variant="success">
-                                                    This is a alert—check budget!
-                                                </Alert></Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        )}
-                                    </div>
-
+                                    <GiSheikahEye style={{marginRight: 30, fontSize: '20px'}}/>
                                     <FaSearch style={{fontSize: '20px'}}/>
                                 </Navbar.Text>
                             </Navbar.Collapse>
@@ -798,8 +767,6 @@ const SideBar = ({onWalletSelect, onMonthIndexSelect, onYearSelect}) => {
                 </div>
             </div>
         </div>
-
-
     );
 };
 
