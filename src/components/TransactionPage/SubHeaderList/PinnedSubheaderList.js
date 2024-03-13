@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './PinnedSubheaderList.css';
 import {useEffect, useState} from "react";
+import {useChangeNotification} from "../../../ChangeNotificationContext";
 import OutlinedCard from "../OutlinedCard/OutlinedCard";
 import TransactionService from "../../../services/transactions.services";
 import {Button, Navbar, TabsHeader} from "@material-tailwind/react";
@@ -16,7 +17,7 @@ import "./PinnedSubheaderList.css"
 
 import {Link, useNavigate} from "react-router-dom";
 import {MDBCardFooter, MDBCardHeader, MDBCardText} from "mdbreact";
-import {MDBBtn, MDBCard, MDBCardBody, MDBCardTitle} from "mdb-react-ui-kit";
+import {MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBRow} from "mdb-react-ui-kit";
 import {MdOutlineClose} from "react-icons/md";
 import axios from "axios";
 import {
@@ -26,7 +27,7 @@ import {
     ModalContent, ModalFooter,
     ModalHeader,
     ModalOverlay, useDisclosure,
-    useToast
+    useToast, Image
 } from "@chakra-ui/react";
 import {CgCalendarDates} from "react-icons/cg";
 import Offcanvas from "react-bootstrap/Offcanvas";
@@ -50,6 +51,7 @@ import {
 import {FaPen} from "react-icons/fa";
 
 export default function PinnedSubheaderList() {
+    const { notifyTransactionChange } = useChangeNotification();
 
     const { selectedWalletId } = useWallet();
     const [transactions, setTransactions] = useState([]);
@@ -225,6 +227,20 @@ export default function PinnedSubheaderList() {
     useEffect(() => {
         const fetchData = async () => {
 
+
+            const data = await TransactionService.fetchTransactions(user, selectedWalletId);
+            setTransactions(data);
+            notifyTransactionChange();
+            localStorage.setItem("transactions", JSON.stringify(data));
+            setCurrentMonthIndex(new Date().getMonth());
+            setCurrentYear(new Date().getFullYear())
+        };
+        fetchData();
+    }, [selectedWalletId]);
+
+    const fetchData = () => {
+        const fetchData = async () => {
+
             const data = await TransactionService.fetchTransactions(user, selectedWalletId);
             setTransactions(data);
             localStorage.setItem("transactions", JSON.stringify(data));
@@ -232,7 +248,7 @@ export default function PinnedSubheaderList() {
             setCurrentYear(new Date().getFullYear())
         };
         fetchData();
-    }, [selectedWalletId]);
+    }
 
     useEffect(() => {
         const inflow = TransactionService.calculateTotalInflow(transactions);
@@ -246,6 +262,7 @@ export default function PinnedSubheaderList() {
         if (confirm) {
             axios.delete(`http://localhost:8080/api/transactions/user/${user.id}/transaction/${id}`)
                 .then(res => {
+                    notifyTransactionChange();
                     toast({
                         title: 'Delete success!',
                         description: 'You successfully deleted a transaction!',
@@ -253,7 +270,8 @@ export default function PinnedSubheaderList() {
                         duration: 1500,
                         isClosable: true,
                     });
-                    navigate("/auth/wallets");
+                    fetchData();
+                    navigate("/auth/transactions");
                 })
                 .catch(err => console.log(err))
         }
@@ -269,10 +287,12 @@ export default function PinnedSubheaderList() {
             <div className={`bg-white rounded-lg shadow-lg container-left ${showDetail ? 'selected' : ''}`}>
                 <div>
                     <div className="header">
-                        <Link to={"/auth/create_transaction"}>
-                            <button type="button" className="button">
-                                <span className="button__text">Add Transaction</span>
-                                <span className="button__icon">
+                        <MDBRow>
+                            <MDBCol>
+                                <Link to={"/auth/create_transaction"}>
+                                    <button type="button" className="button">
+                                        <span className="button__text">Add Transaction</span>
+                                        <span className="button__icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                          viewBox="0 0 24 24" stroke-width="2"
                                          stroke-linejoin="round" stroke-linecap="round"
@@ -284,15 +304,20 @@ export default function PinnedSubheaderList() {
                                                                                     x1="5"></line>
                                     </svg>
                                 </span>
-                            </button>
-                        </Link>
-                        <CgCalendarDates style={{width: '40px', height: '40px', marginLeft: '100%'}}
-                                         onClick={handleShow}/>
+                                    </button>
+                                </Link>
+                            </MDBCol>
+                            <MDBCol>
+                                <CgCalendarDates className='btn-show-range' onClick={handleShow}/>
+                            </MDBCol>
+                        </MDBRow>
+
+
                         {navigation === 'month' && (
                             <div className="flex justify-content-center mt-0.5">
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                    className="fix-button rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -300,13 +325,13 @@ export default function PinnedSubheaderList() {
                                     {currentMonthIndex === 0 ? months[11] : months[currentMonthIndex - 1]} {currentMonthIndex === 0 ? currentYear - 1 : currentYear}
                                 </Button>
                                 <Button variant="text"
-                                        className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month btn-color"
+                                        className="fix-button btn-mid rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month btn-color"
                                         indicatorProps={{
                                             className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                         }}>{months[currentMonthIndex]} {currentYear}</Button>
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                    className="fix-button rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -347,7 +372,7 @@ export default function PinnedSubheaderList() {
                             <div className="flex justify-content-center mt-0.5">
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                    className="fix-button rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -356,7 +381,7 @@ export default function PinnedSubheaderList() {
                                 </Button>
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                    className="fix-button btn-mid rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -365,7 +390,7 @@ export default function PinnedSubheaderList() {
                                 </Button>
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
+                                    className="fix-button rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-month"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -378,7 +403,7 @@ export default function PinnedSubheaderList() {
                             <div className="flex justify-content-center mt-0.5">
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-year"
+                                    className="fix-button rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-year"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -388,7 +413,7 @@ export default function PinnedSubheaderList() {
                                 </Button>
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-year btn-color"
+                                    className="fix-button btn-mid rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-year btn-color"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -398,7 +423,7 @@ export default function PinnedSubheaderList() {
                                 </Button>
                                 <Button
                                     variant="text"
-                                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-year"
+                                    className="fix-button rounded-none border-b border-blue-gray-50 bg-transparent p-2 btn-year"
                                     indicatorProps={{
                                         className: "bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",
                                     }}
@@ -439,28 +464,57 @@ export default function PinnedSubheaderList() {
                     </div>
                     <hr className='my-0.5'/>
                     {navigation === "month" && (
-                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
+                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "450px"}}>
                             {groupedTransactions.length === 0 ? (
-                                <div style={{height: "430px"}}>
-                                    <ListItem>
-                                        No transactions for this month
-                                    </ListItem>
-                                    <Button variant="outlined" onClick={() => handleCurrentMonth(setCurrentMonthIndex, setCurrentYear)}>Back to Current Month</Button>
+                                <div style={{height: "430px",textAlign:'center'}}>
+                                    <Image
+                                        style={{margin: "auto"}}
+                                        borderRadius='full'
+                                        boxSize='300px'
+                                        src='https://t4.ftcdn.net/jpg/04/52/43/87/360_F_452438771_qBPO91hhFQK5tiJCfff93Y90C0NvT3Zi.jpg'
+                                        alt=''
+                                    />
+                                    <Button  variant="outlined"
+                                            onClick={() => handleCurrentMonth(setCurrentMonthIndex, setCurrentYear)}>Back
+                                        to Current Month</Button>
                                 </div>
+
                             ) : (
-                                <List className="list" class="border-t border-gray-200" style={{height: "450px"}}>
-                                    {groupedTransactions.map(({ date, transactions }) => (
-                                        <div>
+                                <List className="list" class="border-t border-gray-200">
+                                    {groupedTransactions.map(({ date, transactions }) => {
+                                        const filteredIncomeAndDebt = transactions.filter(transaction =>
+                                            transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT'
+                                        );
+                                        const filteredExpenseAndLoan = transactions.filter(transaction =>
+                                            transaction.category.type === 'EXPENSE' || transaction.category.type === 'LOAN'
+                                        );
+                                        const totalIncomeAndDebt = filteredIncomeAndDebt.reduce((total, transaction) => {
+                                            return total + transaction.amount;
+                                        }, 0);
+                                        const totalExpenseAndLoan = filteredExpenseAndLoan.reduce((total, transaction) => {
+                                            return total + transaction.amount;
+                                        }, 0);
+                                        const netAmount = totalIncomeAndDebt - totalExpenseAndLoan;
+                                        return ( <div>
                                             <hr className='my-0.5'/>
-                                            <ListItem className="sticky-top bg-light px-4 py-2 ml-0 flex justify-between items-center" style={{ height: '5rem' }}>
+                                            <ListItem
+                                                className="sticky-top bg-light px-4 py-2 ml-0 flex justify-between items-center"
+                                                style={{height: '5rem'}}>
                                                 <div className="flex items-center">
-                                                    <div className="text-5xl font-bold mr-2">{date.getDate()}</div> {/* Largest font size for the day number */}
+                                                    <div className="text-5xl font-bold mr-2">{date.getDate()}</div>
+                                                    {/* Largest font size for the day number */}
                                                     <div className="text-lg flex flex-col">
-                                                        <div className='text-sm'>{date.toLocaleString('en-US', { weekday: 'long' })}</div> {/* Day name */}
-                                                        <div className='text-sm'>{date.toLocaleString('en-US', { month: 'long' })}</div> {/* Month name */}
-                                                        <div className='text-sm'>{date.getFullYear()}</div> {/* Year */}
+                                                        <div
+                                                            className='text-sm'>{date.toLocaleString('en-US', {weekday: 'long'})}</div>
+                                                        {/* Day name */}
+                                                        <div
+                                                            className='text-sm'>{date.toLocaleString('en-US', {month: 'long'})}</div>
+                                                        {/* Month name */}
+                                                        <div className='text-sm'>{date.getFullYear()}</div>
+                                                        {/* Year */}
                                                     </div>
                                                 </div>
+                                                <h5>{netAmount.toLocaleString()} VNĐ</h5>
                                             </ListItem>
                                             <hr className='my-0.5'/>
 
@@ -470,31 +524,39 @@ export default function PinnedSubheaderList() {
                                                     key={transaction.id}
                                                     onClick={() => handleTransactionClick(transaction)}>
                                                     <ListItemPrefix className="pl-0">
-                                                        <Avatar variant="circular" alt="candice" src={transaction.category.image} />
+                                                        <Avatar variant="circular" alt="candice"
+                                                                src={transaction.category.image}/>
                                                     </ListItemPrefix>
                                                     <div className="flex justify-between w-full">
                                                         {/* Category name */}
                                                         <div>
                                                             <Typography variant="h6" color="blue-gray" className="pl-3">
                                                                 {transaction.category.name}
+                                                                <div className="text-lg flex flex-col">
+                                                                    <div
+                                                                        className='text-sm'>{transaction.note}</div>
+
+                                                                </div>
                                                             </Typography>
                                                         </div>
                                                         <div>
-                                                            <Typography variant="h5" style={{ color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
+                                                            <Typography variant="h5"
+                                                                        style={{color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red'}}
+                                                                        class="font-normal">
                                                                 {transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? '+' : '-'}{transaction.amount.toLocaleString()} VNĐ
                                                             </Typography>
                                                         </div>
                                                     </div>
                                                 </ListItem>
                                             ))}
-                                        </div>
-                                    ))}
+                                        </div>)
+                                    })}
                                 </List>
                             )}
                         </List>
                     )}
                     {navigation === "day" && (
-                        <List className="btn-nav-right bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
+                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "450px"}}>
                             {groupTransactionsByDay.length === 0 ? (
                                 <div style={{height: "300px"}}>
                                     <ListItem>
@@ -532,7 +594,7 @@ export default function PinnedSubheaderList() {
                         </List>
                     )}
                     {navigation === "week" && (
-                        <List className="btn-nav-right bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
+                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "450px"}}>
                             {Object.keys(groupedTransactionsArray).length === 0 ? (
                                 <div style={{height: "300px"}}>
                                     <ListItem>
@@ -552,14 +614,20 @@ export default function PinnedSubheaderList() {
                                                     <Avatar variant="circular" alt="candice" src={transaction.category.image} />
                                                 </ListItemPrefix>
                                                 <div className="flex justify-between w-full">
-                                                    {/* Category name */}
                                                     <div>
                                                         <Typography variant="h6" color="blue-gray" className="pl-3">
                                                             {transaction.category.name}
+                                                            <div className="text-lg flex flex-col">
+                                                                <div
+                                                                    className='text-sm'>{transaction.transactionDate}</div>
+
+                                                            </div>
                                                         </Typography>
                                                     </div>
                                                     <div>
-                                                        <Typography variant="h5" style={{ color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
+                                                        <Typography variant="h5"
+                                                                    style={{color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red'}}
+                                                                    class="font-normal">
                                                             {transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? '+' : '-'}{transaction.amount.toLocaleString()} VNĐ
                                                         </Typography>
                                                     </div>
@@ -572,7 +640,7 @@ export default function PinnedSubheaderList() {
                         </List>
                     )}
                     {navigation === "year" && (
-                        <List className="btn-nav-right bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
+                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "450px"}}>
                             {Object.keys(groupedTransactionsArrayYear).length === 0 ? (
                                 <div style={{height: "300px"}}>
                                     <ListItem>
@@ -592,14 +660,20 @@ export default function PinnedSubheaderList() {
                                                     <Avatar variant="circular" alt="candice" src={transaction.category.image} />
                                                 </ListItemPrefix>
                                                 <div className="flex justify-between w-full">
-                                                    {/* Category name */}
                                                     <div>
                                                         <Typography variant="h6" color="blue-gray" className="pl-3">
                                                             {transaction.category.name}
+                                                            <div className="text-lg flex flex-col">
+                                                                <div
+                                                                    className='text-sm'>{transaction.transactionDate}</div>
+
+                                                            </div>
                                                         </Typography>
                                                     </div>
                                                     <div>
-                                                        <Typography variant="h5" style={{ color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red' }} class="font-normal">
+                                                        <Typography variant="h5"
+                                                                    style={{color: transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? 'blue' : 'red'}}
+                                                                    class="font-normal">
                                                             {transaction.category.type === 'INCOME' || transaction.category.type === 'DEBT' ? '+' : '-'}{transaction.amount.toLocaleString()} VNĐ
                                                         </Typography>
                                                     </div>
@@ -612,7 +686,7 @@ export default function PinnedSubheaderList() {
                         </List>
                     )}
                     {navigation === "range" && (
-                        <List className="btn-nav-right bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
+                        <List className="bg-white rounded-lg shadow-lg mt-4 overflow-auto" style={{maxHeight: "550px"}}>
                             {transactions.length === 0 ? (
                                 <div style={{height: "300px"}}>
                                     <ListItem>
@@ -734,12 +808,40 @@ export default function PinnedSubheaderList() {
                         style={{marginLeft: '5px'}}>Year</span>
                         <Button onClick={() => setNavigation('year')}>Year</Button>
                     </div>
-                    <div style={{display: 'flex', alignItems: 'center', marginTop: '20px'}} onClick={onOpen}>
-                        <FaPen style={{height: '20px', width: '20px', marginLeft: '10px'}}/> <span
-                        style={{marginLeft: '15px'}}>Custom</span>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }} onClick={onOpen}>
+                        <FaPen style={{ height: '20px', width: '20px',marginLeft: '10px' }} /> <span style={{ marginLeft: '15px' }}>Custom</span>
                     </div>
                 </Offcanvas.Body>
             </Offcanvas>
+
+            {/*modal custom*/}
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Select Date Range</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody pb={6}>
+                        <FormControl>
+                            <FormLabel>From</FormLabel>
+                            <Input type={"date"} value={startDateRange} onChange={(e) => setStartDateRange(e.target.value)} />
+                        </FormControl>
+
+                        <FormControl mt={4}>
+                            <FormLabel>To</FormLabel>
+                            <Input type={"date"} value={endDateRange} onChange={(e) => setEndDateRange(e.target.value)} />
+                        </FormControl>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button onClick={onClose} colorScheme='green' variant='outline'>Cancel</Button>
+                        <Button colorScheme='greengreen' variant='outline'>
+                            Select Time
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
         </div>
     );
